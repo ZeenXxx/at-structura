@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang='id'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><meta name='description' content='Preliminary design beton struktural berdasarkan rujukan SNI 2847:2019.'><meta property='og:title' content='Preliminary Design - AT STRUCTURA'><meta property='og:description' content='Preliminary design beton struktural berdasarkan rujukan SNI 2847:2019.'><meta property='og:image' content='../assets/logo/at-structura-logo.png'><link rel='icon' href='../assets/icons/favicon.png' type='image/png'><link rel='stylesheet' href='../css/style.css'><link rel='stylesheet' href='../css/navbar.css'><link rel="stylesheet" href="../css/preliminary-design.css"><title>Preliminary Design - AT STRUCTURA</title></head><body><header class='navbar'><a class='brand' href='../index.html'><img src='../assets/logo/at-structura-logo.png' alt='Logo AT STRUCTURA'><span><strong>AT STRUCTURA</strong><small>Personal civil engineering platform</small></span></a><button class='menu-toggle' type='button' aria-label='Toggle navigation' aria-expanded='false'><span></span></button><nav class='nav-links' data-active='tools'><a href='../index.html' data-page='home'>Home</a><a href='../pages/belajar.html' data-page='belajar'>Belajar</a><a href='../pages/tools.html' data-page='tools'>Tools</a><a href='../pages/resources.html' data-page='resources'>Resources</a><a href='../pages/jasa.html' data-page='jasa'>Jasa</a><a href='../pages/portfolio.html' data-page='portfolio'>Portfolio</a><a href='../pages/about.html' data-page='about'>About</a><a href='../pages/contact.html' data-page='contact'>Contact</a></nav></header><main>
+      <section class="prelim-hero">
+        <div class="container prelim-hero-grid">
+          <div>
+            <span class="eyebrow">SNI 2847:2019</span>
+            <h1>Preliminary Design Beton Struktural</h1>
+            <p class="lead">Estimasi awal dimensi kolom, balok, pelat, dan dinding geser dengan rujukan pasal, rumus, dan tabel ringkas dari SNI 2847:2019.</p>
+          </div>
+          <div class="prelim-hero-note">
+            <strong>Catatan desain</strong>
+            <p>Hasil ini untuk tahap preliminary. Desain final tetap perlu analisis struktur, kombinasi beban, detailing tulangan, geser, torsi, lendutan, dan ketentuan gempa yang lengkap.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section"><div class="container prelim-layout"><div class="engineering-disclaimer" style="grid-column:1 / -1">Hasil perhitungan pada tools ini bersifat bantuan awal dan wajib diverifikasi kembali berdasarkan standar terbaru, asumsi desain, kombinasi beban, serta pertimbangan engineer.</div>
+          <aside class="prelim-sidebar">
+            <button class="prelim-tab active" type="button" data-prelim-tab="kolom">Kolom</button>
+            <button class="prelim-tab" type="button" data-prelim-tab="balok">Balok</button>
+            <button class="prelim-tab" type="button" data-prelim-tab="pelat">Pelat</button>
+            <button class="prelim-tab" type="button" data-prelim-tab="dinding">Dinding geser</button>
+          </aside>
+
+          <section class="prelim-main">
+            <article class="prelim-panel active" id="panel-kolom">
+              <div class="panel-heading"><span>01</span><div><h2>Preliminary kolom</h2><p>Estimasi luas bruto dan dimensi awal dari beban aksial terfaktor.</p></div></div>
+              <div class="calc-grid">
+                <form class="input-card" id="columnForm">
+                  <div class="form-grid two">
+                    <div><label for="colPu">Pu (kN)</label><input class="control" id="colPu" type="number" step="1" value="1600"></div>
+                    <div><label for="colFc">f'c (MPa)</label><input class="control" id="colFc" type="number" step="0.1" value="25"></div>
+                    <div><label for="colFy">fy (MPa)</label><input class="control" id="colFy" type="number" step="1" value="420"></div>
+                    <div><label for="colRho">Rasio tulangan asumsi (%)</label><input class="control" id="colRho" type="number" step="0.1" value="1.5"></div>
+                    <div><label for="colTie">Tulangan transversal</label><select class="control" id="colTie"><option value="tie">Sengkang persegi</option><option value="spiral">Spiral</option></select></div>
+                    <div><label for="colAspect">Rasio h / b</label><input class="control" id="colAspect" type="number" step="0.05" value="1"></div>
+                    <div class="span-2 check-row"><input id="colSpecial" type="checkbox" checked><label for="colSpecial">Terapkan batas kolom sistem rangka pemikul momen khusus</label></div>
+                  </div>
+                  <button class="btn btn-primary full-btn" type="submit">Hitung kolom</button>
+                </form>
+                <div class="output-card" id="columnResult"></div>
+              </div>
+              <div class="sni-card" id="columnInfo"></div>
+            </article>
+
+            <article class="prelim-panel" id="panel-balok">
+              <div class="panel-heading"><span>02</span><div><h2>Preliminary balok</h2><p>Tinggi minimum balok nonprategang berdasarkan kondisi tumpuan.</p></div></div>
+              <div class="calc-grid">
+                <form class="input-card" id="beamForm">
+                  <div class="form-grid two">
+                    <div><label for="beamSpan">Bentang bersih, l (m)</label><input class="control" id="beamSpan" type="number" step="0.01" value="6"></div>
+                    <div><label for="beamCondition">Kondisi balok</label><select class="control" id="beamCondition"><option value="simple">Sederhana</option><option value="oneEnd">Menerus satu sisi</option><option value="twoEnd">Menerus dua sisi</option><option value="cantilever">Kantilever</option></select></div>
+                    <div><label for="beamFy">fy (MPa)</label><input class="control" id="beamFy" type="number" step="1" value="420"></div>
+                    <div><label for="beamWc">Berat beton wc (kg/m3)</label><input class="control" id="beamWc" type="number" step="1" value="2400"></div>
+                  </div>
+                  <button class="btn btn-primary full-btn" type="submit">Hitung balok</button>
+                </form>
+                <div class="output-card" id="beamResult"></div>
+              </div>
+              <div class="sni-card" id="beamInfo"></div>
+            </article>
+
+            <article class="prelim-panel" id="panel-pelat">
+              <div class="panel-heading"><span>03</span><div><h2>Preliminary pelat</h2><p>Menentukan pelat satu arah atau dua arah, lalu menghitung tebal awal.</p></div></div>
+              <div class="calc-grid">
+                <form class="input-card" id="slabForm">
+                  <div class="form-grid two">
+                    <div><label for="slabShort">Bentang pendek (m)</label><input class="control" id="slabShort" type="number" step="0.01" value="3"></div>
+                    <div><label for="slabLong">Bentang panjang (m)</label><input class="control" id="slabLong" type="number" step="0.01" value="5"></div>
+                    <div><label for="slabFy">fy (MPa)</label><input class="control" id="slabFy" type="number" step="1" value="420"></div>
+                    <div><label for="slabWc">Berat beton wc (kg/m3)</label><input class="control" id="slabWc" type="number" step="1" value="2400"></div>
+                    <div><label for="slabOneWayCondition">Jika satu arah</label><select class="control" id="slabOneWayCondition"><option value="simple">Tumpuan sederhana</option><option value="oneEnd">Satu ujung menerus</option><option value="twoEnd">Kedua ujung menerus</option><option value="cantilever">Kantilever</option></select></div>
+                    <div><label for="slabPanel">Jika dua arah</label><select class="control" id="slabPanel"><option value="interiorNoDrop">Interior tanpa drop panel</option><option value="edgeNoBeamNoDrop">Eksterior tanpa balok tepi, tanpa drop</option><option value="edgeBeamNoDrop">Eksterior dengan balok tepi, tanpa drop</option><option value="interiorDrop">Interior dengan drop panel</option><option value="edgeNoBeamDrop">Eksterior tanpa balok tepi, dengan drop</option><option value="edgeBeamDrop">Eksterior dengan balok tepi, dengan drop</option></select></div>
+                  </div>
+                  <button class="btn btn-primary full-btn" type="submit">Hitung pelat</button>
+                </form>
+                <div class="output-card" id="slabResult"></div>
+              </div>
+              <div class="sni-card" id="slabInfo"></div>
+            </article>
+
+            <article class="prelim-panel" id="panel-dinding">
+              <div class="panel-heading"><span>04</span><div><h2>Preliminary dinding geser</h2><p>Estimasi tebal minimum, tulangan badan, dan cek kapasitas geser awal.</p></div></div>
+              <div class="calc-grid">
+                <form class="input-card" id="wallForm">
+                  <div class="form-grid two">
+                    <div><label for="wallType">Tipe dinding</label><select class="control" id="wallType"><option value="bearing">Tumpu</option><option value="nonbearing">Bukan tumpu</option><option value="basement">Basemen/fondasi eksterior</option></select></div>
+                    <div><label for="wallHeight">Tinggi tidak tertumpu hw (m)</label><input class="control" id="wallHeight" type="number" step="0.01" value="3.5"></div>
+                    <div><label for="wallLength">Panjang dinding lw (m)</label><input class="control" id="wallLength" type="number" step="0.01" value="4"></div>
+                    <div><label for="wallFc">f'c (MPa)</label><input class="control" id="wallFc" type="number" step="0.1" value="25"></div>
+                    <div><label for="wallFy">fy tulangan badan (MPa)</label><input class="control" id="wallFy" type="number" step="1" value="420"></div>
+                    <div><label for="wallVu">Vu desain (kN)</label><input class="control" id="wallVu" type="number" step="1" value="650"></div>
+                    <div><label for="wallRho">rho t asumsi (%)</label><input class="control" id="wallRho" type="number" step="0.01" value="0.25"></div>
+                    <div><label for="wallLambda">lambda beton</label><input class="control" id="wallLambda" type="number" step="0.01" value="1"></div>
+                  </div>
+                  <button class="btn btn-primary full-btn" type="submit">Hitung dinding</button>
+                </form>
+                <div class="output-card" id="wallResult"></div>
+              </div>
+              <div class="sni-card" id="wallInfo"></div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main><footer class='site-footer'><div class='footer-grid'><div><a class='footer-brand' href='../index.html'><img src='../assets/logo/at-structura-logo.png' alt='Logo AT STRUCTURA'><span>AT STRUCTURA</span></a><p>Platform pribadi Arief Tediansyah untuk belajar, tools, resources, portfolio, dan layanan pendukung Teknik Sipil.</p></div><div><h3>Quick links</h3><a href='../pages/belajar.html'>Belajar</a><a href='../pages/tools.html'>Tools</a><a href='../pages/resources.html'>Resources</a><a href='../pages/jasa.html'>Jasa</a></div><div><h3>Tools</h3><a href='../pages/tools.html#converter'>Converter</a><a href='../pages/tools.html#spectrum'>Spektrum ETABS</a><a href='../tools/diagram-struktur.html'>Structural Analyzer</a><a href='../tools/preliminary-design.html'>Preliminary Design</a></div><div><h3>Kontak</h3><p>WhatsApp: #<br>Email: #<br>Instagram: #<br>YouTube: #</p></div></div><div class='footer-bottom'><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Built for civil engineering learning and tools.</span></div></footer><div class='toast' id='toast'></div><script src="../js/navbar.js"></script><script src="../js/preliminary-design.js"></script></body></html>

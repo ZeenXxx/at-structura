@@ -1,0 +1,50 @@
+[
+    {
+        "title": "Web Edukasi Teknik Sipil",
+        "category": "Website",
+        "description": "Pengembangan website edukasi dan resource Teknik Sipil sebagai referensi desain AT STRUCTURA.",
+        "status": "Selesai"
+    },
+    {
+        "title": "Tools Teknik Sipil",
+        "category": "Web Tools",
+        "description": "Converter, response spectrum, diagram struktur, preliminary design, dan kalkulator tulangan.",
+        "status": "Berjalan"
+    },
+    {
+        "title": "Template Akademik",
+        "category": "Template",
+        "description": "Template perhitungan, rekap desain, dan dokumen belajar yang akan dikembangkan bertahap.",
+        "status": "Coming Soon"
+    },
+    {
+        "title": "Visualisasi Gambar Teknik",
+        "category": "Drafting",
+        "description": "Eksperimen layout gambar, detail teknik, dan visualisasi berbasis CAD/BIM.",
+        "status": "Coming Soon"
+    },
+    {
+        "title": "Project Civil 3D",
+        "category": "Civil 3D",
+        "description": "Dokumentasi surface, alignment, corridor, dan output gambar teknik.",
+        "status": "Coming Soon"
+    },
+    {
+        "title": "Project HEC-RAS / Hidrologi",
+        "category": "Hidrologi",
+        "description": "Catatan pemodelan hidrologi dan hidraulika untuk pembelajaran teknis.",
+        "status": "Coming Soon"
+    },
+    {
+        "title": "Web Tools Teknik Sipil",
+        "category": "Development",
+        "description": "Pembuatan kalkulator dan alat bantu berbasis browser untuk kebutuhan teknik.",
+        "status": "Berjalan"
+    },
+    {
+        "title": "Drafting Gambar Teknik",
+        "category": "Drafting",
+        "description": "Portfolio gambar kerja, detail, dan layout teknis yang disusun rapi.",
+        "status": "Coming Soon"
+    }
+]

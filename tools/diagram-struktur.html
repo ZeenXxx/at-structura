@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang='id'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><meta name='description' content='Analisis diagram gaya dalam balok 1D.'><meta property='og:title' content='Structural Diagram Analyzer - AT STRUCTURA'><meta property='og:description' content='Analisis diagram gaya dalam balok 1D.'><meta property='og:image' content='../assets/logo/at-structura-logo.png'><link rel='icon' href='../assets/icons/favicon.png' type='image/png'><link rel='stylesheet' href='../css/style.css'><link rel='stylesheet' href='../css/navbar.css'><link rel="stylesheet" href="../css/diagram-struktur.css"><title>Structural Diagram Analyzer - AT STRUCTURA</title></head><body><header class='navbar'><a class='brand' href='../index.html'><img src='../assets/logo/at-structura-logo.png' alt='Logo AT STRUCTURA'><span><strong>AT STRUCTURA</strong><small>Personal civil engineering platform</small></span></a><button class='menu-toggle' type='button' aria-label='Toggle navigation' aria-expanded='false'><span></span></button><nav class='nav-links' data-active='tools'><a href='../index.html' data-page='home'>Home</a><a href='../pages/belajar.html' data-page='belajar'>Belajar</a><a href='../pages/tools.html' data-page='tools'>Tools</a><a href='../pages/resources.html' data-page='resources'>Resources</a><a href='../pages/jasa.html' data-page='jasa'>Jasa</a><a href='../pages/portfolio.html' data-page='portfolio'>Portfolio</a><a href='../pages/about.html' data-page='about'>About</a><a href='../pages/contact.html' data-page='contact'>Contact</a></nav></header><main>
+      <section class="diagram-hero">
+        <div class="container diagram-hero-grid">
+          <div>
+            <span class="eyebrow">Structural tools</span>
+            <h1>Structural Diagram Analyzer</h1>
+            <p class="lead">Gambar balok 1D sederhana, tambahkan support dan beban, lalu hitung reaksi tumpuan, axial force, shear force diagram, bending moment diagram, dan tabel gaya dalam.</p>
+          </div>
+          <div class="sign-card">
+            <h2>Konvensi tanda</h2>
+            <p>Beban titik memakai sudut: 0&deg; ke kanan, 90&deg; ke bawah, 180&deg; ke kiri, -90&deg; ke atas. Reaksi vertikal positif ke atas. Axial positif tarik. SFD positif bila gaya geser internal ke atas pada sisi kiri potongan. BMD positif sagging dan digambar ke bawah, negatif hogging digambar ke atas.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="diagram-workspace section"><div class="container diagram-layout"><div class="engineering-disclaimer" style="grid-column:1 / -1">Hasil perhitungan pada tools ini bersifat bantuan awal dan wajib diverifikasi kembali berdasarkan standar terbaru, asumsi desain, kombinasi beban, serta pertimbangan engineer.</div>
+          <aside class="diagram-panel input-panel">
+            <div class="panel-heading"><span>01</span><h2>Input model</h2></div>
+
+            <details open>
+              <summary>Node</summary>
+              <div class="form-grid single">
+                <label for="nodeX">Posisi X (m)</label>
+                <input class="control" id="nodeX" type="number" step="0.01" min="0" placeholder="Contoh: 4">
+                <button class="btn btn-primary" id="addNodeBtn" type="button">Tambah node</button>
+              </div>
+            </details>
+
+            <details open>
+              <summary>Element balok</summary>
+              <div class="form-grid two">
+                <div><label for="elementStart">Node awal</label><select class="control" id="elementStart"></select></div>
+                <div><label for="elementEnd">Node akhir</label><select class="control" id="elementEnd"></select></div>
+              </div>
+              <button class="btn btn-primary full-btn" id="addElementBtn" type="button">Tambah element</button>
+            </details>
+
+            <details open>
+              <summary>Support</summary>
+              <div class="form-grid two">
+                <div><label for="supportNode">Node</label><select class="control" id="supportNode"></select></div>
+                <div><label for="supportType">Jenis support</label><select class="control" id="supportType"><option value="free">Free</option><option value="roller">Roller</option><option value="pin">Pin</option><option value="fixed">Fixed</option></select></div>
+              </div>
+              <button class="btn btn-primary full-btn" id="setSupportBtn" type="button">Simpan support</button>
+            </details>
+
+            <details open>
+              <summary>Beban titik</summary>
+              <div class="form-grid two">
+                <div><label for="pointLoadTarget">Target</label><select class="control" id="pointLoadTarget"><option value="node">Node</option><option value="element">Element</option></select></div>
+                <div><label for="pointLoadAngle">Sudut gaya (&deg;)</label><input class="control" id="pointLoadAngle" type="number" step="1" value="90" placeholder="0 kanan, 90 bawah"></div>
+                <div class="span-2"><label for="pointLoadValue">Besar beban P (kN)</label><input class="control" id="pointLoadValue" type="number" step="0.01" placeholder="Contoh: 25"></div>
+                <div><label for="pointLoadNode">Node</label><select class="control" id="pointLoadNode"></select></div>
+                <div><label for="pointLoadElement">Element</label><select class="control" id="pointLoadElement"></select></div>
+                <div class="span-2"><label for="pointLoadOffset">Jarak dari node awal element (m)</label><input class="control" id="pointLoadOffset" type="number" step="0.01" min="0" value="0"></div>
+              </div>
+              <button class="btn btn-primary full-btn" id="addPointLoadBtn" type="button">Tambah beban titik</button>
+            </details>
+
+            <details open>
+              <summary>Beban merata vertikal</summary>
+              <div class="form-grid two">
+                <div><label for="udlStartNode">Node awal</label><select class="control" id="udlStartNode"></select></div>
+                <div><label for="udlEndNode">Node akhir</label><select class="control" id="udlEndNode"></select></div>
+                <div class="span-2"><label for="udlValue">w (kN/m)</label><input class="control" id="udlValue" type="number" step="0.01" placeholder="Downward +"></div>
+              </div>
+              <button class="btn btn-primary full-btn" id="addUdlBtn" type="button">Tambah beban merata</button>
+            </details>
+
+            <div class="diagram-preset-card">
+              <label for="presetModel">Contoh model cepat</label>
+              <select class="control" id="presetModel">
+                <option value="">Pilih preset soal</option>
+                <option value="overhang-two-side">Overhang dua sisi seperti gambar</option>
+                <option value="cantilever-fixed-right">Kantilever kiri - fixed kanan</option>
+                <option value="cantilever-fixed-left">Kantilever kanan - fixed kiri</option>
+                <option value="simple-span-udl">Balok sederhana + beban merata</option>
+              </select>
+              <button class="btn btn-secondary full-btn" id="loadPresetBtn" type="button">Pakai preset</button>
+            </div>
+
+            <div class="action-row">
+              <button class="btn btn-primary" id="analyzeBtn" type="button">Hitung</button>
+              <button class="btn btn-secondary" id="resetBtn" type="button">Reset</button>
+            </div>
+            <div class="model-message" id="modelMessage"></div>
+          </aside>
+
+          <section class="diagram-main">
+            <div class="diagram-panel editor-panel">
+              <div class="panel-heading"><span>02</span><h2>Editor visual</h2></div>
+              <div class="svg-wrap"><svg id="beamCanvas" viewBox="0 0 960 560" role="img" aria-label="Visualisasi model balok"></svg></div>
+              <div class="model-list" id="modelList"></div>
+            </div>
+
+            <div class="diagram-panel result-panel">
+              <div class="panel-heading"><span>03</span><h2>Hasil analisis</h2></div>
+              <div class="output-switch"><label for="diagramOutput">Output utama</label><select class="control" id="diagramOutput"><option value="all">AFD, SFD, dan BMD</option><option value="afd">Axial Force Diagram</option><option value="sfd">Shear Force Diagram</option><option value="bmd">Bending Moment Diagram</option></select></div>
+              <div class="result-grid" id="reactionResults"></div>
+              <div class="chart-grid">
+                <div class="chart-card combined-chart-card" id="forceDiagramCard"><h3>Diagram Gaya Dalam</h3><canvas id="forceDiagramChart"></canvas></div>
+              </div>
+              <div class="table-wrap"><table><thead><tr><th>Element</th><th>x awal</th><th>x akhir</th><th>N awal</th><th>N akhir</th><th>V awal</th><th>V akhir</th><th>M awal</th><th>M tengah</th><th>M akhir</th></tr></thead><tbody id="forceTableBody"><tr><td colspan="10">Belum ada hasil analisis.</td></tr></tbody></table></div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main><footer class='site-footer'><div class='footer-grid'><div><a class='footer-brand' href='../index.html'><img src='../assets/logo/at-structura-logo.png' alt='Logo AT STRUCTURA'><span>AT STRUCTURA</span></a><p>Platform pribadi Arief Tediansyah untuk belajar, tools, resources, portfolio, dan layanan pendukung Teknik Sipil.</p></div><div><h3>Quick links</h3><a href='../pages/belajar.html'>Belajar</a><a href='../pages/tools.html'>Tools</a><a href='../pages/resources.html'>Resources</a><a href='../pages/jasa.html'>Jasa</a></div><div><h3>Tools</h3><a href='../pages/tools.html#converter'>Converter</a><a href='../pages/tools.html#spectrum'>Spektrum ETABS</a><a href='../tools/diagram-struktur.html'>Structural Analyzer</a><a href='../tools/preliminary-design.html'>Preliminary Design</a></div><div><h3>Kontak</h3><p>WhatsApp: #<br>Email: #<br>Instagram: #<br>YouTube: #</p></div></div><div class='footer-bottom'><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Built for civil engineering learning and tools.</span></div></footer><div class='toast' id='toast'></div><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script><script src="../js/navbar.js"></script><script src="../js/diagram-struktur.js"></script></body></html>

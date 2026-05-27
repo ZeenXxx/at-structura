@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang='id'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><meta name='description' content='Kalkulator tulangan lentur dan sengkang balok beton bertulang.'><meta property='og:title' content='Kalkulator Tulangan Balok - AT STRUCTURA'><meta property='og:description' content='Kalkulator tulangan lentur dan sengkang balok beton bertulang.'><meta property='og:image' content='../assets/logo/at-structura-logo.png'><link rel='icon' href='../assets/icons/favicon.png' type='image/png'><link rel='stylesheet' href='../css/style.css'><link rel='stylesheet' href='../css/navbar.css'><link rel="stylesheet" href="../css/preliminary-design.css"><title>Kalkulator Tulangan Balok - AT STRUCTURA</title></head><body><header class='navbar'><a class='brand' href='../index.html'><img src='../assets/logo/at-structura-logo.png' alt='Logo AT STRUCTURA'><span><strong>AT STRUCTURA</strong><small>Personal civil engineering platform</small></span></a><button class='menu-toggle' type='button' aria-label='Toggle navigation' aria-expanded='false'><span></span></button><nav class='nav-links' data-active='tools'><a href='../index.html' data-page='home'>Home</a><a href='../pages/belajar.html' data-page='belajar'>Belajar</a><a href='../pages/tools.html' data-page='tools'>Tools</a><a href='../pages/resources.html' data-page='resources'>Resources</a><a href='../pages/jasa.html' data-page='jasa'>Jasa</a><a href='../pages/portfolio.html' data-page='portfolio'>Portfolio</a><a href='../pages/about.html' data-page='about'>About</a><a href='../pages/contact.html' data-page='contact'>Contact</a></nav></header><main>
+      <section class="prelim-hero">
+        <div class="container prelim-hero-grid">
+          <div>
+            <span class="eyebrow">SNI 2847:2019</span>
+            <h1>Kalkulator Tulangan Balok</h1>
+            <p class="lead">Hitung kebutuhan tulangan lentur dan sengkang balok beton bertulang nonprategang dari Mu dan Vu terfaktor.</p>
+          </div>
+          <div class="prelim-hero-note">
+            <strong>Untuk desain awal beton</strong>
+            <p>Tool ini memakai pendekatan balok persegi bertulangan tunggal. Cek torsi, detailing gempa, panjang penyaluran, dan serviceability tetap perlu dilakukan pada desain final.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section"><div class="container prelim-main"><div class="engineering-disclaimer">Hasil perhitungan pada tools ini bersifat bantuan awal dan wajib diverifikasi kembali berdasarkan standar terbaru, asumsi desain, kombinasi beban, serta pertimbangan engineer.</div>
+          <article class="prelim-panel active">
+            <div class="panel-heading"><span>TB</span><div><h2>Input desain balok</h2><p>Masukkan gaya dalam terfaktor dan dimensi efektif penampang.</p></div></div>
+            <div class="calc-grid">
+              <form class="input-card" id="beamRebarForm">
+                <div class="form-grid two">
+                  <div><label for="beamB">Lebar balok bw (mm)</label><input class="control" id="beamB" type="number" step="1" value="300"></div>
+                  <div><label for="beamH">Tinggi balok h (mm)</label><input class="control" id="beamH" type="number" step="1" value="500"></div>
+                  <div><label for="beamCover">Selimut ke pusat tulangan tarik (mm)</label><input class="control" id="beamCover" type="number" step="1" value="60"></div>
+                  <div><label for="beamFc">f'c (MPa)</label><input class="control" id="beamFc" type="number" step="0.1" value="25"></div>
+                  <div><label for="beamFy">fy lentur (MPa)</label><input class="control" id="beamFy" type="number" step="1" value="420"></div>
+                  <div><label for="beamFyt">fyt sengkang (MPa)</label><input class="control" id="beamFyt" type="number" step="1" value="420"></div>
+                  <div><label for="beamMu">Mu (kNm)</label><input class="control" id="beamMu" type="number" step="0.1" value="120"></div>
+                  <div><label for="beamVu">Vu (kN)</label><input class="control" id="beamVu" type="number" step="0.1" value="140"></div>
+                  <div><label for="beamBarDia">Diameter tulangan tarik</label><select class="control" id="beamBarDia"><option value="10">D10</option><option value="13">D13</option><option value="16" selected>D16</option><option value="19">D19</option><option value="22">D22</option><option value="25">D25</option><option value="29">D29</option><option value="32">D32</option></select></div>
+                  <div><label for="beamStirrupDia">Diameter sengkang</label><select class="control" id="beamStirrupDia"><option value="8" selected>D8</option><option value="10">D10</option><option value="13">D13</option></select></div>
+                  <div><label for="beamStirrupLegs">Jumlah kaki sengkang</label><select class="control" id="beamStirrupLegs"><option value="2" selected>2 kaki</option><option value="4">4 kaki</option><option value="6">6 kaki</option></select></div>
+                  <div><label for="beamLambda">lambda beton</label><input class="control" id="beamLambda" type="number" step="0.01" value="1"></div>
+                </div>
+                <button class="btn btn-primary full-btn" type="submit">Hitung tulangan balok</button>
+              </form>
+              <div class="output-card" id="beamRebarResult"></div>
+            </div>
+            <div class="sni-card" id="beamRebarInfo"></div>
+          </article>
+        </div>
+      </section>
+    </main><footer class='site-footer'><div class='footer-grid'><div><a class='footer-brand' href='../index.html'><img src='../assets/logo/at-structura-logo.png' alt='Logo AT STRUCTURA'><span>AT STRUCTURA</span></a><p>Platform pribadi Arief Tediansyah untuk belajar, tools, resources, portfolio, dan layanan pendukung Teknik Sipil.</p></div><div><h3>Quick links</h3><a href='../pages/belajar.html'>Belajar</a><a href='../pages/tools.html'>Tools</a><a href='../pages/resources.html'>Resources</a><a href='../pages/jasa.html'>Jasa</a></div><div><h3>Tools</h3><a href='../pages/tools.html#converter'>Converter</a><a href='../pages/tools.html#spectrum'>Spektrum ETABS</a><a href='../tools/diagram-struktur.html'>Structural Analyzer</a><a href='../tools/preliminary-design.html'>Preliminary Design</a></div><div><h3>Kontak</h3><p>WhatsApp: #<br>Email: #<br>Instagram: #<br>YouTube: #</p></div></div><div class='footer-bottom'><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Built for civil engineering learning and tools.</span></div></footer><div class='toast' id='toast'></div><script src="../js/navbar.js"></script><script src="../js/tulangan-balok.js"></script></body></html>

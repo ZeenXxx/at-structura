@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang='id'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><meta name='description' content='Tools perhitungan dan pengelolaan file Teknik Sipil AT STRUCTURA.'><meta property='og:title' content='Tools - AT STRUCTURA'><meta property='og:description' content='Tools perhitungan dan pengelolaan file Teknik Sipil AT STRUCTURA.'><meta property='og:image' content='../assets/logo/at-structura-logo.png'><link rel='icon' href='../assets/icons/favicon.png' type='image/png'><link rel='stylesheet' href='../css/style.css'><link rel='stylesheet' href='../css/navbar.css'><link rel="stylesheet" href="../css/tools.css"><title>Tools - AT STRUCTURA</title></head><body><header class='navbar'><a class='brand' href='../index.html'><img src='../assets/logo/at-structura-logo.png' alt='Logo AT STRUCTURA'><span><strong>AT STRUCTURA</strong><small>Personal civil engineering platform</small></span></a><button class='menu-toggle' type='button' aria-label='Toggle navigation' aria-expanded='false'><span></span></button><nav class='nav-links' data-active='tools'><a href='../index.html' data-page='home'>Home</a><a href='../pages/belajar.html' data-page='belajar'>Belajar</a><a href='../pages/tools.html' data-page='tools'>Tools</a><a href='../pages/resources.html' data-page='resources'>Resources</a><a href='../pages/jasa.html' data-page='jasa'>Jasa</a><a href='../pages/portfolio.html' data-page='portfolio'>Portfolio</a><a href='../pages/about.html' data-page='about'>About</a><a href='../pages/contact.html' data-page='contact'>Contact</a></nav></header><main>
+      <section class="page-head tools-hero"><div class="container tools-hero-grid"><div><span class="eyebrow">Engineering tools</span><h1>Toolkit Teknik Sipil AT STRUCTURA</h1><p class="lead">Converter, KML/KMZ to CSV Civil 3D, response spectrum ETABS, PDF tools, Structural Analyzer, Preliminary Design, dan kalkulator tulangan balok.</p></div><div class="tools-hero-panel"><span>10</span><strong>tools aktif</strong><p>Tools tahap awal diadaptasi dari project lama dengan branding AT STRUCTURA.</p></div></div></section>
+      <section class="section"><div class="container"><div class="engineering-disclaimer">Hasil perhitungan pada tools ini bersifat bantuan awal dan wajib diverifikasi kembali berdasarkan standar terbaru, asumsi desain, kombinasi beban, serta pertimbangan engineer.</div>
+          <div class="tools-feature-grid">
+            <div class="structural-tool-link"><div><strong>Structural Diagram Analyzer</strong><span>Analisis balok 1D: reaksi tumpuan, SFD, BMD, dan tabel gaya dalam.</span></div><a class="btn btn-primary" href="../tools/diagram-struktur.html">Buka Analyzer</a></div>
+            <div class="structural-tool-link"><div><strong>Preliminary Design SNI 2847:2019</strong><span>Estimasi awal kolom, balok, pelat satu/dua arah, dan dinding geser lengkap dengan pasal, rumus, dan tabel ringkas.</span></div><a class="btn btn-primary" href="../tools/preliminary-design.html">Buka Preliminary</a></div>
+            <div class="structural-tool-link"><div><strong>Kalkulator Tulangan Balok</strong><span>Hitung tulangan lentur dan sengkang balok dari Mu, Vu, dimensi, f'c, dan fy sesuai rujukan SNI 2847:2019.</span></div><a class="btn btn-primary" href="../tools/tulangan-balok.html">Buka Kalkulator</a></div>
+          </div>
+          <div class="tools-tabs" role="tablist" aria-label="Tools navigation">
+            <button class="tool-tab active" type="button" data-tool-tab="converter">Converter</button>
+            <button class="tool-tab" type="button" data-tool-tab="kmlcsv">KML/KMZ to CSV</button>
+            <button class="tool-tab" type="button" data-tool-tab="spectrum">Spektrum ETABS</button>
+            <button class="tool-tab" type="button" data-tool-tab="export">Export PDF</button>
+            <button class="tool-tab" type="button" data-tool-tab="merge">PDF Merger</button>
+            <button class="tool-tab" type="button" data-tool-tab="image">PDF to Image</button>
+            <button class="tool-tab" type="button" data-tool-tab="jpgpdf">JPG to PDF</button>
+          </div>
+          <section class="tool-panel active" id="tool-converter">
+            <div class="tool-header"><div><span class="tool-code">CV</span><h2>Kalkulator konverter</h2></div><p>Konversi satuan yang sering dipakai untuk perhitungan struktur, geoteknik, hidrologi, dan RAB.</p></div>
+            <div class="tool-layout">
+              <div class="card tool-card">
+                <label for="conversionType">Jenis konversi</label><select class="control" id="conversionType"></select>
+                <label for="conversionValue">Nilai</label><input class="control" id="conversionValue" type="number" inputmode="decimal" placeholder="Masukkan nilai" value="1">
+                <div class="tool-grid-2"><div><label for="fromUnit">Dari</label><select class="control" id="fromUnit"></select></div><div><label for="toUnit">Ke</label><select class="control" id="toUnit"></select></div></div>
+                <button class="btn btn-primary full-btn" type="button" id="convertBtn">Hitung konversi</button>
+              </div>
+              <div class="result-card" id="conversionResult"><span>Hasil</span><strong>1 m = 100 cm</strong><p>Pilih kategori satuan, masukkan angka, lalu tekan hitung.</p></div>
+            </div>
+          </section>
+          <section class="tool-panel" id="tool-kmlcsv">
+            <div class="tool-header"><div><span class="tool-code">KC</span><h2>KML/KMZ to CSV Civil 3D</h2></div><p>Konversi hasil export Google Earth menjadi CSV comma delimited berisi LAT, LONG, ALT tanpa judul, siap dipakai sebagai point file Civil 3D.</p></div>
+            <div class="tool-layout">
+              <div class="card tool-card">
+                <label for="kmlKmzFile">Pilih file KML atau KMZ</label><input class="control file-control" id="kmlKmzFile" type="file" accept=".kml,.kmz,application/vnd.google-earth.kml+xml,application/vnd.google-earth.kmz">
+                <label for="kmlAltDefault">ALT default jika kosong</label><input class="control" id="kmlAltDefault" type="number" inputmode="decimal" value="0">
+                <label class="inline-check" for="kmlUseTerrainAlt"><input id="kmlUseTerrainAlt" type="checkbox" checked> Tambahkan elevasi DEM otomatis jika ALT di file 0/kosong</label>
+                <label class="inline-check" for="kmlIncludeIndex"><input id="kmlIncludeIndex" type="checkbox" checked> Sertakan nomor titik seperti format CSV GPSVisualizer/TCX</label>
+                <label for="kmlOutputFormat">Format output</label>
+                <select class="control" id="kmlOutputFormat">
+                  <option value="plla">PLLA - Point, Latitude, Longitude, Altitude</option>
+                  <option value="penz">PENZ - Point, Easting, Northing, Z</option>
+                  <option value="pnez">PNEZ - Point, Northing, Easting, Z</option>
+                </select>
+                <div class="tool-grid-2"><button class="btn btn-primary full-btn" type="button" id="kmlCsvBtn">Download CSV Civil 3D</button><button class="btn btn-secondary full-btn" type="button" id="kmlPreviewBtn">Preview data</button></div>
+              </div>
+              <div class="tool-note geo-preview" id="kmlCsvPreview"><h3>Format output</h3><p>Pilih PLLA untuk latitude/longitude, atau PENZ/PNEZ untuk koordinat UTM WGS84 otomatis dari titik Google Earth.</p><pre>1,-7.665294,110.595746,229.331</pre></div>
+            </div>
+          </section>
+          <section class="tool-panel" id="tool-spectrum">
+            <div class="tool-header"><div><span class="tool-code">RS</span><h2>Response spectrum ETABS</h2></div><p>Masukkan parameter dari RSA/Web RSA, hitung tabel dan grafik, lalu download TXT siap import ke SAP/ETABS atau grafik PNG secara terpisah.</p></div>
+            <div class="tool-layout">
+              <div class="card tool-card">
+                <label for="spectrumLocation">Lokasi</label><input class="control" id="spectrumLocation" type="text" placeholder="Contoh: Cimahi / Bandung">
+                <div class="tool-grid-2"><div><label for="spectrumSs">Ss (g)</label><input class="control" id="spectrumSs" type="number" step="0.0001" inputmode="decimal" placeholder="Contoh: 1.05"></div><div><label for="spectrumS1">S1 (g)</label><input class="control" id="spectrumS1" type="number" step="0.0001" inputmode="decimal" placeholder="Contoh: 0.45"></div></div>
+                <label for="spectrumSiteClass">Kelas situs SNI 1726:2019</label>
+                <select class="control" id="spectrumSiteClass">
+                  <option value="SE">SE - tanah lunak</option>
+                  <option value="SA">SA - batuan keras</option>
+                  <option value="SB">SB - batuan</option>
+                  <option value="SC">SC - tanah keras/sangat padat</option>
+                  <option value="SD">SD - tanah sedang</option>
+                  <option value="SF">SF - perlu respons spesifik situs</option>
+                  <option value="manual">Manual Fa/Fv</option>
+                </select>
+                <div class="tool-grid-2"><div><label for="spectrumFa">Fa</label><input class="control" id="spectrumFa" type="number" step="0.0001" inputmode="decimal" placeholder="Otomatis dari kelas situs"></div><div><label for="spectrumFv">Fv</label><input class="control" id="spectrumFv" type="number" step="0.0001" inputmode="decimal" placeholder="Otomatis dari kelas situs"></div></div>
+                <div class="tool-grid-2"><div><label for="spectrumTL">TL (detik)</label><input class="control" id="spectrumTL" type="number" step="0.1" inputmode="decimal" value="6"></div><div><label for="spectrumStep">Interval T (detik)</label><input class="control" id="spectrumStep" type="number" step="0.01" inputmode="decimal" value="0.05"></div></div>
+                <label for="spectrumTmax">T maksimum (detik)</label><input class="control" id="spectrumTmax" type="number" step="0.5" inputmode="decimal" value="10">
+                <label for="spectrumPaste">Paste data RSA/Web RSA (opsional)</label><textarea class="control textarea compact-textarea" id="spectrumPaste" placeholder="Tempel teks hasil RSA/Web RSA yang memuat lokasi, Ss, S1, Fa, Fv, atau TL..."></textarea>
+                <button class="btn btn-secondary full-btn" type="button" id="spectrumParseBtn">Ambil parameter dari teks</button>
+                <button class="btn btn-primary full-btn" type="button" id="spectrumBtn">Hitung Spektrum</button>
+                <div class="action-row spectrum-download-actions">
+                  <button class="btn btn-secondary full-btn" type="button" id="spectrumTxtBtn" disabled>Download TXT</button>
+                  <button class="btn btn-secondary full-btn" type="button" id="spectrumChartBtn" disabled>Download Grafik</button>
+                </div>
+              </div>
+              <div class="tool-note spectrum-preview" id="spectrumPreview"><h3>Ringkasan spektrum</h3><p>Isi Ss, S1, TL, dan kelas situs. Klik Hitung Spektrum untuk menampilkan tabel data dan grafik respons spektrum.</p><div class="spectrum-summary-grid"><span>SDS: -</span><span>SD1: -</span><span>T0: -</span><span>Ts: -</span></div></div>
+            </div>
+          </section>
+          <section class="tool-panel" id="tool-export">
+            <div class="tool-header"><div><span class="tool-code">EP</span><h2>Export PDF</h2></div><p>Buat PDF sederhana dari catatan, ringkasan tugas, atau dokumentasi singkat tanpa aplikasi tambahan.</p></div>
+            <div class="tool-layout">
+              <form class="card tool-card" id="exportForm">
+                <label for="pdfTitle">Judul PDF</label><input class="control" id="pdfTitle" type="text" placeholder="Contoh: Ringkasan Mekanika Tanah" required>
+                <label for="pdfAuthor">Nama / keterangan</label><input class="control" id="pdfAuthor" type="text" placeholder="Contoh: 2350031020">
+                <label for="pdfContent">Isi dokumen</label><textarea class="control textarea" id="pdfContent" placeholder="Tulis isi dokumen yang ingin diexport..." required></textarea>
+                <button class="btn btn-primary full-btn" type="submit">Export ke PDF</button>
+              </form>
+              <div class="tool-note"><h3>Format output</h3><p>PDF memakai ukuran A4, margin rapi, tanggal otomatis, dan identitas dokumen di bagian bawah.</p><p class="small-text">Cocok untuk catatan singkat, rangkuman, memo kegiatan, dan draft laporan sederhana.</p></div>
+            </div>
+          </section>
+          <section class="tool-panel" id="tool-merge">
+            <div class="tool-header"><div><span class="tool-code">PM</span><h2>PDF merger</h2></div><p>Gabungkan beberapa PDF menjadi satu file. Pilih banyak file sekaligus, lalu cek daftar dan atur dengan tombol Naik/Turun jika browser mengurutkan otomatis.</p></div>
+            <div class="tool-layout">
+              <div class="card tool-card"><label for="mergeFiles">Pilih file PDF</label><input class="control file-control" id="mergeFiles" type="file" accept="application/pdf" multiple><div class="file-list" id="mergeList"><p>Belum ada PDF dipilih.</p></div><div class="action-row"><button class="btn btn-primary full-btn" type="button" id="mergeBtn">Gabungkan PDF</button><button class="btn btn-secondary full-btn" type="button" id="clearMergeBtn">Reset urutan</button></div></div>
+              <div class="tool-note"><h3>Privasi file</h3><p>File PDF diproses lokal di browser. Tidak ada upload ke browser lokal.</p><p class="small-text">Untuk file besar, proses bisa membutuhkan beberapa detik tergantung perangkat.</p></div>
+            </div>
+          </section>
+          <section class="tool-panel" id="tool-image">
+            <div class="tool-header"><div><span class="tool-code">PI</span><h2>PDF to image</h2></div><p>Ubah halaman PDF menjadi gambar PNG untuk kebutuhan preview, dokumentasi, atau lampiran chat.</p></div>
+            <div class="tool-layout">
+              <div class="card tool-card"><label for="imagePdfFile">Pilih PDF</label><input class="control file-control" id="imagePdfFile" type="file" accept="application/pdf"><label for="imageMode">Ambil halaman</label><select class="control" id="imageMode"><option value="single">Satu halaman</option><option value="range">Rentang halaman</option><option value="all">Semua halaman</option></select><div class="tool-grid-2 image-page-fields"><div><label for="imagePageStart">Halaman awal</label><input class="control" id="imagePageStart" type="number" min="1" value="1"></div><div><label for="imagePageEnd">Halaman akhir</label><input class="control" id="imagePageEnd" type="number" min="1" value="1"></div></div><label for="imageScale">Kualitas</label><select class="control" id="imageScale"><option value="1.25">Standar</option><option value="1.75" selected>Tinggi</option><option value="2.25">Sangat tinggi</option></select><button class="btn btn-primary full-btn" type="button" id="imageBtn">Konversi PDF ke gambar</button></div>
+              <div class="image-preview" id="imagePreview"><p>Preview gambar akan muncul di sini.</p></div>
+            </div>
+          </section>
+          <section class="tool-panel" id="tool-jpgpdf">
+            <div class="tool-header"><div><span class="tool-code">JP</span><h2>JPG to PDF</h2></div><p>Gabungkan satu atau beberapa gambar JPG/JPEG menjadi file PDF A4. Gambar otomatis menyesuaikan halaman tanpa terpotong.</p></div>
+            <div class="tool-layout">
+              <div class="card tool-card"><label for="jpgPdfFiles">Pilih gambar JPG/JPEG</label><input class="control file-control" id="jpgPdfFiles" type="file" accept="image/jpeg,image/jpg" multiple><div class="file-list" id="jpgPdfList"><p>Belum ada gambar dipilih.</p></div><label for="jpgPdfOrientation">Orientasi halaman</label><select class="control" id="jpgPdfOrientation"><option value="auto" selected>Otomatis mengikuti gambar</option><option value="portrait">Portrait A4</option><option value="landscape">Landscape A4</option></select><button class="btn btn-primary full-btn" type="button" id="jpgPdfBtn">Export JPG ke PDF</button></div>
+              <div class="tool-note"><h3>Cara kerja</h3><p>Setiap gambar menjadi satu halaman PDF. File diproses langsung di browser, jadi gambar tidak diupload ke server.</p><p class="small-text">Untuk hasil rapi, gunakan gambar dengan resolusi cukup besar dan nama file berurutan.</p></div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main><footer class='site-footer'><div class='footer-grid'><div><a class='footer-brand' href='../index.html'><img src='../assets/logo/at-structura-logo.png' alt='Logo AT STRUCTURA'><span>AT STRUCTURA</span></a><p>Platform pribadi Arief Tediansyah untuk belajar, tools, resources, portfolio, dan layanan pendukung Teknik Sipil.</p></div><div><h3>Quick links</h3><a href='../pages/belajar.html'>Belajar</a><a href='../pages/tools.html'>Tools</a><a href='../pages/resources.html'>Resources</a><a href='../pages/jasa.html'>Jasa</a></div><div><h3>Tools</h3><a href='../pages/tools.html#converter'>Converter</a><a href='../pages/tools.html#spectrum'>Spektrum ETABS</a><a href='../tools/diagram-struktur.html'>Structural Analyzer</a><a href='../tools/preliminary-design.html'>Preliminary Design</a></div><div><h3>Kontak</h3><p>WhatsApp: #<br>Email: #<br>Instagram: #<br>YouTube: #</p></div></div><div class='footer-bottom'><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Built for civil engineering learning and tools.</span></div></footer><div class='toast' id='toast'></div><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script><script src="../js/navbar.js"></script><script src="../js/tools.js"></script></body></html>

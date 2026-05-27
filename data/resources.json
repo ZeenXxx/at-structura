@@ -1,0 +1,101 @@
+[
+    {
+        "title": "SNI 2847:2019 Persyaratan Beton Struktural",
+        "category": "SNI",
+        "type": "PDF",
+        "author": "BSN",
+        "description": "Acuan desain beton struktural untuk gedung dan infrastruktur. Gunakan akses resmi atau dokumen legal.",
+        "status": "Coming Soon",
+        "link": "#"
+    },
+    {
+        "title": "SNI 1726:2019 Ketahanan Gempa",
+        "category": "SNI",
+        "type": "PDF",
+        "author": "BSN",
+        "description": "Referensi parameter gempa, sistem struktur, dan analisis seismik. Link legal akan ditambahkan bertahap.",
+        "status": "Coming Soon",
+        "link": "#"
+    },
+    {
+        "title": "SNI 1727:2020 Beban Desain Minimum",
+        "category": "SNI",
+        "type": "PDF",
+        "author": "BSN",
+        "description": "Rujukan beban mati, hidup, angin, hujan, dan kombinasi beban.",
+        "status": "Coming Soon",
+        "link": "#"
+    },
+    {
+        "title": "Daftar Regulasi Konstruksi Indonesia",
+        "category": "Regulasi",
+        "type": "Link",
+        "author": "AT STRUCTURA",
+        "description": "Kumpulan link resmi terkait regulasi konstruksi, bangunan gedung, dan infrastruktur.",
+        "status": "Link Eksternal",
+        "link": "#"
+    },
+    {
+        "title": "ETABS Learning Notes",
+        "category": "Software",
+        "type": "Software",
+        "author": "Arief Tediansyah",
+        "description": "Catatan penggunaan ETABS untuk pemodelan struktur gedung dan interpretasi output.",
+        "status": "Coming Soon",
+        "link": "#"
+    },
+    {
+        "title": "SAP2000 Truss and Beam Notes",
+        "category": "Software",
+        "type": "Software",
+        "author": "Arief Tediansyah",
+        "description": "Catatan pemodelan rangka batang dan balok sederhana menggunakan SAP2000.",
+        "status": "Coming Soon",
+        "link": "#"
+    },
+    {
+        "title": "Template Perhitungan Struktur",
+        "category": "Template",
+        "type": "Template",
+        "author": "AT STRUCTURA",
+        "description": "Template spreadsheet untuk rekap gaya, kombinasi beban, dan pengecekan awal.",
+        "status": "Coming Soon",
+        "link": "#"
+    },
+    {
+        "title": "Modul Analisis Struktur Dasar",
+        "category": "Modul",
+        "type": "PDF",
+        "author": "AT STRUCTURA",
+        "description": "Modul ringkas reaksi perletakan, gaya dalam, dan diagram struktur.",
+        "status": "Coming Soon",
+        "link": "#"
+    },
+    {
+        "title": "Buku Referensi Mekanika Tanah",
+        "category": "Buku & Referensi",
+        "type": "Link",
+        "author": "AT STRUCTURA",
+        "description": "Daftar buku dan referensi legal untuk mempelajari geoteknik dasar.",
+        "status": "Coming Soon",
+        "link": "#"
+    },
+    {
+        "title": "Video Tutorial Civil 3D",
+        "category": "Video Tutorial",
+        "type": "Video",
+        "author": "AT STRUCTURA",
+        "description": "Playlist tutorial alignment, corridor, surface, dan output gambar teknik.",
+        "status": "Coming Soon",
+        "link": "#"
+    },
+    {
+        "title": "Website Rujukan Teknik Sipil",
+        "category": "Website Rujukan",
+        "type": "Link",
+        "author": "AT STRUCTURA",
+        "description": "Kumpulan website referensi legal untuk standar, software, dan edukasi konstruksi.",
+        "status": "Link Eksternal",
+        "link": "#"
+    }
+]

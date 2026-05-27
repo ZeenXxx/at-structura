@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang='id'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta name='description' content='Resources SNI, regulasi, template, software, dan referensi Teknik Sipil.'>
+    <meta property='og:title' content='Resources - AT STRUCTURA'>
+    <meta property='og:description' content='Resources SNI, regulasi, template, software, dan referensi Teknik Sipil.'>
+    <meta property='og:image' content='../assets/logo/at-structura-logo.png'>
+    <link rel='icon' href='../assets/icons/favicon.png' type='image/png'>
+    <link rel='stylesheet' href='../css/style.css'>
+    <link rel='stylesheet' href='../css/navbar.css'>
+    <link rel="stylesheet" href="../css/resources.css">
+    <title>Resources - AT STRUCTURA</title>
+</head>
+
+<body>
+    <header class='navbar'><a class='brand' href='../index.html'><img src='../assets/logo/at-structura-logo.png'
+                alt='Logo AT STRUCTURA'><span><strong>AT STRUCTURA</strong><small>Personal civil engineering
+                    platform</small></span></a><button class='menu-toggle' type='button' aria-label='Toggle navigation'
+            aria-expanded='false'><span></span></button>
+        <nav class='nav-links' data-active='resources'><a href='../index.html' data-page='home'>Home</a><a
+                href='belajar.html' data-page='belajar'>Belajar</a><a href='tools.html' data-page='tools'>Tools</a><a
+                href='resources.html' data-page='resources'>Resources</a><a href='jasa.html' data-page='jasa'>Jasa</a><a
+                href='portfolio.html' data-page='portfolio'>Portfolio</a><a href='about.html'
+                data-page='about'>About</a><a href='contact.html' data-page='contact'>Contact</a></nav>
+    </header>
+    <main>
+        <section class='page-head'>
+            <div class='container'><span class='eyebrow'>Resources</span>
+                <h1>Resources Teknik Sipil</h1>
+                <p class='lead'>Kumpulan SNI, regulasi, software, template, modul, buku referensi, video tutorial, dan
+                    website rujukan. File standar tidak disertakan secara ilegal; link kosong ditandai sebagai
+                    placeholder.</p>
+            </div>
+        </section>
+        <section class='section'>
+            <div class='container'>
+                <div class='filter-bar'><input class='control' id='resourceSearch' type='search'
+                        placeholder='Cari resource...'><select class='control' id='typeFilter'>
+                        <option value='All'>Semua tipe</option>
+                        <option value='PDF'>PDF</option>
+                        <option value='Link'>Link</option>
+                        <option value='Template'>Template</option>
+                        <option value='Video'>Video</option>
+                        <option value='Software'>Software</option>
+                    </select></div>
+                <div class='filter-chips' id='categoryFilters'></div>
+                <div class='page-grid' id='resourceGrid'></div>
+                <div class='pagination' id='pagination'></div>
+            </div>
+        </section>
+    </main>
+    <footer class='site-footer'>
+        <div class='footer-grid'>
+            <div><a class='footer-brand' href='../index.html'><img src='../assets/logo/at-structura-logo.png'
+                        alt='Logo AT STRUCTURA'><span>AT STRUCTURA</span></a>
+                <p>Platform pribadi Arief Tediansyah untuk belajar, tools, resources, portfolio, dan layanan pendukung
+                    Teknik Sipil.</p>
+            </div>
+            <div>
+                <h3>Quick links</h3><a href='belajar.html'>Belajar</a><a href='tools.html'>Tools</a><a
+                    href='resources.html'>Resources</a><a href='jasa.html'>Jasa</a>
+            </div>
+            <div>
+                <h3>Resources</h3><a href='resources.html?category=SNI'>SNI</a><a
+                    href='resources.html?category=Regulasi'>Regulasi</a><a
+                    href='resources.html?category=Software'>Software</a><a
+                    href='resources.html?category=Template'>Template</a>
+            </div>
+            <div>
+                <h3>Kontak</h3>
+                <p>WhatsApp: #<br>Email: #<br>Instagram: #<br>YouTube: #</p>
+            </div>
+        </div>
+        <div class='footer-bottom'><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Built for
+                civil engineering learning and tools.</span></div>
+    </footer>
+    <div class='toast' id='toast'></div>
+    <script src="../js/navbar.js"></script>
+    <script src="../js/resources.js"></script>
+</body>
+
+</html>

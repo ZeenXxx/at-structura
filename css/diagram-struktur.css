@@ -1,0 +1,631 @@
+.diagram-hero {
+  padding: 88px 0 64px;
+  background: linear-gradient(135deg, #0B2A5B, #153C78);
+  color: #fff;
+}
+
+.diagram-hero .eyebrow,
+.diagram-hero .lead {
+  color: #fff;
+}
+
+.diagram-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 32px;
+  align-items: center;
+}
+
+.diagram-hero h1 {
+  margin: 12px 0 16px;
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 1.02;
+}
+
+.sign-card {
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 8px;
+  padding: 24px;
+  background: rgba(255, 255, 255, .12);
+}
+
+.sign-card h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+}
+
+.sign-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, .84);
+}
+
+.diagram-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  max-width: 100%;
+}
+
+.diagram-panel {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(15, 77, 58, .08);
+}
+
+.input-panel {
+  position: sticky;
+  top: 94px;
+  padding: 18px;
+}
+
+.diagram-main {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+
+.editor-panel,
+.result-panel {
+  padding: 22px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.panel-heading span {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--primary);
+  font-weight: 900;
+}
+
+.panel-heading h2 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 24px;
+}
+
+details {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #fbfdfc;
+}
+
+summary {
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 900;
+}
+
+.form-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.form-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-grid.single {
+  grid-template-columns: 1fr;
+}
+
+.form-grid label,
+.output-switch label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.span-2 {
+  grid-column: 1 / -1;
+}
+
+.full-btn {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.diagram-preset-card {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 16px;
+  padding: 12px;
+  border: 1px solid rgba(217, 197, 41, .48);
+  border-radius: 8px;
+  background: #fffbe8;
+}
+
+.diagram-preset-card label {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.model-message {
+  margin-top: 12px;
+  color: #8a4b00;
+  font-weight: 800;
+}
+
+.model-message.ok {
+  color: var(--primary);
+}
+
+.svg-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background:
+    linear-gradient(rgba(15, 77, 58, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 77, 58, .045) 1px, transparent 1px),
+    linear-gradient(135deg, #f0f8f5 0%, #fff 60%, #f5faf8 100%);
+  background-size: 40px 40px, 40px 40px, auto;
+  box-shadow: inset 0 2px 8px rgba(15, 77, 58, .06), 0 8px 32px rgba(15, 77, 58, .08);
+}
+
+#beamCanvas {
+  display: block;
+  width: 100%;
+  min-width: 620px;
+  min-height: 460px;
+}
+
+.model-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.model-list article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fbfdfc;
+}
+
+.model-list h3 {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 15px;
+}
+
+.model-list p {
+  margin: 3px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.output-switch {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.output-switch .control {
+  width: min(280px, 100%);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.result-card-small {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: var(--soft);
+}
+
+.result-card-small.highlight {
+  background: #fff8d8;
+  border-color: rgba(217, 197, 41, .8);
+}
+
+.result-card-small span {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.result-card-small strong {
+  color: var(--primary);
+  font-size: 22px;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  max-width: 100%;
+}
+
+.chart-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 18px;
+  height: 360px;
+  min-height: 360px;
+  background: linear-gradient(135deg, #fff, #f8fcfa);
+  box-shadow: 0 4px 20px rgba(15, 77, 58, .06);
+}
+
+.chart-card canvas {
+  max-height: 290px;
+}
+
+.combined-chart-card {
+  height: 420px;
+  min-height: 420px;
+}
+
+.combined-chart-card canvas {
+  max-height: 350px;
+}
+
+.chart-card h3 {
+  margin: 0 0 12px;
+  color: var(--primary);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 980px;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  font-size: 14px;
+}
+
+th {
+  background: var(--soft);
+  color: var(--primary);
+}
+
+/* â”€â”€ Beam diagram SVG elements â”€â”€ */
+.diagram-node-ring {
+  fill: rgba(255, 255, 255, .92);
+  stroke: rgba(15, 77, 58, .2);
+  stroke-width: 3;
+}
+
+.diagram-node {
+  fill: #fff;
+  stroke: #0B2A5B;
+  stroke-width: 3;
+  filter: drop-shadow(0 3px 6px rgba(15, 77, 58, .28));
+}
+
+.diagram-node-online {
+  fill: #e8f9f1;
+}
+
+.diagram-element-glow {
+  stroke: rgba(15, 77, 58, .1);
+  stroke-width: 34;
+  stroke-linecap: round;
+}
+
+.diagram-element-shadow {
+  stroke: rgba(12, 47, 38, .18);
+  stroke-width: 19;
+  stroke-linecap: round;
+  filter: drop-shadow(0 8px 9px rgba(15, 77, 58, .18));
+}
+
+.diagram-element-edge {
+  stroke: url(#beamEdgeGrad);
+  stroke-width: 21;
+  stroke-linecap: round;
+  opacity: .9;
+}
+
+.diagram-element {
+  stroke: url(#beamGrad);
+  stroke-width: 15;
+  stroke-linecap: round;
+}
+
+.diagram-element-highlight {
+  stroke: rgba(255, 255, 255, .78);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.diagram-element-cap {
+  fill: #e6f2ee;
+  stroke: #0B2A5B;
+  stroke-width: 2.4;
+  filter: drop-shadow(0 2px 4px rgba(15, 77, 58, .2));
+}
+
+.diagram-element-label-bg {
+  fill: rgba(255, 255, 255, .94);
+  stroke: rgba(15, 77, 58, .24);
+  stroke-width: 1;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .12));
+}
+
+.diagram-element-label {
+  fill: #0B2A5B;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.diagram-load {
+  stroke: #c93434;
+  stroke-width: 4;
+  stroke-linecap: round;
+  filter: drop-shadow(0 2px 4px rgba(201, 52, 52, .24));
+}
+
+.diagram-hload {
+  stroke: #6b4fd8;
+  stroke-width: 4;
+  stroke-linecap: round;
+  filter: drop-shadow(0 2px 4px rgba(107, 79, 216, .22));
+}
+
+.diagram-udl-band {
+  fill: url(#udlBandGrad);
+  stroke: rgba(214, 122, 0, .12);
+  stroke-width: 1;
+}
+
+.diagram-udl {
+  stroke: #d67a00;
+  stroke-width: 3.3;
+  marker-end: url(#arrowOrange);
+  filter: drop-shadow(0 2px 3px rgba(214, 122, 0, .2));
+}
+
+.diagram-udl-top {
+  stroke: #d67a00;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.diagram-udl-base {
+  stroke: rgba(214, 122, 0, .32);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 5;
+}
+
+.diagram-load-head {
+  fill: #c93434;
+  stroke: #fff;
+  stroke-width: 1.2;
+  filter: drop-shadow(0 2px 3px rgba(201, 52, 52, .24));
+}
+
+.diagram-hload-head {
+  fill: #6b4fd8;
+  stroke: #fff;
+  stroke-width: 1.2;
+  filter: drop-shadow(0 2px 3px rgba(107, 79, 216, .22));
+}
+
+.diagram-load-seat {
+  stroke: #c93434;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.diagram-load-anchor {
+  fill: #fff;
+  stroke: #c93434;
+  stroke-width: 2.6;
+}
+
+.diagram-support-group {
+  filter: drop-shadow(0 3px 5px rgba(15, 77, 58, .2));
+}
+
+.diagram-support {
+  fill: #E63946;
+  stroke: #0B2A5B;
+  stroke-width: 2.4;
+}
+
+.diagram-support-cap {
+  stroke: #0B2A5B;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.diagram-ground-line {
+  stroke: #0B2A5B;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.diagram-ground-hatch,
+.diagram-fixed-hatch {
+  stroke: rgba(15, 77, 58, .72);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.diagram-support-type {
+  fill: #0B2A5B;
+  font-size: 8px;
+  font-weight: 900;
+  text-anchor: middle;
+  letter-spacing: .08em;
+}
+
+.diagram-roller {
+  fill: #fffef3;
+  stroke: #0B2A5B;
+  stroke-width: 2;
+}
+
+.diagram-fixed-wall {
+  fill: #E63946;
+  stroke: #0B2A5B;
+  stroke-width: 2.6;
+  filter: drop-shadow(0 3px 5px rgba(15, 77, 58, .24));
+}
+
+.diagram-fixed-face {
+  stroke: #0B2A5B;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.diagram-label {
+  fill: #101828;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.diagram-load-label {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.diagram-label-bg {
+  fill: rgba(255, 255, 255, .97);
+  stroke: rgba(201, 52, 52, .28);
+  rx: 6;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .12));
+}
+
+.diagram-label-bg.orange {
+  stroke: rgba(214, 122, 0, .36);
+}
+
+.diagram-node-label {
+  fill: #0B2A5B;
+  font-size: 16px;
+  font-weight: 900;
+  text-anchor: middle;
+}
+
+.diagram-dim-label {
+  fill: #101828;
+  font-size: 12px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.diagram-axis-label {
+  fill: #6b7d77;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.diagram-dim-line {
+  stroke: #0B2A5B;
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+  opacity: .5;
+}
+
+.diagram-end-val {
+  font-size: 11px;
+  font-weight: 900;
+  text-anchor: middle;
+}
+
+@media (max-width: 1280px) {
+  .diagram-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .input-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 980px) {
+
+  .diagram-hero-grid,
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .model-list,
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .diagram-hero {
+    padding-top: 56px;
+  }
+
+  .form-grid.two,
+  .action-row,
+  .output-switch {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .editor-panel,
+  .result-panel,
+  .input-panel {
+    padding: 14px;
+  }
+
+  #beamCanvas {
+    min-width: 520px;
+  }
+
+  .chart-card,
+  .combined-chart-card {
+    height: 320px;
+    min-height: 320px;
+  }
+
+  .chart-card canvas,
+  .combined-chart-card canvas {
+    max-height: 250px;
+  }
+}
