@@ -327,7 +327,7 @@ th {
   color: var(--primary);
 }
 
-/* â”€â”€ Beam diagram SVG elements â”€â”€ */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Beam diagram SVG elements Ã¢â€â‚¬Ã¢â€â‚¬ */
 .diagram-node-ring {
   fill: rgba(255, 255, 255, .92);
   stroke: rgba(15, 77, 58, .2);

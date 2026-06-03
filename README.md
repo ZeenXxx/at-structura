@@ -38,3 +38,8 @@ AT STRUCTURA adalah web pribadi Arief Tediansyah untuk belajar, tools, resources
 ## Catatan
 
 Tahap ini adalah project web lokal statis. Tools bersifat bantuan awal dan hasilnya wajib diverifikasi kembali berdasarkan standar terbaru, asumsi desain, kombinasi beban, data lapangan, serta pertimbangan engineer.
+## Resource Manager Lokal
+
+Halaman `pages/resource-upload.html` adalah pengelola resources lokal yang tidak dimasukkan ke navbar umum. Halaman ini bisa menambah resource, preview, copy JSON, dan download `resources.json`.
+
+Catatan: halaman tersembunyi bukan keamanan sungguhan jika web dipublikasikan. Untuk produksi, gunakan autentikasi dan penyimpanan server.
