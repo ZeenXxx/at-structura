@@ -56,7 +56,7 @@ async function init() {
   if (params.get('category')) current = params.get('category');
   renderFilters();
   try {
-    const response = await fetch('../data/resources.json');
+    const response = await fetch('/data/resources.json');
     resources = await response.json();
   } catch (error) {
     resourceGrid.innerHTML = '<div class="card empty">Resources belum bisa dimuat. Jalankan melalui Live Server agar data JSON terbaca.</div>';
@@ -67,3 +67,4 @@ async function init() {
 resourceSearch?.addEventListener('input', () => { page = 1; render(); });
 typeFilter?.addEventListener('change', () => { page = 1; render(); });
 init();
+

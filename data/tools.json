@@ -3,70 +3,71 @@
         "title": "Kalkulator Konverter",
         "category": "Converter",
         "description": "Konversi satuan panjang, luas, volume, gaya, momen, tekanan, debit, dan berat tulangan.",
-        "link": "pages/tools.html#converter",
+        "link": "/pages/tools/#converter",
         "status": "Tersedia"
     },
     {
         "title": "KML/KMZ to CSV Civil 3D",
         "category": "Geospasial",
         "description": "Konversi file KML/KMZ menjadi format CSV untuk point file Civil 3D.",
-        "link": "pages/tools.html#kmlcsv",
+        "link": "/pages/tools/#kmlcsv",
         "status": "Tersedia"
     },
     {
         "title": "Response Spectrum ETABS",
         "category": "Struktur",
         "description": "Membuat tabel respons spektrum dan file TXT untuk SAP/ETABS.",
-        "link": "pages/tools.html#spectrum",
+        "link": "/pages/tools/#spectrum",
         "status": "Tersedia"
     },
     {
         "title": "Export PDF",
         "category": "Dokumen",
         "description": "Membuat PDF sederhana dari catatan teks.",
-        "link": "pages/tools.html#export",
+        "link": "/pages/tools/#export",
         "status": "Tersedia"
     },
     {
         "title": "PDF Merger",
         "category": "Dokumen",
         "description": "Menggabungkan beberapa PDF di browser.",
-        "link": "pages/tools.html#merge",
+        "link": "/pages/tools/#merge",
         "status": "Tersedia"
     },
     {
         "title": "PDF to Image",
         "category": "Dokumen",
         "description": "Mengubah halaman PDF menjadi gambar PNG.",
-        "link": "pages/tools.html#image",
+        "link": "/pages/tools/#image",
         "status": "Tersedia"
     },
     {
         "title": "JPG to PDF",
         "category": "Dokumen",
         "description": "Menggabungkan gambar JPG/JPEG menjadi PDF A4.",
-        "link": "pages/tools.html#jpgpdf",
+        "link": "/pages/tools/#jpgpdf",
         "status": "Tersedia"
     },
     {
         "title": "Structural Diagram Analyzer",
         "category": "Struktur",
         "description": "Analisis balok 1D, reaksi tumpuan, AFD, SFD, dan BMD.",
-        "link": "tools/diagram-struktur.html",
+        "link": "/tools/diagram-struktur/",
         "status": "Tersedia"
     },
     {
         "title": "Preliminary Design SNI 2847:2019",
         "category": "Struktur",
         "description": "Estimasi awal kolom, balok, pelat, dan dinding geser.",
-        "link": "tools/preliminary-design.html",
+        "link": "/tools/preliminary-design/",
         "status": "Tersedia"
     },
     {
         "title": "Kalkulator Tulangan Balok",
         "category": "Struktur",
         "description": "Hitung tulangan lentur dan sengkang balok beton bertulang.",
-        "link": "tools/tulangan-balok.html",
+        "link": "/tools/tulangan-balok/",
         "status": "Tersedia"
     }
 ]
+

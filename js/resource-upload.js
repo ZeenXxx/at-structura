@@ -81,7 +81,7 @@ document.getElementById('downloadResourceJson')?.addEventListener('click', () =>
 });
 
 document.getElementById('importCurrentResources')?.addEventListener('click', async () => {
-  const response = await fetch('../data/resources.json');
+  const response = await fetch('/data/resources.json');
   resources = await response.json();
   saveLocal();
   render();
@@ -109,3 +109,4 @@ output?.addEventListener('input', () => {
 
 loadLocal();
 render();
+

@@ -11,7 +11,7 @@ async function renderPortfolio() {
   const grid = document.getElementById('portfolioGrid');
   if (!grid) return;
   try {
-    const response = await fetch('../data/portfolio.json');
+    const response = await fetch('/data/portfolio.json');
     const items = await response.json();
     grid.innerHTML = items.map(item => `
       <article class="card portfolio-card">
@@ -46,3 +46,4 @@ function setupContactForm() {
 
 renderPortfolio();
 setupContactForm();
+
