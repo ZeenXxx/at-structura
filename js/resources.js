@@ -1,4 +1,4 @@
-const resourceSearch = document.getElementById('resourceSearch');
+﻿const resourceSearch = document.getElementById('resourceSearch');
 const typeFilter = document.getElementById('typeFilter');
 const categoryFilters = document.getElementById('categoryFilters');
 const resourceGrid = document.getElementById('resourceGrid');

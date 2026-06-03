@@ -1,4 +1,4 @@
-const tabs = document.querySelectorAll('[data-tool-tab]');
+﻿const tabs = document.querySelectorAll('[data-tool-tab]');
 const panels = document.querySelectorAll('.tool-panel');
 const toast = document.getElementById('toast');
 
@@ -799,3 +799,4 @@ document.getElementById('jpgPdfBtn')?.addEventListener('click', async () => {
     showToast('Gagal membuat PDF dari gambar. Pastikan file JPG tidak rusak.');
   }
 });
+

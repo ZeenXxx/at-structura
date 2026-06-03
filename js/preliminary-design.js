@@ -1,4 +1,4 @@
-const $ = selector => document.querySelector(selector);
+﻿const $ = selector => document.querySelector(selector);
 const $$ = selector => Array.from(document.querySelectorAll(selector));
 
 const format = (value, digits = 0) => new Intl.NumberFormat('id-ID', {
@@ -403,3 +403,4 @@ calculateColumn();
 calculateBeam();
 calculateSlab();
 calculateWall();
+

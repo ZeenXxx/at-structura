@@ -1,4 +1,4 @@
-[
+﻿[
   { "title": "AT STRUCTURA", "category": "Website", "description": "Web pribadi untuk belajar, tools, resources, portfolio, dan layanan pendukung Teknik Sipil.", "role": "Konsep, desain, konten, frontend", "tools": "HTML, CSS, JavaScript", "status": "Berjalan" },
   { "title": "Web Edukasi Teknik Sipil", "category": "Website", "description": "Pengembangan website edukasi dan resource Teknik Sipil sebagai referensi desain awal AT STRUCTURA.", "role": "Desain konten dan struktur halaman", "tools": "HTML, CSS, JavaScript", "status": "Selesai" },
   { "title": "Structural Diagram Analyzer", "category": "Web Tools", "description": "Tools analisis balok 1D untuk reaksi tumpuan, AFD, SFD, BMD, dan tabel gaya dalam.", "role": "Pengembangan UI dan logika tools", "tools": "JavaScript, Canvas/SVG", "status": "Tersedia" },

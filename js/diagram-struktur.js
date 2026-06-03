@@ -1,4 +1,4 @@
-const state = {
+﻿const state = {
   nodes: [],
   elements: [],
   loads: [],
@@ -1182,3 +1182,4 @@ controls.diagramOutput.addEventListener('change', updateChartVisibility);
 
 refresh();
 showMessage('Mulai dengan menambahkan node sesuai panjang balok yang diinginkan.', true);
+

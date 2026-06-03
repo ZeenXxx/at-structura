@@ -1,4 +1,4 @@
-const storageKey = 'at_structura_resource_draft';
+﻿const storageKey = 'at_structura_resource_draft';
 const form = document.getElementById('resourceManagerForm');
 const output = document.getElementById('resourceJsonOutput');
 const preview = document.getElementById('resourceManagerPreview');
