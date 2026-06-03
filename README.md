@@ -2,16 +2,24 @@
 
 AT STRUCTURA adalah web pribadi Arief Tediansyah untuk belajar, tools, resources, portfolio, dan layanan pendukung Teknik Sipil.
 
+## Fokus Project
+
+- Tutorial dan learning path Teknik Sipil.
+- Tools perhitungan dan pengelolaan file untuk bantuan awal.
+- Resources SNI, regulasi, software, template, modul, video, dan website rujukan.
+- Portfolio project pribadi dan dokumentasi proses.
+- Layanan tutor, drafting, asistensi software, template, konsultasi perhitungan dasar, dan web tools Teknik Sipil.
+
 ## Struktur Folder
 
 - `index.html` halaman utama.
 - `pages/` halaman About, Belajar, Tools, Resources, Jasa, Portfolio, dan Contact.
 - `tools/` halaman tools mandiri hasil adaptasi.
 - `css/` styling global, navbar, home, pages, dan tools.
-- `js/` script interaksi lokal, resources, dan tools.
+- `js/` script interaksi lokal, resources, portfolio, kontak, dan tools.
 - `data/` data JSON untuk resources, tools, video, dan portfolio.
 - `assets/logo/` logo utama AT STRUCTURA.
-- `assets/icons/` favicon lokal.
+- `assets/images/arief.png` foto profil Arief.
 
 ## Cara Menjalankan Lokal
 
@@ -20,6 +28,13 @@ AT STRUCTURA adalah web pribadi Arief Tediansyah untuk belajar, tools, resources
 3. Klik kanan `index.html`.
 4. Pilih `Open with Live Server`.
 
-## Catatan Pengembangan Lanjutan
+## Kontak
 
-Tahap ini hanya project lokal statis. Integrasi cloud, sistem akun, panel pengelola, penyimpanan data jarak jauh, dan backend belum digunakan.
+- WhatsApp: 081220032582
+- Email: arieftediansyah0@gmail.com
+- Instagram: arieftediansyah_
+- YouTube: Arief Tediansyah dan ZeenXxx
+
+## Catatan
+
+Tahap ini adalah project web lokal statis. Tools bersifat bantuan awal dan hasilnya wajib diverifikasi kembali berdasarkan standar terbaru, asumsi desain, kombinasi beban, data lapangan, serta pertimbangan engineer.

@@ -1,9 +1,4 @@
 [
-    {
-        "title": "Tutorial ETABS Dasar",
-        "category": "Software Teknik Sipil",
-        "description": "Placeholder video tutorial tahap awal.",
-        "link": "#",
-        "status": "Coming Soon"
-    }
+  { "title": "Arief Tediansyah", "category": "YouTube", "description": "Channel utama Arief Tediansyah untuk konten belajar dan dokumentasi.", "link": "https://youtube.com/@arieftediansyah6460?si=uSbpsM4gSWXJKICn", "status": "Tersedia" },
+  { "title": "ZeenXxx", "category": "YouTube", "description": "Channel tambahan yang dikelola Arief.", "link": "https://www.youtube.com/@zeenxxx6004", "status": "Tersedia" }
 ]

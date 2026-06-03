@@ -1,50 +1,10 @@
 [
-    {
-        "title": "Web Edukasi Teknik Sipil",
-        "category": "Website",
-        "description": "Pengembangan website edukasi dan resource Teknik Sipil sebagai referensi desain AT STRUCTURA.",
-        "status": "Selesai"
-    },
-    {
-        "title": "Tools Teknik Sipil",
-        "category": "Web Tools",
-        "description": "Converter, response spectrum, diagram struktur, preliminary design, dan kalkulator tulangan.",
-        "status": "Berjalan"
-    },
-    {
-        "title": "Template Akademik",
-        "category": "Template",
-        "description": "Template perhitungan, rekap desain, dan dokumen belajar yang akan dikembangkan bertahap.",
-        "status": "Coming Soon"
-    },
-    {
-        "title": "Visualisasi Gambar Teknik",
-        "category": "Drafting",
-        "description": "Eksperimen layout gambar, detail teknik, dan visualisasi berbasis CAD/BIM.",
-        "status": "Coming Soon"
-    },
-    {
-        "title": "Project Civil 3D",
-        "category": "Civil 3D",
-        "description": "Dokumentasi surface, alignment, corridor, dan output gambar teknik.",
-        "status": "Coming Soon"
-    },
-    {
-        "title": "Project HEC-RAS / Hidrologi",
-        "category": "Hidrologi",
-        "description": "Catatan pemodelan hidrologi dan hidraulika untuk pembelajaran teknis.",
-        "status": "Coming Soon"
-    },
-    {
-        "title": "Web Tools Teknik Sipil",
-        "category": "Development",
-        "description": "Pembuatan kalkulator dan alat bantu berbasis browser untuk kebutuhan teknik.",
-        "status": "Berjalan"
-    },
-    {
-        "title": "Drafting Gambar Teknik",
-        "category": "Drafting",
-        "description": "Portfolio gambar kerja, detail, dan layout teknis yang disusun rapi.",
-        "status": "Coming Soon"
-    }
+  { "title": "AT STRUCTURA", "category": "Website", "description": "Web pribadi untuk belajar, tools, resources, portfolio, dan layanan pendukung Teknik Sipil.", "role": "Konsep, desain, konten, frontend", "tools": "HTML, CSS, JavaScript", "status": "Berjalan" },
+  { "title": "Web Edukasi Teknik Sipil", "category": "Website", "description": "Pengembangan website edukasi dan resource Teknik Sipil sebagai referensi desain awal AT STRUCTURA.", "role": "Desain konten dan struktur halaman", "tools": "HTML, CSS, JavaScript", "status": "Selesai" },
+  { "title": "Structural Diagram Analyzer", "category": "Web Tools", "description": "Tools analisis balok 1D untuk reaksi tumpuan, AFD, SFD, BMD, dan tabel gaya dalam.", "role": "Pengembangan UI dan logika tools", "tools": "JavaScript, Canvas/SVG", "status": "Tersedia" },
+  { "title": "Preliminary Design Beton", "category": "Web Tools", "description": "Estimasi awal kolom, balok, pelat, dan dinding geser dengan rujukan SNI 2847:2019.", "role": "Pengembangan tools dan dokumentasi output", "tools": "JavaScript", "status": "Tersedia" },
+  { "title": "Kalkulator Tulangan Balok", "category": "Web Tools", "description": "Kalkulator tulangan lentur dan sengkang balok beton bertulang untuk bantuan awal.", "role": "Pengembangan tools dan UI input", "tools": "JavaScript", "status": "Tersedia" },
+  { "title": "Template Akademik", "category": "Template", "description": "Template perhitungan, rekap desain, dan dokumen belajar yang akan dikembangkan bertahap.", "role": "Penyusunan format dan workflow", "tools": "Spreadsheet, dokumen teknis", "status": "Coming Soon" },
+  { "title": "Visualisasi Gambar Teknik", "category": "Drafting", "description": "Eksperimen layout gambar, detail teknik, dan visualisasi berbasis CAD/BIM.", "role": "Drafting, layout, dan visualisasi", "tools": "AutoCAD, Civil 3D", "status": "Coming Soon" },
+  { "title": "Project HEC-RAS / Hidrologi", "category": "Hidrologi", "description": "Catatan pemodelan hidrologi dan hidraulika untuk pembelajaran teknis.", "role": "Dokumentasi workflow dan studi kasus", "tools": "HEC-RAS, QGIS", "status": "Coming Soon" }
 ]
