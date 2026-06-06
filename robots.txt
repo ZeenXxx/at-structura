@@ -1,0 +1,5 @@
+﻿User-agent: *
+Allow: /
+Disallow: /pages/resource-upload/
+Sitemap: https://at-structura.vercel.app/sitemap.xml
+

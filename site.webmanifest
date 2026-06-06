@@ -1,0 +1,27 @@
+﻿{
+    "description":  "AT STRUCTURA adalah platform Teknik Sipil untuk tools perhitungan, resources SNI dan regulasi, tutorial software, drafting, tutor, dan jasa pendampingan akademik.",
+    "short_name":  "AT STRUCTURA",
+    "background_color":  "#FFFFFF",
+    "icons":  [
+                  {
+                      "type":  "image/png",
+                      "sizes":  "192x192",
+                      "src":  "/assets/icons/favicon-192.png"
+                  },
+                  {
+                      "type":  "image/png",
+                      "sizes":  "96x96",
+                      "src":  "/assets/icons/favicon-96.png"
+                  },
+                  {
+                      "type":  "image/png",
+                      "sizes":  "48x48",
+                      "src":  "/assets/icons/favicon-48.png"
+                  }
+              ],
+    "theme_color":  "#0B2A5B",
+    "display":  "standalone",
+    "name":  "AT STRUCTURA",
+    "scope":  "/",
+    "start_url":  "/"
+}
