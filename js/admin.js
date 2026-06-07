@@ -38,6 +38,8 @@ const authHeaders = token => ({
   'Content-Type': 'application/json',
   Accept: 'application/json'
 });
+const adminTable = () => cfg().adminsTable || 'resource_admins';
+const adminCheck = { token: '', valid: false, denied: false };
 const escapeText = value => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const slugify = value => String(value || 'item').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'item';
 const showToast = message => {
@@ -50,6 +52,41 @@ const showToast = message => {
 const redirectToLogin = () => {
   window.location.replace(`${loginPath}?next=${encodeURIComponent('/pages/admin/')}`);
 };
+const redirectDenied = () => {
+  window.location.replace(`${loginPath}?denied=1&next=${encodeURIComponent('/pages/admin/')}`);
+};
+
+async function userFromSession(session) {
+  if (session?.user?.id) return session.user;
+  if (!session?.access_token) return null;
+  const response = await fetch(apiUrl('/auth/v1/user'), {
+    method: 'GET',
+    headers: authHeaders(session.access_token)
+  });
+  const payload = await response.json().catch(() => ({}));
+  return response.ok ? payload : null;
+}
+
+async function isAdminSession(session) {
+  if (!session?.access_token) return false;
+  if (adminCheck.token === session.access_token) return adminCheck.valid;
+  const user = await userFromSession(session);
+  if (!user?.id) {
+    adminCheck.token = session.access_token;
+    adminCheck.valid = false;
+    adminCheck.denied = true;
+    return false;
+  }
+  const response = await fetch(apiUrl(`/rest/v1/${adminTable()}?select=user_id&user_id=eq.${encodeURIComponent(user.id)}&limit=1`), {
+    method: 'GET',
+    headers: authHeaders(session.access_token)
+  });
+  const rows = await response.json().catch(() => []);
+  adminCheck.token = session.access_token;
+  adminCheck.valid = response.ok && Array.isArray(rows) && rows.length > 0;
+  adminCheck.denied = !adminCheck.valid;
+  return adminCheck.valid;
+}
 
 async function refreshSession(session) {
   if (!session?.refresh_token) return null;
@@ -69,9 +106,13 @@ async function ensureSession() {
   if (!session?.access_token) return null;
   const expiresAt = Number(session.expires_at || 0);
   const shouldRefresh = expiresAt && expiresAt * 1000 < Date.now() + 60000;
-  if (!shouldRefresh) return session;
+  if (!shouldRefresh) {
+    if (await isAdminSession(session)) return session;
+    clearSession();
+    return null;
+  }
   const refreshed = await refreshSession(session);
-  if (refreshed) return refreshed;
+  if (refreshed && await isAdminSession(refreshed)) return refreshed;
   clearSession();
   return null;
 }
@@ -314,6 +355,10 @@ function renderAll() {
 async function fetchItems(kind) {
   const session = await ensureSession();
   if (!session?.access_token) {
+    if (adminCheck.denied) {
+      redirectDenied();
+      return [];
+    }
     redirectToLogin();
     return [];
   }
@@ -337,6 +382,7 @@ async function loadAll() {
 async function saveItem(kind, payload) {
   const session = await ensureSession();
   if (!session?.access_token) {
+    if (adminCheck.denied) return redirectDenied();
     redirectToLogin();
     return;
   }
@@ -356,6 +402,7 @@ async function saveItem(kind, payload) {
 async function deleteItem(kind, id) {
   const session = await ensureSession();
   if (!session?.access_token) {
+    if (adminCheck.denied) return redirectDenied();
     redirectToLogin();
     return;
   }
@@ -473,6 +520,10 @@ els.logout?.addEventListener('click', () => {
   }
   const session = await ensureSession();
   if (!session?.access_token) {
+    if (adminCheck.denied) {
+      redirectDenied();
+      return;
+    }
     redirectToLogin();
     return;
   }

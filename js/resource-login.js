@@ -13,10 +13,12 @@ const authHeaders = token => ({
   'Content-Type': 'application/json',
   Accept: 'application/json'
 });
+const adminTable = () => cfg().adminsTable || 'resource_admins';
 const getSession = () => {
   try { return JSON.parse(localStorage.getItem(sessionKey) || 'null'); } catch { return null; }
 };
 const setSession = session => localStorage.setItem(sessionKey, JSON.stringify(session));
+const clearSession = () => localStorage.removeItem(sessionKey);
 const setStatus = (message, tone = '') => {
   if (!statusBox) return;
   statusBox.textContent = message;
@@ -27,6 +29,29 @@ const nextPath = () => {
   const next = params.get('next') || managerPath;
   return next.startsWith('/') ? next : managerPath;
 };
+function adminErrorMessage() {
+  return 'Akun ini bukan admin AT STRUCTURA. Gunakan akun admin yang sudah dimasukkan ke tabel resource_admins.';
+}
+async function userFromSession(session) {
+  if (session?.user?.id) return session.user;
+  if (!session?.access_token) return null;
+  const response = await fetch(apiUrl('/auth/v1/user'), {
+    method: 'GET',
+    headers: authHeaders(session.access_token)
+  });
+  const payload = await response.json().catch(() => ({}));
+  return response.ok ? payload : null;
+}
+async function isAdminSession(session) {
+  const user = await userFromSession(session);
+  if (!user?.id) return false;
+  const response = await fetch(apiUrl(`/rest/v1/${adminTable()}?select=user_id&user_id=eq.${encodeURIComponent(user.id)}&limit=1`), {
+    method: 'GET',
+    headers: authHeaders(session.access_token)
+  });
+  const rows = await response.json().catch(() => []);
+  return response.ok && Array.isArray(rows) && rows.length > 0;
+}
 async function refreshSession(session) {
   if (!session?.refresh_token) return null;
   const response = await fetch(apiUrl('/auth/v1/token?grant_type=refresh_token'), {
@@ -40,6 +65,12 @@ async function refreshSession(session) {
   return payload;
 }
 async function validateExistingSession() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('denied') === '1') {
+    clearSession();
+    setStatus(adminErrorMessage());
+    return;
+  }
   if (!isSupabaseReady()) {
     setStatus('Supabase belum dikonfigurasi.');
     return;
@@ -53,10 +84,16 @@ async function validateExistingSession() {
   if (expiresAt && expiresAt * 1000 < Date.now() + 60000) {
     const refreshed = await refreshSession(session);
     if (!refreshed) {
-      localStorage.removeItem(sessionKey);
+      clearSession();
       setStatus('Sesi lama sudah habis. Silakan login ulang.');
       return;
     }
+  }
+  const activeSession = getSession();
+  if (!(await isAdminSession(activeSession))) {
+    clearSession();
+    setStatus(adminErrorMessage());
+    return;
   }
   setStatus('Sesi admin masih aktif. Mengarahkan ke Admin Dashboard...', 'status-online');
   window.location.replace(nextPath());
@@ -69,6 +106,7 @@ async function loginAdmin() {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.error_description || payload.msg || 'Login Supabase gagal.');
+  if (!(await isAdminSession(payload))) throw new Error(adminErrorMessage());
   setSession(payload);
 }
 form?.addEventListener('submit', async event => {
