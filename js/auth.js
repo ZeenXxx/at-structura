@@ -75,6 +75,7 @@ function authStatus(message, tone = '') {
   box.textContent = message;
   box.className = `page-note manager-status ${tone}`.trim();
 }
+const isEmailNotVerifiedError = message => /confirm|verified|verifikasi|not confirmed/i.test(String(message || ''));
 
 async function signInUser(email, password) {
   const response = await fetch(authApiUrl('/auth/v1/token?grant_type=password'), {
@@ -88,19 +89,46 @@ async function signInUser(email, password) {
   return payload;
 }
 
-async function signUpUser({ name, email, password }) {
+async function signUpUser({ name, email, phone, institution, password }) {
   const response = await fetch(authApiUrl('/auth/v1/signup'), {
     method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify({
       email,
       password,
-      data: { full_name: name, source: 'AT STRUCTURA Web' }
+      data: {
+        full_name: name,
+        phone,
+        institution,
+        source: 'AT STRUCTURA Web'
+      }
     })
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.error_description || payload.msg || payload.message || 'Daftar akun gagal.');
+  return payload;
+}
+
+async function verifyEmailCode(email, token) {
+  const response = await fetch(authApiUrl('/auth/v1/verify'), {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ email, token, type: 'email' })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error_description || payload.msg || payload.message || 'Kode verifikasi tidak valid atau sudah kedaluwarsa.');
   if (payload.access_token) setUserSession(payload);
+  return payload;
+}
+
+async function resendVerificationEmail(email) {
+  const response = await fetch(authApiUrl('/auth/v1/resend'), {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ type: 'signup', email })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error_description || payload.msg || payload.message || 'Gagal mengirim ulang kode verifikasi.');
   return payload;
 }
 
@@ -122,6 +150,12 @@ function setupLoginForm() {
       authStatus('Login berhasil. Mengarahkan...', 'status-online');
       window.location.href = safeNextPath('/pages/account/');
     } catch (error) {
+      if (isEmailNotVerifiedError(error.message)) {
+        const email = encodeURIComponent(String(data.get('email') || '').trim());
+        authStatus('Email belum diverifikasi. Mengarahkan ke halaman aktivasi...');
+        window.location.href = `/pages/verify-email/?email=${email}`;
+        return;
+      }
       authStatus(error.message);
       buildCaptcha(document.getElementById('loginCaptcha'));
       form.elements.captcha.value = '';
@@ -150,20 +184,57 @@ function setupRegisterForm() {
       const payload = await signUpUser({
         name: String(data.get('name') || '').trim(),
         email: String(data.get('email') || '').trim(),
+        phone: String(data.get('phone') || '').trim(),
+        institution: String(data.get('institution') || '').trim(),
         password
       });
-      if (payload.access_token) {
-        authStatus('Akun berhasil dibuat. Mengarahkan...', 'status-online');
-        window.location.href = safeNextPath('/pages/account/');
-        return;
-      }
-      authStatus('Akun berhasil dibuat. Jika Supabase meminta verifikasi, cek email sebelum login.', 'status-online');
-      form.reset();
-      buildCaptcha(document.getElementById('registerCaptcha'));
+      const email = encodeURIComponent(String(data.get('email') || '').trim());
+      authStatus('Akun dibuat. Cek email lalu masukkan kode aktivasi.', 'status-online');
+      window.location.href = `/pages/verify-email/?email=${email}`;
     } catch (error) {
       authStatus(error.message);
       buildCaptcha(document.getElementById('registerCaptcha'));
       form.elements.captcha.value = '';
+    }
+  });
+}
+
+function setupVerifyEmailForm() {
+  const form = document.querySelector('[data-verify-email-form]');
+  if (!form) return;
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('email')) form.elements.email.value = params.get('email');
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!authReady()) return authStatus('Supabase belum dikonfigurasi.');
+    const data = new FormData(form);
+    const email = String(data.get('email') || '').trim();
+    const token = String(data.get('token') || '').trim();
+    if (!email || !token) return authStatus('Email dan kode wajib diisi.');
+    authStatus('Memverifikasi email...');
+    try {
+      await verifyEmailCode(email, token);
+      authStatus('Email berhasil diverifikasi. Mengarahkan ke akun...', 'status-online');
+      window.location.href = safeNextPath('/pages/account/');
+    } catch (error) {
+      authStatus(error.message);
+    }
+  });
+}
+
+function setupResendVerification() {
+  const button = document.querySelector('[data-resend-verification]');
+  if (!button) return;
+  button.addEventListener('click', async () => {
+    if (!authReady()) return authStatus('Supabase belum dikonfigurasi.');
+    const email = String(document.querySelector('[data-verify-email-form] [name="email"]')?.value || '').trim();
+    if (!email) return authStatus('Isi email dulu untuk kirim ulang kode.');
+    authStatus('Mengirim ulang kode verifikasi...');
+    try {
+      await resendVerificationEmail(email);
+      authStatus('Kode verifikasi baru sudah dikirim ke email.', 'status-online');
+    } catch (error) {
+      authStatus(error.message);
     }
   });
 }
@@ -189,11 +260,14 @@ async function renderAccountPage() {
   }
   const email = userEmailFromSession(session);
   const name = session.user?.user_metadata?.full_name || 'Pengguna AT STRUCTURA';
+  const phone = session.user?.user_metadata?.phone || '-';
+  const institution = session.user?.user_metadata?.institution || '-';
   box.innerHTML = `
     <div class="card account-card">
       <span class="icon">AT</span>
       <h2>${name}</h2>
       <p>${email}</p>
+      <p>Telepon: ${phone}<br>Instansi: ${institution}</p>
       <div class="actions">
         <a class="btn btn-primary" href="/pages/software/">Buka Software</a>
         <a class="btn btn-secondary" href="/pages/jasa/">Buka Jasa</a>
@@ -224,5 +298,7 @@ window.ATAuth = {
 
 setupLoginForm();
 setupRegisterForm();
+setupVerifyEmailForm();
+setupResendVerification();
 renderAccountPage();
 guardProtectedPage();

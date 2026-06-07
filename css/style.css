@@ -499,6 +499,19 @@ button, input, select, textarea { font: inherit; }
 .captcha-refresh {
   min-width: 86px;
 }
+.auth-small-link {
+  font-size: 15px;
+}
+.auth-small-link a {
+  color: var(--red);
+  font-weight: 900;
+}
+.code-input {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-align: center;
+}
 .nav-auth-button {
   min-height: 44px;
   padding: 0 18px;

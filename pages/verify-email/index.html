@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daftar Akun | AT STRUCTURA</title>
-<meta name="description" content="Daftar akun AT STRUCTURA untuk mengakses halaman Software dan Jasa Teknik Sipil.">
+<title>Verifikasi Email | AT STRUCTURA</title>
+<meta name="description" content="Aktivasi akun AT STRUCTURA dengan kode verifikasi email.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="author" content="Arief Tediansyah">
 <meta name="theme-color" content="#0B2A5B">
-<link rel="canonical" href="https://at-structura.vercel.app/pages/daftar/">
+<link rel="canonical" href="https://at-structura.vercel.app/pages/verify-email/">
 <link rel="shortcut icon" href="/favicon.ico">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="stylesheet" href="/css/style.css">
@@ -21,7 +21,7 @@
     <span><strong>AT STRUCTURA</strong><small>Civil engineering platform</small></span>
   </a>
   <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
-  <nav class="nav-links" data-active="daftar">
+  <nav class="nav-links" data-active="verify">
     <a href="/" data-page="home">Home</a>
     <a href="/pages/tools/" data-page="tools">Tools</a>
     <a href="/pages/resources/" data-page="resources">Resources</a>
@@ -35,34 +35,28 @@
 <main>
   <section class="page-head auth-head">
     <div class="container">
-      <span class="eyebrow">Akun Web</span>
-      <h1>Daftar Akun</h1>
-      <p class="lead">Buat akun untuk mengakses Software dan Jasa AT STRUCTURA dengan sistem member.</p>
+      <span class="eyebrow">Aktivasi Akun</span>
+      <h1>Verifikasi Email</h1>
+      <p class="lead">Masukkan kode yang dikirim Supabase ke email kamu. Setelah aktif, akun bisa dipakai untuk membuka Software dan Jasa.</p>
     </div>
   </section>
   <section class="section">
     <div class="container auth-layout">
-      <form class="card manager-auth auth-card" data-register-form>
-        <span class="eyebrow">Create Account</span>
-        <h2 class="title">Buat Akun Baru</h2>
-        <label>Nama<input class="control" name="name" autocomplete="name" placeholder="Nama lengkap" required></label>
-        <label>Nomor Telepon<input class="control" name="phone" type="tel" autocomplete="tel" placeholder="0812xxxxxxxx" required></label>
-        <label>Instansi<input class="control" name="institution" autocomplete="organization" placeholder="Kampus, perusahaan, atau komunitas" required></label>
+      <form class="card manager-auth auth-card" data-verify-email-form>
+        <span class="eyebrow">Email Code</span>
+        <h2 class="title">Aktivasi Akun</h2>
         <label>Email<input class="control" name="email" type="email" autocomplete="email" placeholder="email@example.com" required></label>
-        <label>Password<input class="control" name="password" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter" required></label>
-        <label>Konfirmasi Password<input class="control" name="confirm_password" type="password" autocomplete="new-password" placeholder="Ulangi password" required></label>
-        <div id="registerCaptcha"></div>
-        <label>Jawaban Captcha<input class="control" name="captcha" inputmode="numeric" placeholder="Masukkan hasil hitung" required></label>
+        <label>Kode Verifikasi<input class="control code-input" name="token" inputmode="numeric" autocomplete="one-time-code" placeholder="6 digit kode email" required></label>
         <div class="manager-actions">
-          <button class="btn btn-primary" type="submit">Daftar</button>
-          <a class="btn btn-secondary" href="/pages/login/">Login</a>
+          <button class="btn btn-primary" type="submit">Aktifkan Akun</button>
+          <button class="btn btn-secondary" type="button" data-resend-verification>Kirim Ulang Kode</button>
         </div>
-        <div class="page-note manager-status" data-auth-status>Setelah daftar, cek email dan masukkan kode aktivasi.</div>
+        <div class="page-note manager-status" data-auth-status>Jika kode belum masuk, cek folder spam atau kirim ulang kode.</div>
       </form>
       <aside class="card auth-side">
-        <span class="icon">ID</span>
-        <h2>Satu akun untuk akses member</h2>
-        <p>Akun ini dipakai untuk membuka halaman Software dan Jasa. Aktivasi email menjaga akses tetap rapi dan memastikan akun benar-benar milik pengguna.</p>
+        <span class="icon">EV</span>
+        <h2>Email harus aktif sebelum login</h2>
+        <p>Sistem member memakai verifikasi email agar akses Software dan Jasa hanya diberikan ke akun yang sudah aktif.</p>
       </aside>
     </div>
   </section>
@@ -70,11 +64,11 @@
 <footer class="site-footer">
   <div class="footer-grid">
     <div><a class="footer-brand" href="/"><img src="/assets/logo/at-structura-logo.png?v=2" alt="Logo AT STRUCTURA"><span>AT STRUCTURA</span></a><p>Platform pribadi Arief Tediansyah untuk tools, resources, software, portfolio, dan layanan pendukung Teknik Sipil.</p></div>
-    <div><h3>Mulai Cepat</h3><a href="/pages/tools/">Tools</a><a href="/pages/resources/">Resources</a></div>
     <div><h3>Akun</h3><a href="/pages/login/">Login</a><a href="/pages/daftar/">Daftar</a></div>
+    <div><h3>Member</h3><a href="/pages/software/">Software</a><a href="/pages/jasa/">Jasa</a></div>
     <div><h3>Kontak</h3><p>Email: arieftediansyah0@gmail.com<br>WhatsApp: 081220032582</p></div>
   </div>
-  <div class="footer-bottom"><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Member registration.</span></div>
+  <div class="footer-bottom"><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Email verification.</span></div>
 </footer>
 <script src="/js/supabase-config.js?v=6"></script>
 <script src="/js/auth.js?v=2"></script>
