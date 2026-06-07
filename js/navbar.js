@@ -1,2 +1,50 @@
-﻿const toggle = document.querySelector('.menu-toggle'); const nav = document.querySelector('.nav-links'); if (toggle && nav) { toggle.addEventListener('click', () => { const open = nav.classList.toggle('open'); toggle.setAttribute('aria-expanded', String(open)); }); nav.addEventListener('click', e => { if (e.target.closest('a')) { nav.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); } }); } const active = nav?.dataset.active; if (active) { nav.querySelectorAll('[data-page]').forEach(a => a.classList.toggle('active', a.dataset.page === active)); }
+const toggle = document.querySelector('.menu-toggle');
+const nav = document.querySelector('.nav-links');
+const publicUserSessionKey = 'at_structura_user_session';
 
+function readPublicUserSession() {
+  try { return JSON.parse(localStorage.getItem(publicUserSessionKey) || 'null'); } catch { return null; }
+}
+
+function appendAuthLinks() {
+  if (!nav || nav.dataset.authReady === 'true') return;
+  nav.dataset.authReady = 'true';
+  const session = readPublicUserSession();
+  if (session?.access_token) {
+    nav.insertAdjacentHTML('beforeend', `
+      <a href="/pages/account/" data-page="account">Akun</a>
+      <button class="nav-auth-button" type="button" data-user-logout>Logout</button>
+    `);
+    return;
+  }
+  nav.insertAdjacentHTML('beforeend', `
+    <a href="/pages/daftar/" data-page="daftar">Daftar</a>
+    <a href="/pages/login/" data-page="login">Login</a>
+  `);
+}
+
+appendAuthLinks();
+
+if (toggle && nav) {
+  toggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+  nav.addEventListener('click', event => {
+    if (event.target.closest('a') || event.target.closest('button')) {
+      nav.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
+document.addEventListener('click', event => {
+  if (!event.target.closest('[data-user-logout]')) return;
+  localStorage.removeItem(publicUserSessionKey);
+  window.location.href = '/';
+});
+
+const active = nav?.dataset.active;
+if (active) {
+  nav.querySelectorAll('[data-page]').forEach(link => link.classList.toggle('active', link.dataset.page === active));
+}

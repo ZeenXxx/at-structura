@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="/css/resources.css">
 <script type="application/ld+json">{"@id":"https://at-structura.vercel.app/pages/software/#webpage","@type":"WebPage","url":"https://at-structura.vercel.app/pages/software/","name":"Software Teknik Sipil | AT STRUCTURA","description":"Katalog software Teknik Sipil, catatan workflow, link resmi, dan referensi penggunaan software konstruksi di AT STRUCTURA.","inLanguage":"id-ID","@context":"https://schema.org","isPartOf":{"@id":"https://at-structura.vercel.app/#website"}}</script>
 </head>
-<body>
+<body data-require-auth="true" class="auth-checking">
 <header class="navbar">
   <a class="brand" href="/">
     <img src="/assets/logo/at-structura-logo.png?v=2" alt="Logo AT STRUCTURA">
@@ -55,7 +55,7 @@
   <div class="container">
     <span class="eyebrow">Software</span>
     <h1>Katalog Software Teknik Sipil</h1>
-    <p class="lead">Kumpulan software, catatan workflow, link resmi, dan referensi penggunaan untuk analisis struktur, CAD, BIM, hidrologi, geoteknik, transportasi, dan estimasi biaya.</p>
+    <p class="lead">Kumpulan software, catatan workflow, link resmi, dan referensi penggunaan untuk analisis struktur, CAD, BIM, hidrologi, geoteknik, transportasi, dan estimasi biaya. Halaman ini membutuhkan akun AT STRUCTURA.</p>
   </div>
 </section>
 <section class="section">
@@ -115,9 +115,10 @@
   </div>
 </footer>
 <div class="toast" id="toast"></div>
-<script src="/js/navbar.js"></script>
-<script src="/js/supabase-config.js?v=5"></script>
-<script src="/js/software.js?v=1"></script>
+<script src="/js/supabase-config.js?v=6"></script>
+<script src="/js/auth.js?v=1"></script>
+<script src="/js/navbar.js?v=2"></script>
+<script src="/js/software.js?v=2"></script>
 </body>
 </html>
 

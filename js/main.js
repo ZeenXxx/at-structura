@@ -10,7 +10,10 @@ const visibleContentStatuses = ['Tersedia', 'Link Eksternal', 'Coming Soon'];
 const cfg = () => window.AT_SUPABASE || {};
 const isSupabaseReady = () => Boolean(cfg().enabled && cfg().url && cfg().anonKey && !String(cfg().url).includes('PROJECT_ID') && !String(cfg().anonKey).includes('SUPABASE_ANON_KEY'));
 const apiUrl = path => `${String(cfg().url || '').replace(/\/$/, '')}${path}`;
-const publicHeaders = () => ({ apikey: cfg().anonKey, Authorization: `Bearer ${cfg().anonKey}`, Accept: 'application/json' });
+const publicHeaders = () => {
+  const token = window.ATAuth?.getUserSession?.()?.access_token || cfg().anonKey;
+  return { apikey: cfg().anonKey, Authorization: `Bearer ${token}`, Accept: 'application/json' };
+};
 
 async function fetchJson(path) {
   const response = await fetch(path);
@@ -41,6 +44,17 @@ async function getLiveCounts() {
   [fallback.tools, fallback.resources, fallback.software, fallback.services] = await Promise.all(localTasks);
 
   if (!isSupabaseReady()) return fallback;
+  const countersTable = cfg().countersTable || 'site_counters';
+  const counterRows = await fetchPublicRows(`/rest/v1/${countersTable}?select=key,value&key=in.(resources,software,services)`).catch(() => []);
+  if (counterRows.length) {
+    const counters = counterRows.reduce((acc, row) => ({ ...acc, [row.key]: Number(row.value || 0) }), {});
+    return {
+      tools: fallback.tools,
+      resources: counters.resources ?? fallback.resources,
+      software: counters.software ?? fallback.software,
+      services: counters.services ?? fallback.services
+    };
+  }
   const resourcesTable = cfg().resourcesTable || 'resources';
   const softwareTable = cfg().softwareTable || 'software_items';
   const servicesTable = cfg().servicesTable || 'technical_services';
@@ -79,6 +93,10 @@ async function getActiveServices() {
 async function renderServices() {
   const grid = document.getElementById('serviceGrid');
   if (!grid) return;
+  if (document.body?.dataset.requireAuth) {
+    const session = await window.ATAuth?.ensureUserSession?.();
+    if (!session?.access_token) return;
+  }
   try {
     const services = await getActiveServices();
     grid.innerHTML = services.map(service => `

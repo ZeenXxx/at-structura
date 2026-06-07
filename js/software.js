@@ -18,7 +18,7 @@ const isSupabaseReady = () => {
 const supabaseUrl = path => `${String(supabaseConfig().url || '').replace(/\/$/, '')}${path}`;
 const supabaseHeaders = token => ({
   apikey: supabaseConfig().anonKey,
-  Authorization: `Bearer ${token || supabaseConfig().anonKey}`,
+  Authorization: `Bearer ${token || window.ATAuth?.getUserSession?.()?.access_token || supabaseConfig().anonKey}`,
   Accept: 'application/json'
 });
 const normalizeSoftware = item => ({
@@ -114,6 +114,10 @@ async function loadJsonSoftware() {
   return (await response.json()).map(normalizeSoftware);
 }
 async function init() {
+  if (document.body?.dataset.requireAuth) {
+    const session = await window.ATAuth?.ensureUserSession?.();
+    if (!session?.access_token) return;
+  }
   const params = new URLSearchParams(location.search);
   if (params.get('category')) currentCategory = params.get('category');
   try {

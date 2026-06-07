@@ -431,8 +431,105 @@ button, input, select, textarea { font: inherit; }
   display: grid;
   gap: 14px;
 }
+.auth-checking main,
+.auth-checking footer {
+  opacity: 0;
+}
+.auth-head {
+  background:
+    linear-gradient(#e6edf7 1px, transparent 1px),
+    linear-gradient(90deg, #e6edf7 1px, transparent 1px),
+    linear-gradient(135deg, #fff 0%, #f6f8fb 58%, #eaf0f8 100%);
+  background-size: 34px 34px, 34px 34px, auto;
+}
+.auth-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, .82fr) minmax(280px, .68fr);
+  gap: 24px;
+  align-items: stretch;
+}
+.auth-card,
+.auth-side,
+.account-card {
+  padding: 28px;
+}
+.auth-card {
+  display: grid;
+  gap: 14px;
+}
+.auth-side {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  background: linear-gradient(145deg, #081C3B, #0B2A5B 62%, #C1121F);
+  color: #fff;
+}
+.auth-side h2,
+.account-card h2 {
+  margin: 0;
+  color: inherit;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.05;
+}
+.auth-side p {
+  margin: 0;
+  color: rgba(255, 255, 255, .78);
+  font-weight: 700;
+}
+.captcha-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid rgba(193, 18, 31, .24);
+  border-radius: 8px;
+  background:
+    linear-gradient(#e6edf7 1px, transparent 1px),
+    linear-gradient(90deg, #e6edf7 1px, transparent 1px),
+    #fff;
+  background-size: 22px 22px;
+}
+.captcha-box strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--primary);
+  font-size: 24px;
+}
+.captcha-refresh {
+  min-width: 86px;
+}
+.nav-auth-button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--primary);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+.nav-auth-button:hover {
+  color: var(--red);
+  border-color: rgba(193, 18, 31, .32);
+  background: #fff5f6;
+}
+.account-card {
+  width: min(100%, 720px);
+  margin: 0 auto;
+  text-align: center;
+}
+.account-card .icon {
+  margin: 0 auto 14px;
+}
+.account-card p {
+  color: var(--muted);
+  font-weight: 800;
+}
 @media(max-width: 900px) {
   .manager-layout,
+  .auth-layout,
   .manager-actions {
     grid-template-columns: 1fr;
   }

@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="/css/resources.css">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"isPartOf":{"@id":"https://at-structura.vercel.app/#website"},"name":"Jasa Teknik Sipil | Tutor, Drafting, Asistensi Software","@id":"https://at-structura.vercel.app/pages/jasa/#webpage","description":"Layanan AT STRUCTURA untuk tutor Teknik Sipil, drafting gambar teknik, asistensi software, pendampingan akademik, template, web tools, dan konsultasi perhitungan dasar.","@type":"WebPage","url":"https://at-structura.vercel.app/pages/jasa/","inLanguage":"id-ID"},{"areaServed":"Indonesia","name":"Jasa Teknik Sipil AT STRUCTURA","@id":"https://at-structura.vercel.app/pages/jasa/#service","provider":{"@id":"https://at-structura.vercel.app/#person"},"serviceType":["Tutor Teknik Sipil","Drafting Gambar Teknik","Asistensi Software Teknik Sipil","Pendampingan Akademik Teknik Sipil","Pembuatan Web Tools Teknik Sipil","Konsultasi Perhitungan Dasar"],"@type":"Service","url":"https://at-structura.vercel.app/pages/jasa/"}]}</script>
 </head>
-<body>
+<body data-require-auth="true" class="auth-checking">
 <header class="navbar">
   <a class="brand" href="/">
     <img src="/assets/logo/at-structura-logo.png?v=2" alt="Logo AT STRUCTURA">
@@ -54,7 +54,7 @@
   <div class="container">
     <span class="eyebrow">Jasa</span>
     <h1>Layanan Pendukung Teknik Sipil</h1>
-    <p class="lead">Pendampingan teknis untuk belajar, drafting, software, template, perhitungan dasar, dan pengembangan web tools Teknik Sipil dengan komunikasi yang rapi dan profesional.</p><p class="lead">Layanan ini membantu kebutuhan jasa drafting teknik sipil, tutor teknik sipil, asistensi software civil engineering, web tools perhitungan, dan konsultasi perhitungan dasar secara profesional.</p>
+    <p class="lead">Pendampingan teknis untuk belajar, drafting, software, template, perhitungan dasar, dan pengembangan web tools Teknik Sipil dengan komunikasi yang rapi dan profesional. Halaman ini membutuhkan akun AT STRUCTURA.</p><p class="lead">Layanan ini membantu kebutuhan jasa drafting teknik sipil, tutor teknik sipil, asistensi software civil engineering, web tools perhitungan, dan konsultasi perhitungan dasar secara profesional.</p>
   </div>
 </section>
 <section class="section">
@@ -122,7 +122,8 @@
 </footer>
 <div class="toast" id="toast"></div>
 <script src="/js/supabase-config.js?v=6"></script>
-<script src="/js/navbar.js"></script><script src="/js/main.js?v=2"></script>
+<script src="/js/auth.js?v=1"></script>
+<script src="/js/navbar.js?v=2"></script><script src="/js/main.js?v=3"></script>
 </body>
 </html>
 
