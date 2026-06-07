@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout | AT STRUCTURA</title>
+<meta name="description" content="Checkout manual item premium AT STRUCTURA.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B2A5B">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/navbar.css">
+</head>
+<body data-require-auth="true" class="auth-checking">
+<header class="navbar">
+  <a class="brand" href="/"><img src="/assets/logo/at-structura-logo.png?v=2" alt="Logo AT STRUCTURA"><span><strong>AT STRUCTURA</strong><small>Civil engineering platform</small></span></a>
+  <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+  <nav class="nav-links" data-active="cart">
+    <a href="/" data-page="home">Home</a>
+    <a href="/pages/tools/" data-page="tools">Tools</a>
+    <a href="/pages/resources/" data-page="resources">Resources</a>
+    <a href="/pages/software/" data-page="software">Software</a>
+    <a href="/pages/jasa/" data-page="jasa">Jasa</a>
+    <a href="/pages/portfolio/" data-page="portfolio">Portfolio</a>
+    <a href="/pages/about/" data-page="about">About</a>
+    <a href="/pages/contact/" data-page="contact">Contact</a>
+  </nav>
+</header>
+<main>
+  <section class="page-head">
+    <div class="container">
+      <span class="eyebrow">Checkout</span>
+      <h1>Checkout Manual</h1>
+      <p class="lead">Buat invoice, lakukan pembayaran manual, lalu upload bukti pembayaran.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container shop-layout">
+      <section class="card shop-list-card" id="checkoutPanel"></section>
+      <aside class="card shop-summary">
+        <span class="eyebrow">Pembayaran</span>
+        <h2>Manual</h2>
+        <p>Untuk saat ini pembayaran memakai konfirmasi manual. Setelah order dibuat, kirim pembayaran sesuai instruksi Arief dan upload bukti di halaman ini.</p>
+        <p>Kontak konfirmasi: WhatsApp 081220032582.</p>
+      </aside>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="footer-bottom"><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Payment review.</span></div>
+</footer>
+<div class="toast" id="toast"></div>
+<script src="/js/supabase-config.js?v=8"></script>
+<script src="/js/auth.js?v=3"></script>
+<script src="/js/shop.js?v=1"></script>
+<script src="/js/navbar.js?v=3"></script>
+<script src="/js/cart.js?v=1"></script>
+</body>
+</html>

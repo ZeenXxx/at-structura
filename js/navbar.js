@@ -9,6 +9,10 @@ function readPublicUserSession() {
 function appendAuthLinks() {
   if (!nav || nav.dataset.authReady === 'true') return;
   nav.dataset.authReady = 'true';
+  const cartCount = (() => {
+    try { return JSON.parse(localStorage.getItem('at_structura_cart') || '[]').length; } catch { return 0; }
+  })();
+  nav.insertAdjacentHTML('beforeend', `<a href="/pages/cart/" data-page="cart">Keranjang <span data-cart-count>${cartCount}</span></a>`);
   const session = readPublicUserSession();
   if (session?.access_token) {
     nav.insertAdjacentHTML('beforeend', `

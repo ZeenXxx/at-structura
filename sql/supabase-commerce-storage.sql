@@ -1,0 +1,29 @@
+-- AT STRUCTURA Commerce + Storage MVP
+-- Migration ini sudah diterapkan ke Supabase project xpruvhfuyhnhdvlwiyye.
+-- Fitur:
+-- 1. Bucket private at-structura-storage dengan limit file 50 MB.
+-- 2. Kolom premium/harga/file storage pada resources dan software_items.
+-- 3. Order manual, order_items, akses member, item tersimpan, dan riwayat download.
+-- 4. RPC create_manual_order dan submit_payment_proof.
+-- 5. RLS agar user biasa hanya bisa melihat order/akses miliknya, admin bisa review semua.
+-- 6. Policy Storage agar file premium hanya bisa dibaca admin atau member yang sudah punya akses.
+
+-- Catatan:
+-- File lengkap migration tersimpan di Supabase migration history dengan nama:
+-- commerce_storage_access_mvp_v2
+--
+-- Bucket:
+-- at-structura-storage
+-- public = false
+-- file_size_limit = 52428800
+--
+-- Tabel baru:
+-- public.orders
+-- public.order_items
+-- public.member_access
+-- public.saved_items
+-- public.download_logs
+--
+-- RPC publik untuk frontend:
+-- public.create_manual_order(p_items jsonb)
+-- public.submit_payment_proof(p_order_id uuid, p_bucket text, p_path text, p_file_name text)

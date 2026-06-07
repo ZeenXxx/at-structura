@@ -808,6 +808,72 @@ button, input, select, textarea { font: inherit; }
   text-transform: uppercase;
   letter-spacing: .08em;
 }
+.shop-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 22px;
+  align-items: start;
+}
+.shop-list-card,
+.shop-summary,
+.account-section {
+  padding: 22px;
+}
+.shop-summary {
+  position: sticky;
+  top: 110px;
+}
+.shop-summary h2 {
+  margin: 8px 0 10px;
+  color: var(--primary);
+  font-size: 34px;
+}
+.shop-order-items {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+.shop-order-items div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+.account-commerce {
+  margin-top: 24px;
+}
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.account-section h2 {
+  margin: 0 0 14px;
+  color: var(--primary);
+}
+.download-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.download-list li {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--text);
+}
+.download-list span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
 @media(max-width: 980px) {
   .admin-shell {
     grid-template-columns: 1fr;
@@ -835,6 +901,13 @@ button, input, select, textarea { font: inherit; }
   }
   .member-detail-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .shop-layout,
+  .account-grid {
+    grid-template-columns: 1fr;
+  }
+  .shop-summary {
+    position: static;
   }
 }
 @media(max-width: 640px) {

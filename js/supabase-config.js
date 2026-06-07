@@ -7,5 +7,6 @@
   servicesTable: 'technical_services',
   countersTable: 'site_counters',
   membersTable: 'member_profiles',
-  adminsTable: 'resource_admins'
+  adminsTable: 'resource_admins',
+  storageBucket: 'at-structura-storage'
 };

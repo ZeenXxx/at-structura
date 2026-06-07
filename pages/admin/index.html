@@ -29,6 +29,7 @@
       <button type="button" data-admin-panel="software">Software</button>
       <button type="button" data-admin-panel="services">Layanan</button>
       <button type="button" data-admin-panel="members">Akun</button>
+      <button type="button" data-admin-panel="orders">Pesanan</button>
       <a href="/pages/resources/" target="_blank" rel="noopener">Lihat Resources</a>
       <a href="/pages/software/" target="_blank" rel="noopener">Lihat Software</a>
       <a href="/pages/jasa/" target="_blank" rel="noopener">Lihat Jasa</a>
@@ -48,6 +49,7 @@
         <div><strong id="softwareCount">0</strong><span>Software</span></div>
         <div><strong id="serviceCount">0</strong><span>Layanan</span></div>
         <div><strong id="memberCount">0</strong><span>Akun</span></div>
+        <div><strong id="orderCount">0</strong><span>Pesanan</span></div>
       </div>
     </header>
 
@@ -86,11 +88,20 @@
             <option value="Draft">Draft</option>
             <option value="Archived">Archived</option>
           </select></label>
+          <label>Akses<select class="control" name="access_type">
+            <option value="free" selected>Gratis</option>
+            <option value="premium">Premium / berbayar</option>
+          </select></label>
+          <label>Harga (IDR)<input class="control" name="price" type="number" min="0" value="0"></label>
           <label>Sumber<select class="control" name="source_type">
+            <option value="supabase_storage">Supabase Storage</option>
             <option value="mega_link">Link MEGA</option>
             <option value="external_link">Link Eksternal</option>
             <option value="official_link">Link Resmi</option>
           </select></label>
+          <label>Upload File Supabase<input class="control" name="storage_file" type="file"></label>
+          <input type="hidden" name="storage_bucket">
+          <input type="hidden" name="storage_path">
           <label>Link Resource<input class="control" name="link" value="#" placeholder="https://mega.nz/file/... atau URL legal/resmi"></label>
           <label>Nama File<input class="control" name="file_name" placeholder="Opsional"></label>
           <label>Ukuran File (byte)<input class="control" name="file_size" type="number" min="0" placeholder="Opsional"></label>
@@ -164,11 +175,20 @@
             <option value="Draft">Draft</option>
             <option value="Archived">Archived</option>
           </select></label>
+          <label>Akses<select class="control" name="access_type">
+            <option value="free" selected>Gratis</option>
+            <option value="premium">Premium / berbayar</option>
+          </select></label>
+          <label>Harga (IDR)<input class="control" name="price" type="number" min="0" value="0"></label>
           <label>Sumber<select class="control" name="source_type">
+            <option value="supabase_storage">Supabase Storage</option>
             <option value="official_link">Link Resmi</option>
             <option value="mega_link">Link MEGA</option>
             <option value="external_link">Link Eksternal</option>
           </select></label>
+          <label>Upload File Supabase<input class="control" name="storage_file" type="file"></label>
+          <input type="hidden" name="storage_bucket">
+          <input type="hidden" name="storage_path">
           <label>Link Software<input class="control" name="link" value="#" placeholder="URL resmi, MEGA, atau referensi legal"></label>
           <label>Nama File<input class="control" name="file_name" placeholder="Opsional"></label>
           <label>Ukuran File (byte)<input class="control" name="file_size" type="number" min="0" placeholder="Opsional"></label>
@@ -262,10 +282,34 @@
         <div class="admin-list member-list" id="memberAdminList"></div>
       </section>
     </section>
+
+    <section class="admin-panel" id="panelOrders">
+      <div class="admin-panel-head">
+        <div>
+          <h2>Pesanan & Pembayaran</h2>
+          <p>Review checkout manual, lihat bukti pembayaran, lalu setujui agar akses download otomatis aktif di akun member.</p>
+        </div>
+      </div>
+      <section class="card admin-list-card">
+        <div class="filter-bar manager-filter">
+          <input class="control" id="orderAdminSearch" type="search" placeholder="Cari invoice, email, atau item...">
+          <select class="control" id="orderAdminStatus">
+            <option value="All">Semua status</option>
+            <option value="pending_payment">Menunggu Pembayaran</option>
+            <option value="payment_review">Review Pembayaran</option>
+            <option value="paid">Lunas</option>
+            <option value="rejected">Ditolak</option>
+            <option value="cancelled">Dibatalkan</option>
+          </select>
+        </div>
+        <div class="admin-list" id="orderAdminList"></div>
+      </section>
+    </section>
   </section>
 </main>
 <div class="toast" id="toast"></div>
-<script src="/js/supabase-config.js?v=7"></script>
-<script src="/js/admin.js?v=4"></script>
+<script src="/js/supabase-config.js?v=8"></script>
+<script src="/js/shop.js?v=1"></script>
+<script src="/js/admin.js?v=5"></script>
 </body>
 </html>

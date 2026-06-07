@@ -1,6 +1,6 @@
 const sessionKey = 'at_structura_supabase_session';
 const loginPath = '/pages/resource-login/';
-const state = { resources: [], software: [], services: [], members: [], activePanel: 'resources' };
+const state = { resources: [], software: [], services: [], members: [], orders: [], activePanel: 'resources' };
 const visibleStatuses = ['Tersedia', 'Link Eksternal', 'Coming Soon'];
 const serviceVisibleStatuses = ['Aktif'];
 
@@ -10,6 +10,7 @@ const els = {
   softwareCount: document.getElementById('softwareCount'),
   serviceCount: document.getElementById('serviceCount'),
   memberCount: document.getElementById('memberCount'),
+  orderCount: document.getElementById('orderCount'),
   logout: document.getElementById('adminLogout'),
   resourceForm: document.getElementById('resourceAdminForm'),
   softwareForm: document.getElementById('softwareAdminForm'),
@@ -18,6 +19,7 @@ const els = {
   softwareList: document.getElementById('softwareAdminList'),
   serviceList: document.getElementById('serviceAdminList'),
   memberList: document.getElementById('memberAdminList'),
+  orderList: document.getElementById('orderAdminList'),
   resourceSearch: document.getElementById('resourceAdminSearch'),
   resourceStatus: document.getElementById('resourceAdminStatus'),
   softwareSearch: document.getElementById('softwareAdminSearch'),
@@ -25,7 +27,9 @@ const els = {
   serviceSearch: document.getElementById('serviceAdminSearch'),
   serviceStatus: document.getElementById('serviceAdminStatus'),
   memberSearch: document.getElementById('memberAdminSearch'),
-  memberStatus: document.getElementById('memberAdminStatus')
+  memberStatus: document.getElementById('memberAdminStatus'),
+  orderSearch: document.getElementById('orderAdminSearch'),
+  orderStatus: document.getElementById('orderAdminStatus')
 };
 
 const cfg = () => window.AT_SUPABASE || {};
@@ -43,9 +47,12 @@ const authHeaders = token => ({
   Accept: 'application/json'
 });
 const adminTable = () => cfg().adminsTable || 'resource_admins';
+const storageBucket = () => cfg().storageBucket || 'at-structura-storage';
 const adminCheck = { token: '', valid: false, denied: false };
 const escapeText = value => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const slugify = value => String(value || 'item').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'item';
+const fileSlug = value => String(value || 'file').toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-|-$/g, '') || 'file';
+const money = value => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(value || 0));
 const formatDate = value => {
   if (!value) return '-';
   const date = new Date(value);
@@ -131,12 +138,14 @@ const tableName = kind => {
   if (kind === 'software') return cfg().softwareTable || 'software_items';
   if (kind === 'services') return cfg().servicesTable || 'technical_services';
   if (kind === 'members') return cfg().membersTable || 'member_profiles';
+  if (kind === 'orders') return 'orders';
   return cfg().resourcesTable || 'resources';
 };
 const listForKind = kind => {
   if (kind === 'software') return state.software;
   if (kind === 'services') return state.services;
   if (kind === 'members') return state.members;
+  if (kind === 'orders') return state.orders;
   return state.resources;
 };
 const formForKind = kind => {
@@ -148,6 +157,7 @@ const listElForKind = kind => {
   if (kind === 'software') return els.softwareList;
   if (kind === 'services') return els.serviceList;
   if (kind === 'members') return els.memberList;
+  if (kind === 'orders') return els.orderList;
   return els.resourceList;
 };
 const sourceFields = (kind, sourceType, link) => {
@@ -179,6 +189,12 @@ function basePayload(form, kind) {
     status: String(data.get('status') || 'Draft').trim(),
     source_type: sourceType,
     link,
+    access_type: String(data.get('access_type') || 'free').trim(),
+    price: Number(data.get('price') || 0) || 0,
+    currency: 'IDR',
+    storage_bucket: String(data.get('storage_bucket') || '').trim() || null,
+    storage_path: String(data.get('storage_path') || '').trim() || null,
+    download_label: String(data.get('download_label') || '').trim() || null,
     file_name: String(data.get('file_name') || '').trim() || null,
     file_size: Number(data.get('file_size') || '') || null,
     mime_type: String(data.get('mime_type') || '').trim() || null,
@@ -237,7 +253,9 @@ function normalize(item, kind) {
     link: item.link || item.official_url || item.mega_url || item.external_url || '#',
     platform: item.platform || 'Windows',
     license: item.license || 'Catatan/Referensi',
-    source_type: item.source_type || (kind === 'software' ? 'official_link' : 'mega_link')
+    source_type: item.source_type || (item.storage_path ? 'supabase_storage' : kind === 'software' ? 'official_link' : 'mega_link'),
+    access_type: item.access_type || 'free',
+    price: Number(item.price || 0)
   };
 }
 
@@ -257,6 +275,10 @@ function resetForm(kind) {
   form.elements.author.value = 'AT STRUCTURA';
   form.elements.link.value = '#';
   form.elements.status.value = 'Tersedia';
+  form.elements.access_type.value = 'free';
+  form.elements.price.value = '0';
+  form.elements.storage_bucket.value = '';
+  form.elements.storage_path.value = '';
   form.elements.source_type.value = kind === 'software' ? 'official_link' : 'mega_link';
   if (kind === 'software') {
     form.elements.platform.value = 'Windows';
@@ -287,6 +309,10 @@ function fillForm(kind, item) {
   form.elements.author.value = item.author || 'AT STRUCTURA';
   form.elements.source_type.value = item.source_type || (kind === 'software' ? 'official_link' : 'mega_link');
   form.elements.link.value = item.link || item.official_url || item.mega_url || item.external_url || '#';
+  form.elements.access_type.value = item.access_type || 'free';
+  form.elements.price.value = item.price || 0;
+  form.elements.storage_bucket.value = item.storage_bucket || '';
+  form.elements.storage_path.value = item.storage_path || '';
   form.elements.file_name.value = item.file_name || '';
   form.elements.file_size.value = item.file_size || '';
   form.elements.mime_type.value = item.mime_type || '';
@@ -303,8 +329,8 @@ function fillForm(kind, item) {
 
 function filterItems(kind) {
   const items = listForKind(kind);
-  const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : kind === 'members' ? els.memberSearch : els.resourceSearch;
-  const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : kind === 'members' ? els.memberStatus : els.resourceStatus;
+  const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : kind === 'members' ? els.memberSearch : kind === 'orders' ? els.orderSearch : els.resourceSearch;
+  const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : kind === 'members' ? els.memberStatus : kind === 'orders' ? els.orderStatus : els.resourceStatus;
   const search = (searchEl?.value || '').toLowerCase();
   const status = statusEl?.value || 'All';
   return items.filter(item => {
@@ -313,6 +339,10 @@ function filterItems(kind) {
       const haystack = [item.full_name, item.email, item.phone, item.institution, item.source, item.user_id].join(' ').toLowerCase();
       return (status === 'All' || (status === 'Verified' && verified) || (status === 'Unverified' && !verified)) && haystack.includes(search);
     }
+    if (kind === 'orders') {
+      const haystack = [item.order_number, item.status, item.total_amount, item.proof_file_name, ...(item.order_items || []).map(orderItem => orderItem.title_snapshot)].join(' ').toLowerCase();
+      return (status === 'All' || item.status === status) && haystack.includes(search);
+    }
     const haystack = [item.title, item.category, item.type, item.platform, item.license, item.author, item.description, item.status, item.link, item.icon].join(' ').toLowerCase();
     return (status === 'All' || item.status === status) && haystack.includes(search);
   });
@@ -320,6 +350,7 @@ function filterItems(kind) {
 
 function emptyTitle(kind) {
   if (kind === 'members') return 'Akun belum ditemukan';
+  if (kind === 'orders') return 'Pesanan belum ditemukan';
   if (kind === 'software') return 'Software belum ditemukan';
   if (kind === 'services') return 'Layanan belum ditemukan';
   return 'Resource belum ditemukan';
@@ -330,9 +361,71 @@ function newLabel(kind) {
   return 'Resource Baru';
 }
 
+async function uploadAdminFile(kind, form, session) {
+  const file = form.elements.storage_file?.files?.[0];
+  if (!file) return null;
+  if (file.size > 50 * 1024 * 1024) throw new Error('Ukuran file maksimal 50 MB.');
+  const title = String(new FormData(form).get('title') || 'file');
+  const path = `products/${kind}/${Date.now()}-${slugify(title)}-${fileSlug(file.name)}`;
+  const response = await fetch(apiUrl(`/storage/v1/object/${storageBucket()}/${path.split('/').map(encodeURIComponent).join('/')}`), {
+    method: 'POST',
+    headers: {
+      apikey: cfg().anonKey,
+      Authorization: `Bearer ${session.access_token}`,
+      'Content-Type': file.type || 'application/octet-stream',
+      'x-upsert': 'true'
+    },
+    body: file
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.message || payload.error || `Upload file gagal (${response.status}).`);
+  form.elements.storage_bucket.value = storageBucket();
+  form.elements.storage_path.value = path;
+  form.elements.source_type.value = 'supabase_storage';
+  form.elements.file_name.value = file.name;
+  form.elements.file_size.value = file.size;
+  form.elements.mime_type.value = file.type || 'application/octet-stream';
+  form.elements.link.value = '#';
+  return path;
+}
+
 function renderList(kind) {
   const list = listElForKind(kind);
   const data = filterItems(kind);
+  if (kind === 'orders') {
+    list.innerHTML = data.map(order => {
+      const items = order.order_items || [];
+      const proofButton = order.proof_path
+        ? `<button class="btn btn-secondary" type="button" data-order-proof="${escapeText(order.id)}">Lihat Bukti</button>`
+        : '<button class="btn btn-secondary" type="button" disabled>Belum ada bukti</button>';
+      const reviewActions = order.status === 'payment_review'
+        ? `<button class="btn btn-primary" type="button" data-order-action="paid" data-id="${escapeText(order.id)}">Setujui</button><button class="btn btn-danger" type="button" data-order-action="rejected" data-id="${escapeText(order.id)}">Tolak</button>`
+        : '';
+      return `
+        <article class="admin-item order-item" data-id="${escapeText(order.id)}">
+          <div>
+            <div class="meta">
+              <span class="badge ${order.status === 'paid' ? 'tag-red' : ''}">${escapeText(order.status)}</span>
+              <span class="badge">${escapeText(money(order.total_amount))}</span>
+            </div>
+            <h3>${escapeText(order.order_number)}</h3>
+            <p>${items.map(item => escapeText(item.title_snapshot)).join(', ') || 'Order premium'}</p>
+            <small>Bukti: ${escapeText(order.proof_file_name || '-')} | Dibuat: ${escapeText(formatDate(order.created_at))}</small>
+          </div>
+          <div class="manager-row-actions">${proofButton}${reviewActions}</div>
+        </article>
+      `;
+    }).join('') || `
+      <div class="card empty-state admin-empty-state">
+        <span class="icon">PS</span>
+        <h3>${emptyTitle(kind)}</h3>
+        <p>Belum ada order sesuai filter saat ini.</p>
+        <div class="actions"><button class="btn btn-secondary" type="button" data-admin-reset="${kind}">Reset Filter</button></div>
+      </div>
+    `;
+    els.orderCount.textContent = state.orders.length;
+    return;
+  }
   if (kind === 'members') {
     list.innerHTML = data.map(item => {
       const verified = Boolean(item.email_confirmed_at);
@@ -367,6 +460,7 @@ function renderList(kind) {
       </div>
     `;
     els.memberCount.textContent = state.members.length;
+    els.orderCount.textContent = state.orders.length;
     return;
   }
   list.innerHTML = data.map(item => {
@@ -374,9 +468,10 @@ function renderList(kind) {
       ? (serviceVisibleStatuses.includes(item.status) && item.is_active !== false ? 'tag-red' : '')
       : (visibleStatuses.includes(item.status) ? 'tag-red' : '');
     const secondBadge = kind === 'software' ? item.platform : kind === 'services' ? item.icon : item.type;
+    const accessBadgeHtml = kind === 'services' ? '' : `<span class="badge ${item.access_type === 'premium' ? 'tag-red' : ''}">${escapeText(item.access_type === 'premium' ? money(item.price) : 'Gratis')}</span>`;
     const smallText = kind === 'services'
       ? `Tampil: ${item.is_active !== false ? 'Ya' : 'Tidak'} | Urutan: ${item.sort_order || 100}`
-      : (item.link || '#');
+      : (item.storage_path ? `Storage: ${item.storage_path}` : item.link || '#');
     return `
       <article class="admin-item" data-id="${escapeText(item.id)}">
         <div>
@@ -384,6 +479,7 @@ function renderList(kind) {
             <span class="badge">${escapeText(item.category)}</span>
             <span class="badge">${escapeText(secondBadge)}</span>
             <span class="badge ${statusClass}">${escapeText(item.status)}</span>
+            ${accessBadgeHtml}
           </div>
           <h3>${escapeText(item.title)}</h3>
           <p>${escapeText(item.description)}</p>
@@ -410,6 +506,7 @@ function renderList(kind) {
   els.softwareCount.textContent = state.software.length;
   els.serviceCount.textContent = state.services.filter(item => item.is_active !== false && item.status === 'Aktif').length;
   els.memberCount.textContent = state.members.length;
+  els.orderCount.textContent = state.orders.length;
 }
 
 function renderAll() {
@@ -417,6 +514,7 @@ function renderAll() {
   renderList('software');
   renderList('services');
   renderList('members');
+  renderList('orders');
 }
 
 async function fetchItems(kind) {
@@ -430,6 +528,12 @@ async function fetchItems(kind) {
     return [];
   }
   const order = kind === 'services' ? 'sort_order.asc,created_at.desc' : 'created_at.desc';
+  if (kind === 'orders') {
+    const response = await fetch(apiUrl('/rest/v1/orders?select=*,order_items(*)&order=created_at.desc'), { headers: authHeaders(session.access_token) });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.message || payload.msg || `Load orders gagal (${response.status}).`);
+    return payload;
+  }
   const resourceFilter = kind === 'resources' ? '&category=neq.Software' : '';
   const response = await fetch(apiUrl(`/rest/v1/${tableName(kind)}?select=*&order=${order}${resourceFilter}`), { headers: authHeaders(session.access_token) });
   const payload = await response.json().catch(() => ({}));
@@ -443,6 +547,7 @@ async function loadAll() {
   state.software = await fetchItems('software');
   state.services = await fetchItems('services');
   state.members = await fetchItems('members');
+  state.orders = await fetchItems('orders');
   renderAll();
   els.sessionStatus.textContent = 'Sesi admin aktif. Semua data dibaca dari Supabase.';
 }
@@ -484,6 +589,30 @@ async function deleteItem(kind, id) {
   }
 }
 
+async function updateOrderStatus(id, status) {
+  const session = await ensureSession();
+  if (!session?.access_token) return redirectToLogin();
+  const body = { status };
+  if (status === 'rejected') body.admin_note = 'Pembayaran ditolak. Silakan upload bukti yang benar.';
+  const response = await fetch(apiUrl(`/rest/v1/orders?id=eq.${encodeURIComponent(id)}`), {
+    method: 'PATCH',
+    headers: { ...authHeaders(session.access_token), Prefer: 'return=minimal' },
+    body: JSON.stringify(body)
+  });
+  if (!response.ok) {
+    const result = await response.json().catch(() => ({}));
+    throw new Error(result.message || result.msg || `Update order gagal (${response.status}).`);
+  }
+}
+
+async function openOrderProof(id) {
+  const order = state.orders.find(item => item.id === id);
+  if (!order?.proof_bucket || !order?.proof_path) return showToast('Bukti pembayaran belum ada.');
+  const session = await ensureSession();
+  const url = await window.ATShop.signedUrl(order.proof_bucket, order.proof_path, session.access_token);
+  window.open(url, '_blank', 'noopener');
+}
+
 function switchPanel(panel) {
   state.activePanel = panel;
   document.querySelectorAll('.admin-nav [data-admin-panel]').forEach(button => button.classList.toggle('active', button.dataset.adminPanel === panel));
@@ -491,12 +620,15 @@ function switchPanel(panel) {
   document.getElementById('panelSoftware').classList.toggle('active', panel === 'software');
   document.getElementById('panelServices').classList.toggle('active', panel === 'services');
   document.getElementById('panelMembers').classList.toggle('active', panel === 'members');
+  document.getElementById('panelOrders').classList.toggle('active', panel === 'orders');
 }
 
 document.querySelectorAll('.admin-nav [data-admin-panel]').forEach(button => button.addEventListener('click', () => switchPanel(button.dataset.adminPanel)));
 els.resourceForm?.addEventListener('submit', async event => {
   event.preventDefault();
   try {
+    const session = await ensureSession();
+    await uploadAdminFile('resources', els.resourceForm, session);
     await saveItem('resources', basePayload(els.resourceForm, 'resources'));
     await loadAll();
     resetForm('resources');
@@ -508,6 +640,8 @@ els.resourceForm?.addEventListener('submit', async event => {
 els.softwareForm?.addEventListener('submit', async event => {
   event.preventDefault();
   try {
+    const session = await ensureSession();
+    await uploadAdminFile('software', els.softwareForm, session);
     await saveItem('software', softwarePayload(els.softwareForm));
     await loadAll();
     resetForm('software');
@@ -532,8 +666,8 @@ document.addEventListener('click', async event => {
   const resetButton = event.target.closest('button[data-admin-reset]');
   if (resetButton) {
     const kind = resetButton.dataset.adminReset;
-    const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : kind === 'members' ? els.memberSearch : els.resourceSearch;
-    const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : kind === 'members' ? els.memberStatus : els.resourceStatus;
+    const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : kind === 'members' ? els.memberSearch : kind === 'orders' ? els.orderSearch : els.resourceSearch;
+    const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : kind === 'members' ? els.memberStatus : kind === 'orders' ? els.orderStatus : els.resourceStatus;
     if (searchEl) searchEl.value = '';
     if (statusEl) statusEl.value = 'All';
     renderList(kind);
@@ -542,6 +676,24 @@ document.addEventListener('click', async event => {
   const newButton = event.target.closest('button[data-admin-new]');
   if (newButton) {
     resetForm(newButton.dataset.adminNew);
+    return;
+  }
+  const proofButton = event.target.closest('[data-order-proof]');
+  if (proofButton) {
+    try { await openOrderProof(proofButton.dataset.orderProof); } catch (error) { showToast(error.message); }
+    return;
+  }
+  const orderButton = event.target.closest('[data-order-action]');
+  if (orderButton) {
+    const label = orderButton.dataset.orderAction === 'paid' ? 'setujui pembayaran' : 'tolak pembayaran';
+    if (!confirm(`Yakin ${label} order ini?`)) return;
+    try {
+      await updateOrderStatus(orderButton.dataset.id, orderButton.dataset.orderAction);
+      await loadAll();
+      showToast('Status order diperbarui.');
+    } catch (error) {
+      showToast(error.message);
+    }
     return;
   }
   const button = event.target.closest('button[data-action][data-kind]');
@@ -579,6 +731,8 @@ els.serviceSearch?.addEventListener('input', () => renderList('services'));
 els.serviceStatus?.addEventListener('change', () => renderList('services'));
 els.memberSearch?.addEventListener('input', () => renderList('members'));
 els.memberStatus?.addEventListener('change', () => renderList('members'));
+els.orderSearch?.addEventListener('input', () => renderList('orders'));
+els.orderStatus?.addEventListener('change', () => renderList('orders'));
 els.logout?.addEventListener('click', () => {
   clearSession();
   window.location.href = loginPath;

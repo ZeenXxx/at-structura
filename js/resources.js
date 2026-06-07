@@ -4,6 +4,7 @@ const categoryFilters = document.getElementById('categoryFilters');
 const resourceGrid = document.getElementById('resourceGrid');
 const pagination = document.getElementById('pagination');
 let resources = [];
+let accessMap = new Set();
 let current = 'All';
 let page = 1;
 const perPage = 9;
@@ -22,26 +23,51 @@ const supabaseHeaders = token => ({
   Accept: 'application/json'
 });
 const normalizeResource = item => ({
+  id: item.id || '',
+  item_id: item.id || '',
+  item_kind: 'resource',
   title: item.title || '',
   category: item.category || 'Website Rujukan',
   type: item.type || 'Link',
   author: item.author || 'AT STRUCTURA',
   description: item.description || '',
   status: item.status || 'Tersedia',
-  link: item.link || item.mega_url || item.external_url || '#'
+  link: item.link || item.mega_url || item.external_url || '#',
+  access_type: item.access_type || 'free',
+  price: Number(item.price || 0),
+  currency: item.currency || 'IDR',
+  storage_bucket: item.storage_bucket || '',
+  storage_path: item.storage_path || '',
+  download_label: item.download_label || 'Download'
 });
+const canOpen = item => item.access_type !== 'premium' || accessMap.has(`${item.item_kind}:${item.item_id}`);
+const accessBadge = item => item.access_type === 'premium' && item.price > 0 ? window.ATShop?.money?.(item.price) || `Rp ${item.price}` : 'Gratis';
+const actionButtons = item => {
+  if (item.status === 'Coming Soon') return '<button class="btn btn-secondary" type="button" disabled>Coming Soon</button>';
+  if (canOpen(item)) {
+    return `<button class="btn btn-primary" type="button" data-shop-open="${escapeText(item.item_kind)}:${escapeText(item.item_id)}">${escapeText(item.download_label || 'Buka Resource')}</button>`;
+  }
+  return `
+    <button class="btn btn-primary" type="button" data-shop-cart="${escapeText(item.item_kind)}:${escapeText(item.item_id)}">Tambah Keranjang</button>
+    <a class="btn btn-secondary" href="/pages/cart/">Lihat Keranjang</a>
+  `;
+};
 const card = item => `
-  <article class="card resource-card">
+  <article class="card resource-card" data-shop-card="${escapeText(item.item_kind)}:${escapeText(item.item_id)}">
     <span class="icon">${escapeText((item.category || 'RES').slice(0, 3).toUpperCase())}</span>
     <div class="meta">
       <span class="badge">${escapeText(item.category)}</span>
       <span class="badge">${escapeText(item.type)}</span>
       <span class="badge ${statusTone(item.status)}">${escapeText(item.status)}</span>
+      <span class="badge ${item.access_type === 'premium' ? 'tag-red' : ''}">${escapeText(accessBadge(item))}</span>
     </div>
     <h3>${escapeText(item.title)}</h3>
     <p>${escapeText(item.description)}</p>
     <small>Sumber/author: ${escapeText(item.author)}</small>
-    <div class="actions"><a class="btn btn-primary" href="${escapeText(item.link || '#')}" target="_blank" rel="noopener">${item.link && item.link !== '#' ? 'Buka Resource' : 'Detail Coming Soon'}</a></div>
+    <div class="actions">
+      ${actionButtons(item)}
+      <button class="btn btn-secondary" type="button" data-shop-save="${escapeText(item.item_kind)}:${escapeText(item.item_id)}">Simpan</button>
+    </div>
   </article>
 `;
 const emptyState = ({ title, message, actionHref = '/pages/contact/', actionText = 'Hubungi Saya' }) => `
@@ -97,7 +123,7 @@ function render() {
 }
 async function loadSupabaseResources() {
   const table = supabaseConfig().resourcesTable || 'resources';
-  const query = 'select=id,title,category,type,author,description,status,link,mega_url,external_url,published_at,created_at&status=in.(Tersedia,Link%20Eksternal,Coming%20Soon)&category=neq.Software&order=published_at.desc.nullslast,created_at.desc';
+  const query = 'select=id,title,category,type,author,description,status,link,mega_url,external_url,published_at,created_at,access_type,price,currency,storage_bucket,storage_path,download_label&status=in.(Tersedia,Link%20Eksternal,Coming%20Soon)&category=neq.Software&order=published_at.desc.nullslast,created_at.desc';
   const response = await fetch(supabaseUrl(`/rest/v1/${table}?${query}`), { headers: supabaseHeaders() });
   if (!response.ok) throw new Error(`Supabase resources gagal dimuat (${response.status}).`);
   return (await response.json()).filter(item => item.category !== 'Software').map(normalizeResource);
@@ -113,6 +139,7 @@ async function init() {
   renderFilters();
   try {
     resources = isSupabaseReady() ? await loadSupabaseResources() : await loadJsonResources();
+    accessMap = await window.ATShop?.loadAccessMap?.() || new Set();
   } catch (error) {
     try {
       resources = await loadJsonResources();
@@ -130,4 +157,20 @@ async function init() {
 }
 resourceSearch?.addEventListener('input', () => { page = 1; render(); });
 typeFilter?.addEventListener('change', () => { page = 1; render(); });
+document.addEventListener('click', async event => {
+  const cartButton = event.target.closest('[data-shop-cart]');
+  const openButton = event.target.closest('[data-shop-open]');
+  const saveButton = event.target.closest('[data-shop-save]');
+  const key = cartButton?.dataset.shopCart || openButton?.dataset.shopOpen || saveButton?.dataset.shopSave;
+  if (!key) return;
+  const item = resources.find(entry => `${entry.item_kind}:${entry.item_id}` === key);
+  if (!item) return;
+  try {
+    if (cartButton) window.ATShop?.addToCart?.(item);
+    if (openButton) await window.ATShop?.openItem?.(item);
+    if (saveButton) await window.ATShop?.saveItem?.(item);
+  } catch (error) {
+    window.ATShop?.showToast?.(error.message);
+  }
+});
 init();

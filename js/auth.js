@@ -284,7 +284,61 @@ async function renderAccountPage() {
         <button class="btn btn-danger" type="button" data-user-logout>Logout</button>
       </div>
     </div>
+    <div class="account-commerce" data-account-commerce>
+      <div class="card empty-state"><span class="icon">DL</span><h3>Memuat akses...</h3><p>Sedang mengambil data order dan download.</p></div>
+    </div>
   `;
+  renderAccountCommerce();
+}
+
+async function renderAccountCommerce() {
+  const box = document.querySelector('[data-account-commerce]');
+  if (!box || !window.ATShop) return;
+  const data = await window.ATShop.loadAccountData();
+  const itemByKey = new Map((data.items || []).map(item => [`${item.item_kind}:${item.item_id}`, item]));
+  const accessHtml = (data.access || []).map(access => {
+    const item = itemByKey.get(`${access.item_kind}:${access.item_id}`);
+    return `
+      <article class="admin-item">
+        <div>
+          <div class="meta"><span class="badge tag-red">Akses Aktif</span><span class="badge">${window.ATShop.escape(access.item_kind)}</span></div>
+          <h3>${window.ATShop.escape(item?.title || access.item_id)}</h3>
+          <p>${window.ATShop.escape(item?.description || 'Akses premium sudah aktif.')}</p>
+        </div>
+        ${item ? `<button class="btn btn-primary" type="button" data-account-download="${window.ATShop.escape(access.item_kind)}:${window.ATShop.escape(access.item_id)}">Download</button>` : ''}
+      </article>
+    `;
+  }).join('') || '<div class="empty-state"><span class="icon">AK</span><h3>Belum ada akses premium</h3><p>Item premium akan muncul setelah pembayaran disetujui admin.</p></div>';
+  const ordersHtml = (data.orders || []).map(order => `
+    <article class="admin-item">
+      <div>
+        <div class="meta"><span class="badge">${window.ATShop.escape(order.status)}</span><span class="badge">${window.ATShop.money(order.total_amount)}</span></div>
+        <h3>${window.ATShop.escape(order.order_number)}</h3>
+        <p>${(order.order_items || []).map(item => window.ATShop.escape(item.title_snapshot)).join(', ') || 'Order premium'}</p>
+      </div>
+      <a class="btn btn-secondary" href="/pages/checkout/?order=${encodeURIComponent(order.id)}">Detail</a>
+    </article>
+  `).join('') || '<p class="lead">Belum ada order.</p>';
+  const savedHtml = (data.saved || []).map(saved => {
+    const item = itemByKey.get(`${saved.item_kind}:${saved.item_id}`);
+    return `<article class="admin-item"><div><h3>${window.ATShop.escape(item?.title || saved.item_id)}</h3><p>${window.ATShop.escape(saved.item_kind)}</p></div></article>`;
+  }).join('') || '<p class="lead">Belum ada item tersimpan.</p>';
+  const logsHtml = (data.downloads || []).map(log => `<li>${window.ATShop.escape(log.item_title || log.item_id)} <span>${new Date(log.created_at).toLocaleString('id-ID')}</span></li>`).join('') || '<li>Belum ada riwayat download.</li>';
+  box.innerHTML = `
+    <section class="account-grid">
+      <div class="card account-section"><h2>Akses Saya</h2><div class="admin-list">${accessHtml}</div></div>
+      <div class="card account-section"><h2>Order Saya</h2><div class="admin-list">${ordersHtml}</div></div>
+      <div class="card account-section"><h2>Disimpan</h2><div class="admin-list">${savedHtml}</div></div>
+      <div class="card account-section"><h2>Riwayat Download</h2><ul class="download-list">${logsHtml}</ul></div>
+    </section>
+  `;
+  box.querySelectorAll('[data-account-download]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const item = itemByKey.get(button.dataset.accountDownload);
+      if (!item) return;
+      try { await window.ATShop.openItem(item); } catch (error) { window.ATShop.showToast(error.message); }
+    });
+  });
 }
 
 document.addEventListener('click', event => {
