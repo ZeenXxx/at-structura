@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Resource Admin | AT STRUCTURA</title>
+<meta name="description" content="Halaman login admin resource AT STRUCTURA.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Arief Tediansyah">
+<meta name="theme-color" content="#0B2A5B">
+<link rel="canonical" href="https://at-structura.vercel.app/pages/resource-login/">
+<meta property="og:site_name" content="AT STRUCTURA">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Login Resource Admin | AT STRUCTURA">
+<meta property="og:description" content="Halaman login admin resource AT STRUCTURA.">
+<meta property="og:url" content="https://at-structura.vercel.app/pages/resource-login/">
+<meta property="og:image" content="https://at-structura.vercel.app/assets/logo/at-structura-logo.png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/navbar.css">
+</head>
+<body>
+<header class="navbar">
+  <a class="brand" href="/">
+    <img src="/assets/logo/at-structura-logo.png?v=2" alt="Logo AT STRUCTURA">
+    <span><strong>AT STRUCTURA</strong><small>Civil engineering platform</small></span>
+  </a>
+  <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
+  <nav class="nav-links" data-active="resources">
+    <a href="/" data-page="home">Home</a>
+    <a href="/pages/tools/" data-page="tools">Tools</a>
+    <a href="/pages/resources/" data-page="resources">Resources</a>
+    <a href="/pages/jasa/" data-page="jasa">Jasa</a>
+    <a href="/pages/portfolio/" data-page="portfolio">Portfolio</a>
+    <a href="/pages/about/" data-page="about">About</a>
+    <a href="/pages/contact/" data-page="contact">Contact</a>
+  </nav>
+</header>
+<main>
+  <section class="page-head">
+    <div class="container">
+      <span class="eyebrow">Admin Resource</span>
+      <h1>Login Admin</h1>
+      <p class="lead">Masuk dulu untuk mengelola upload, edit, dan hapus resource AT STRUCTURA.</p>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container admin-login-wrap">
+      <form class="card manager-auth admin-login-card" id="resourceLoginForm">
+        <span class="eyebrow">Supabase Auth</span>
+        <h2 class="title">Akses Resource Manager</h2>
+        <p class="lead">Gunakan akun admin yang sudah terdaftar di Supabase. Setelah berhasil, kamu akan diarahkan ke halaman kelola resource.</p>
+        <label>Email admin<input class="control" id="resourceAdminEmail" type="email" autocomplete="email" placeholder="arieftediansyah0@gmail.com" required></label>
+        <label>Password<input class="control" id="resourceAdminPassword" type="password" autocomplete="current-password" placeholder="Password akun admin" required></label>
+        <div class="manager-actions">
+          <button class="btn btn-primary" type="submit">Login</button>
+          <a class="btn btn-secondary" href="/pages/resources/">Kembali</a>
+        </div>
+        <div class="page-note manager-status" id="resourceLoginStatus">Mengecek sesi admin...</div>
+      </form>
+    </div>
+  </section>
+</main>
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div>
+      <a class="footer-brand" href="/"><img src="/assets/logo/at-structura-logo.png?v=2" alt="Logo AT STRUCTURA"><span>AT STRUCTURA</span></a>
+      <p>Platform pribadi Arief Tediansyah untuk tools, resources, portfolio, dan layanan pendukung Teknik Sipil.</p>
+    </div>
+    <div><h3>Mulai Cepat</h3><a href="/pages/resources/">Resources</a><a href="/pages/tools/">Tools</a></div>
+    <div><h3>Admin</h3><a href="/pages/resource-login/">Login Resource</a></div>
+    <div><h3>Kontak</h3><p>WhatsApp: 081220032582<br>Email: arieftediansyah0@gmail.com</p></div>
+  </div>
+  <div class="footer-bottom"><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Resource admin access.</span></div>
+</footer>
+<script src="/js/navbar.js"></script>
+<script src="/js/supabase-config.js?v=4"></script>
+<script src="/js/resource-login.js?v=4"></script>
+</body>
+</html>

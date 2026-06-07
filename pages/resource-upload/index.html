@@ -52,28 +52,26 @@
     <div class="container">
       <span class="eyebrow">Supabase + MEGA link</span>
       <h1>Resource Manager</h1>
-      <p class="lead">Upload file besar secara manual ke MEGA, lalu tempel link-nya di sini. Metadata resource akan disimpan ke Supabase agar tampil untuk semua pengunjung web.</p>
+      <p class="lead">Kelola metadata resource AT STRUCTURA: tambah link MEGA, edit data, ubah status, atau hapus resource dari Supabase.</p>
     </div>
   </section>
   <section class="section">
     <div class="container">
-      <div class="engineering-disclaimer">Opsi 1 aktif: file besar tetap di MEGA, sedangkan Supabase hanya menyimpan metadata dan link. Untuk menyimpan ke Supabase, gunakan akun admin dan RLS dari file <code>sql/supabase-resources.sql</code>.</div>
-      <div class="card manager-auth">
-        <span class="eyebrow">Admin</span>
-        <h2 class="title">Login Supabase</h2>
-        <p class="lead">Gunakan akun admin Supabase. User umum tetap hanya bisa membaca resource yang statusnya Tersedia atau Link Eksternal.</p>
-        <form id="resourceAuthForm" class="manager-auth-form">
-          <label>Email admin<input class="control" id="resourceAdminEmail" type="email" autocomplete="email" placeholder="email admin Supabase"></label>
-          <label>Password<input class="control" id="resourceAdminPassword" type="password" autocomplete="current-password" placeholder="password akun admin"></label>
-          <div class="manager-actions">
-            <button class="btn btn-primary" type="submit">Login Supabase</button>
-            <button class="btn btn-secondary" type="button" id="resourceLogout">Logout</button>
-          </div>
-        </form>
-        <div class="page-note manager-status" id="resourceAuthStatus">Mengecek konfigurasi Supabase...</div>
+      <div class="engineering-disclaimer">Opsi 1 aktif: file besar tetap di MEGA, sedangkan Supabase hanya menyimpan metadata dan link. Halaman ini khusus admin dan akan mengarahkan ke halaman login jika sesi belum aktif.</div>
+      <div class="card manager-session">
+        <div>
+          <span class="eyebrow">Admin aktif</span>
+          <h2 class="title">Resource Control</h2>
+          <p class="lead" id="managerSessionStatus">Mengecek sesi admin...</p>
+        </div>
+        <div class="actions">
+          <a class="btn btn-secondary" href="/pages/resources/" target="_blank" rel="noopener">Lihat Resources</a>
+          <button class="btn btn-secondary" type="button" id="resourceLogout">Logout</button>
+        </div>
       </div>
       <div class="manager-layout">
         <form class="card manager-form" id="resourceManagerForm">
+          <input type="hidden" name="id">
           <label>Judul<input class="control" name="title" required placeholder="Contoh: SNI 2847:2019 Persyaratan Beton Struktural"></label>
           <label>Kategori<select class="control" name="category">
             <option>SNI</option>
@@ -99,21 +97,30 @@
           <label>Sumber<select class="control" name="source_type"><option value="mega_link">Link MEGA</option><option value="external_link">Link Eksternal</option><option value="official_link">Link Resmi</option></select></label><label>Link Resource<input class="control" name="link" value="#" placeholder="https://mega.nz/file/... atau URL legal/resmi"></label><label>Nama File<input class="control" name="file_name" placeholder="Contoh: template-rab.xlsx"></label><label>Ukuran File (byte)<input class="control" name="file_size" type="number" min="0" placeholder="Opsional"></label><label>MIME Type<input class="control" name="mime_type" placeholder="application/pdf, application/zip, dll"></label>
           <label>Deskripsi<textarea class="control textarea" name="description" required placeholder="Ringkas fungsi resource, sumber, dan catatan legalitas."></textarea></label>
           <div class="manager-actions">
-            <button class="btn btn-primary" type="submit" id="saveResourceSupabase">Simpan ke Supabase</button><button class="btn btn-secondary" type="submit" id="saveResourceLocal">Tambah Draft Lokal</button>
-            <button class="btn btn-secondary" type="button" id="resetManagerForm">Reset Form</button>
-            <a class="btn btn-secondary" href="/pages/resources/" target="_blank" rel="noopener">Lihat Resources</a>
+            <button class="btn btn-primary" type="submit" id="saveResourceSupabase">Simpan Resource</button>
+            <button class="btn btn-secondary" type="button" id="resetManagerForm">Buat Baru</button>
           </div>
         </form>
         <section class="card manager-output">
-          <span class="eyebrow">Output JSON</span>
-          <h2 class="title">resources.json</h2>
-          <p class="lead">Preview data bisa diambil dari Supabase atau draft lokal. Export JSON tetap disediakan sebagai backup.</p>
+          <span class="eyebrow">Data Supabase</span>
+          <h2 class="title">Daftar Resource</h2>
+          <p class="lead">Pilih Edit untuk memuat data ke form. Pilih Hapus untuk menghapus resource dari Supabase.</p>
+          <div class="filter-bar manager-filter">
+            <input class="control" id="managerSearch" type="search" placeholder="Cari judul, kategori, status...">
+            <select class="control" id="managerStatusFilter">
+              <option value="All">Semua status</option>
+              <option value="Tersedia">Tersedia</option>
+              <option value="Link Eksternal">Link Eksternal</option>
+              <option value="Coming Soon">Coming Soon</option>
+              <option value="Draft">Draft</option>
+              <option value="Archived">Archived</option>
+            </select>
+          </div>
           <textarea class="control" id="resourceJsonOutput" spellcheck="false"></textarea>
           <div class="actions" style="margin-top:14px">
             <button class="btn btn-primary" type="button" id="copyResourceJson">Copy JSON</button>
             <button class="btn btn-secondary" type="button" id="downloadResourceJson">Download JSON</button>
-            <button class="btn btn-secondary" type="button" id="importCurrentResources">Muat JSON Lokal</button><button class="btn btn-secondary" type="button" id="loadSupabaseResources">Muat Supabase</button>
-            <button class="btn btn-secondary" type="button" id="clearLocalResources">Hapus Draft Lokal</button>
+            <button class="btn btn-secondary" type="button" id="loadSupabaseResources">Muat Ulang</button>
           </div>
           <div class="manager-preview" id="resourceManagerPreview"></div>
         </section>
@@ -128,7 +135,7 @@
       <p>Platform pribadi Arief Tediansyah untuk tools, resources, portfolio, dan layanan pendukung Teknik Sipil.</p>
     </div>
     <div><h3>Mulai Cepat</h3><a href="/pages/resources/">Resources</a><a href="/pages/tools/">Tools</a></div>
-    <div><h3>Manager</h3><a href="/pages/resource-upload/">Resource Manager</a></div>
+    <div><h3>Admin</h3><a href="/pages/resource-login/">Login Resource</a></div>
     <div><h3>Kontak</h3><p>WhatsApp: 081220032582<br>Email: arieftediansyah0@gmail.com</p></div>
   </div>
   <div class="footer-bottom"><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Local resource preparation page.</span></div>
@@ -136,7 +143,7 @@
 <div class="toast" id="toast"></div>
 <script src="/js/navbar.js"></script>
 <script src="/js/supabase-config.js?v=3"></script>
-<script src="/js/resource-upload.js?v=3"></script>
+<script src="/js/resource-upload.js?v=4"></script>
 </body>
 </html>
 

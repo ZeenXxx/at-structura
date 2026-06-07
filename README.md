@@ -13,7 +13,7 @@ AT STRUCTURA adalah web pribadi Arief Tediansyah untuk belajar, tools, resources
 ## Struktur Folder
 
 - `index.html` halaman utama.
-- `pages/` halaman About, Belajar, Tools, Resources, Jasa, Portfolio, dan Contact.
+- `pages/` halaman About, Tools, Resources, Jasa, Portfolio, Contact, dan halaman admin resource tersembunyi.
 - `tools/` halaman tools mandiri hasil adaptasi.
 - `css/` styling global, navbar, home, pages, dan tools.
 - `js/` script interaksi lokal, resources, portfolio, kontak, dan tools.
@@ -38,8 +38,8 @@ AT STRUCTURA adalah web pribadi Arief Tediansyah untuk belajar, tools, resources
 ## Catatan
 
 Tahap ini adalah project web lokal statis. Tools bersifat bantuan awal dan hasilnya wajib diverifikasi kembali berdasarkan standar terbaru, asumsi desain, kombinasi beban, data lapangan, serta pertimbangan engineer.
-## Resource Manager Lokal
+## Resource Manager
 
-Halaman `pages/resource-upload.html` adalah pengelola resources lokal yang tidak dimasukkan ke navbar umum. Halaman ini bisa menambah resource, preview, copy JSON, dan download `resources.json`.
+Halaman `pages/resource-login/` adalah pintu login admin resource. Setelah login, admin masuk ke `pages/resource-upload/` untuk menambah, mengedit, menghapus, preview, copy JSON, dan download data resource.
 
-Catatan: halaman tersembunyi bukan keamanan sungguhan jika web dipublikasikan. Untuk produksi, gunakan autentikasi dan penyimpanan server.
+Data resource disimpan di Supabase, sedangkan file besar disimpan di MEGA melalui link. Halaman admin diberi `noindex`, tetapi keamanan utamanya tetap berasal dari Supabase Auth dan RLS.
