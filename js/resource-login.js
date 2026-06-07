@@ -1,5 +1,5 @@
 const sessionKey = 'at_structura_supabase_session';
-const managerPath = '/pages/resource-upload/';
+const managerPath = '/pages/admin/';
 const form = document.getElementById('resourceLoginForm');
 const email = document.getElementById('resourceAdminEmail');
 const password = document.getElementById('resourceAdminPassword');
@@ -46,7 +46,7 @@ async function validateExistingSession() {
   }
   const session = getSession();
   if (!session?.access_token) {
-    setStatus('Login dulu untuk masuk ke Resource Manager.');
+    setStatus('Login dulu untuk masuk ke Admin Dashboard.');
     return;
   }
   const expiresAt = Number(session.expires_at || 0);
@@ -58,7 +58,7 @@ async function validateExistingSession() {
       return;
     }
   }
-  setStatus('Sesi admin masih aktif. Mengarahkan ke Resource Manager...', 'status-online');
+  setStatus('Sesi admin masih aktif. Mengarahkan ke Admin Dashboard...', 'status-online');
   window.location.replace(nextPath());
 }
 async function loginAdmin() {
@@ -78,7 +78,7 @@ form?.addEventListener('submit', async event => {
   try {
     await loginAdmin();
     password.value = '';
-    setStatus('Login berhasil. Mengarahkan ke Resource Manager...', 'status-online');
+    setStatus('Login berhasil. Mengarahkan ke Admin Dashboard...', 'status-online');
     window.location.href = nextPath();
   } catch (error) {
     setStatus(error.message);

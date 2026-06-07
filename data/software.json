@@ -1,0 +1,46 @@
+[
+  {
+    "title": "ETABS Learning Notes",
+    "category": "Analisis Struktur",
+    "type": "Software",
+    "platform": "Windows",
+    "license": "Catatan/Referensi",
+    "author": "Arief Tediansyah",
+    "description": "Catatan pemodelan struktur gedung, load pattern, load combination, dan interpretasi output.",
+    "status": "Coming Soon",
+    "link": "#"
+  },
+  {
+    "title": "SAP2000 Truss and Beam Notes",
+    "category": "Analisis Struktur",
+    "type": "Software",
+    "platform": "Windows",
+    "license": "Catatan/Referensi",
+    "author": "Arief Tediansyah",
+    "description": "Catatan pemodelan rangka batang dan balok sederhana menggunakan SAP2000.",
+    "status": "Coming Soon",
+    "link": "#"
+  },
+  {
+    "title": "AutoCAD Drafting Workflow",
+    "category": "CAD & Drafting",
+    "type": "Software",
+    "platform": "Windows",
+    "license": "Catatan/Referensi",
+    "author": "Arief Tediansyah",
+    "description": "Catatan layer, lineweight, layout, plotting, dan kerapian output gambar teknik.",
+    "status": "Coming Soon",
+    "link": "#"
+  },
+  {
+    "title": "Civil 3D Alignment dan Surface",
+    "category": "Transportasi & Survey",
+    "type": "Software",
+    "platform": "Windows",
+    "license": "Catatan/Referensi",
+    "author": "Arief Tediansyah",
+    "description": "Catatan workflow surface, alignment, corridor, dan export data titik.",
+    "status": "Coming Soon",
+    "link": "#"
+  }
+]

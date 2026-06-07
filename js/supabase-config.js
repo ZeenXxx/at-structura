@@ -2,5 +2,6 @@
   enabled: true,
   url: 'https://xpruvhfuyhnhdvlwiyye.supabase.co',
   anonKey: 'sb_publishable_XABzMN4biGWZ2iCdzCoM8g_RJlUtSwj',
-  resourcesTable: 'resources'
+  resourcesTable: 'resources',
+  softwareTable: 'software_items'
 };

@@ -6,7 +6,8 @@ AT STRUCTURA adalah web pribadi Arief Tediansyah untuk belajar, tools, resources
 
 - Tutorial dan learning path Teknik Sipil.
 - Tools perhitungan dan pengelolaan file untuk bantuan awal.
-- Resources SNI, regulasi, software, template, modul, video, dan website rujukan.
+- Resources SNI, regulasi, template, modul, video, dan website rujukan.
+- Halaman Software Teknik Sipil yang terpisah dari Resources.
 - Portfolio project pribadi dan dokumentasi proses.
 - Layanan tutor, drafting, asistensi software, template, konsultasi perhitungan dasar, dan web tools Teknik Sipil.
 
@@ -38,8 +39,8 @@ AT STRUCTURA adalah web pribadi Arief Tediansyah untuk belajar, tools, resources
 ## Catatan
 
 Tahap ini adalah project web lokal statis. Tools bersifat bantuan awal dan hasilnya wajib diverifikasi kembali berdasarkan standar terbaru, asumsi desain, kombinasi beban, data lapangan, serta pertimbangan engineer.
-## Resource Manager
+## Admin Dashboard
 
-Halaman `pages/resource-login/` adalah pintu login admin resource. Setelah login, admin masuk ke `pages/resource-upload/` untuk menambah, mengedit, menghapus, preview, copy JSON, dan download data resource.
+Halaman `pages/resource-login/` adalah pintu login admin. Setelah login, admin masuk ke `pages/admin/` untuk menambah, mengedit, dan menghapus Resources maupun Software.
 
-Data resource disimpan di Supabase, sedangkan file besar disimpan di MEGA melalui link. Halaman admin diberi `noindex`, tetapi keamanan utamanya tetap berasal dari Supabase Auth dan RLS.
+Data resources disimpan di tabel Supabase `resources`, software disimpan di tabel `software_items`, sedangkan file besar tetap disimpan di MEGA melalui link. Halaman admin diberi `noindex`, tetapi keamanan utamanya tetap berasal dari Supabase Auth dan RLS.

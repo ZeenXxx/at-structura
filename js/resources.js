@@ -7,7 +7,7 @@ let resources = [];
 let current = 'All';
 let page = 1;
 const perPage = 9;
-const categories = ['All', 'SNI', 'Regulasi', 'Software', 'Template', 'Modul', 'Buku & Referensi', 'Video Tutorial', 'Website Rujukan'];
+const categories = ['All', 'SNI', 'Regulasi', 'Template', 'Modul', 'Buku & Referensi', 'Video Tutorial', 'Website Rujukan'];
 const escapeText = value => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const statusTone = status => String(status || '').toLowerCase().includes('tersedia') ? 'tag-red' : '';
 const supabaseConfig = () => window.AT_SUPABASE || {};
@@ -73,10 +73,10 @@ function render() {
 }
 async function loadSupabaseResources() {
   const table = supabaseConfig().resourcesTable || 'resources';
-  const query = 'select=id,title,category,type,author,description,status,link,mega_url,external_url,published_at,created_at&status=in.(Tersedia,Link%20Eksternal,Coming%20Soon)&order=published_at.desc.nullslast,created_at.desc';
+  const query = 'select=id,title,category,type,author,description,status,link,mega_url,external_url,published_at,created_at&status=in.(Tersedia,Link%20Eksternal,Coming%20Soon)&category=neq.Software&order=published_at.desc.nullslast,created_at.desc';
   const response = await fetch(supabaseUrl(`/rest/v1/${table}?${query}`), { headers: supabaseHeaders() });
   if (!response.ok) throw new Error(`Supabase resources gagal dimuat (${response.status}).`);
-  return (await response.json()).map(normalizeResource);
+  return (await response.json()).filter(item => item.category !== 'Software').map(normalizeResource);
 }
 async function loadJsonResources() {
   const response = await fetch('/data/resources.json');

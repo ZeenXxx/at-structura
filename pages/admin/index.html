@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | AT STRUCTURA</title>
+<meta name="description" content="Dashboard admin AT STRUCTURA untuk mengelola resources dan software.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Arief Tediansyah">
+<meta name="theme-color" content="#0B2A5B">
+<link rel="canonical" href="https://at-structura.vercel.app/pages/admin/">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="admin-body">
+<main class="admin-shell">
+  <aside class="admin-sidebar">
+    <a class="admin-brand" href="/">
+      <img src="/assets/logo/at-structura-logo.png?v=2" alt="Logo AT STRUCTURA">
+      <span><strong>AT STRUCTURA</strong><small>Admin Dashboard</small></span>
+    </a>
+    <nav class="admin-nav" aria-label="Admin navigation">
+      <button class="active" type="button" data-admin-panel="resources">Resources</button>
+      <button type="button" data-admin-panel="software">Software</button>
+      <a href="/pages/resources/" target="_blank" rel="noopener">Lihat Resources</a>
+      <a href="/pages/software/" target="_blank" rel="noopener">Lihat Software</a>
+      <a href="/" target="_blank" rel="noopener">Lihat Website</a>
+    </nav>
+    <button class="btn btn-secondary admin-logout" type="button" id="adminLogout">Logout</button>
+  </aside>
+  <section class="admin-main">
+    <header class="admin-topbar">
+      <div>
+        <span class="eyebrow">Admin</span>
+        <h1>Kelola Konten</h1>
+        <p id="adminSessionStatus">Mengecek sesi admin...</p>
+      </div>
+      <div class="admin-stats">
+        <div><strong id="resourceCount">0</strong><span>Resources</span></div>
+        <div><strong id="softwareCount">0</strong><span>Software</span></div>
+      </div>
+    </header>
+
+    <section class="admin-panel active" id="panelResources">
+      <div class="admin-panel-head">
+        <div>
+          <h2>Resources</h2>
+          <p>SNI, regulasi, template, modul, buku referensi, video tutorial, dan website rujukan.</p>
+        </div>
+        <button class="btn btn-secondary" type="button" id="newResource">Resource Baru</button>
+      </div>
+      <div class="admin-grid">
+        <form class="card admin-form" id="resourceAdminForm">
+          <input type="hidden" name="id">
+          <label>Judul<input class="control" name="title" required placeholder="Judul resource"></label>
+          <label>Kategori<select class="control" name="category">
+            <option>SNI</option>
+            <option>Regulasi</option>
+            <option>Template</option>
+            <option>Modul</option>
+            <option>Buku & Referensi</option>
+            <option>Video Tutorial</option>
+            <option>Website Rujukan</option>
+          </select></label>
+          <label>Tipe<select class="control" name="type">
+            <option>PDF</option>
+            <option>Link</option>
+            <option>Template</option>
+            <option>Video</option>
+          </select></label>
+          <label>Author<input class="control" name="author" value="AT STRUCTURA"></label>
+          <label>Status<select class="control" name="status">
+            <option value="Tersedia" selected>Tersedia</option>
+            <option value="Link Eksternal">Link Eksternal</option>
+            <option value="Coming Soon">Coming Soon</option>
+            <option value="Draft">Draft</option>
+            <option value="Archived">Archived</option>
+          </select></label>
+          <label>Sumber<select class="control" name="source_type">
+            <option value="mega_link">Link MEGA</option>
+            <option value="external_link">Link Eksternal</option>
+            <option value="official_link">Link Resmi</option>
+          </select></label>
+          <label>Link Resource<input class="control" name="link" value="#" placeholder="https://mega.nz/file/... atau URL legal/resmi"></label>
+          <label>Nama File<input class="control" name="file_name" placeholder="Opsional"></label>
+          <label>Ukuran File (byte)<input class="control" name="file_size" type="number" min="0" placeholder="Opsional"></label>
+          <label>MIME Type<input class="control" name="mime_type" placeholder="application/pdf, application/zip"></label>
+          <label>Deskripsi<textarea class="control textarea" name="description" required placeholder="Deskripsi resource"></textarea></label>
+          <div class="manager-actions">
+            <button class="btn btn-primary" type="submit" id="saveResourceAdmin">Simpan Resource</button>
+            <button class="btn btn-secondary" type="button" id="resetResourceAdmin">Reset</button>
+          </div>
+        </form>
+        <section class="card admin-list-card">
+          <div class="filter-bar manager-filter">
+            <input class="control" id="resourceAdminSearch" type="search" placeholder="Cari resource...">
+            <select class="control" id="resourceAdminStatus">
+              <option value="All">Semua status</option>
+              <option value="Tersedia">Tersedia</option>
+              <option value="Link Eksternal">Link Eksternal</option>
+              <option value="Coming Soon">Coming Soon</option>
+              <option value="Draft">Draft</option>
+              <option value="Archived">Archived</option>
+            </select>
+          </div>
+          <div class="admin-list" id="resourceAdminList"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="admin-panel" id="panelSoftware">
+      <div class="admin-panel-head">
+        <div>
+          <h2>Software</h2>
+          <p>Katalog software Teknik Sipil, catatan workflow, link resmi, atau link MEGA.</p>
+        </div>
+        <button class="btn btn-secondary" type="button" id="newSoftware">Software Baru</button>
+      </div>
+      <div class="admin-grid">
+        <form class="card admin-form" id="softwareAdminForm">
+          <input type="hidden" name="id">
+          <label>Nama Software<input class="control" name="title" required placeholder="Contoh: ETABS Learning Notes"></label>
+          <label>Kategori<select class="control" name="category">
+            <option>Analisis Struktur</option>
+            <option>CAD & Drafting</option>
+            <option>BIM</option>
+            <option>Geoteknik</option>
+            <option>Hidrologi</option>
+            <option>Transportasi & Survey</option>
+            <option>Estimasi Biaya</option>
+            <option>Utility</option>
+          </select></label>
+          <label>Tipe<select class="control" name="type">
+            <option>Software</option>
+            <option>Plugin</option>
+            <option>Template</option>
+            <option>Workflow</option>
+            <option>Video</option>
+          </select></label>
+          <label>Platform<select class="control" name="platform">
+            <option>Windows</option>
+            <option>Web</option>
+            <option>Android</option>
+            <option>iOS</option>
+            <option>Cross-platform</option>
+          </select></label>
+          <label>Lisensi/Keterangan<input class="control" name="license" value="Catatan/Referensi"></label>
+          <label>Versi<input class="control" name="version" placeholder="Opsional"></label>
+          <label>Author<input class="control" name="author" value="AT STRUCTURA"></label>
+          <label>Status<select class="control" name="status">
+            <option value="Tersedia" selected>Tersedia</option>
+            <option value="Link Eksternal">Link Eksternal</option>
+            <option value="Coming Soon">Coming Soon</option>
+            <option value="Draft">Draft</option>
+            <option value="Archived">Archived</option>
+          </select></label>
+          <label>Sumber<select class="control" name="source_type">
+            <option value="official_link">Link Resmi</option>
+            <option value="mega_link">Link MEGA</option>
+            <option value="external_link">Link Eksternal</option>
+          </select></label>
+          <label>Link Software<input class="control" name="link" value="#" placeholder="URL resmi, MEGA, atau referensi legal"></label>
+          <label>Nama File<input class="control" name="file_name" placeholder="Opsional"></label>
+          <label>Ukuran File (byte)<input class="control" name="file_size" type="number" min="0" placeholder="Opsional"></label>
+          <label>MIME Type<input class="control" name="mime_type" placeholder="application/zip, application/pdf"></label>
+          <label>Deskripsi<textarea class="control textarea" name="description" required placeholder="Deskripsi software atau catatan workflow"></textarea></label>
+          <div class="manager-actions">
+            <button class="btn btn-primary" type="submit" id="saveSoftwareAdmin">Simpan Software</button>
+            <button class="btn btn-secondary" type="button" id="resetSoftwareAdmin">Reset</button>
+          </div>
+        </form>
+        <section class="card admin-list-card">
+          <div class="filter-bar manager-filter">
+            <input class="control" id="softwareAdminSearch" type="search" placeholder="Cari software...">
+            <select class="control" id="softwareAdminStatus">
+              <option value="All">Semua status</option>
+              <option value="Tersedia">Tersedia</option>
+              <option value="Link Eksternal">Link Eksternal</option>
+              <option value="Coming Soon">Coming Soon</option>
+              <option value="Draft">Draft</option>
+              <option value="Archived">Archived</option>
+            </select>
+          </div>
+          <div class="admin-list" id="softwareAdminList"></div>
+        </section>
+      </div>
+    </section>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script src="/js/supabase-config.js?v=5"></script>
+<script src="/js/admin.js?v=1"></script>
+</body>
+</html>

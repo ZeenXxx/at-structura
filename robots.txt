@@ -2,5 +2,6 @@
 Allow: /
 Disallow: /pages/resource-upload/
 Disallow: /pages/resource-login/
+Disallow: /pages/admin/
 Sitemap: https://at-structura.vercel.app/sitemap.xml
 
