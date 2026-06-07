@@ -33,11 +33,43 @@ const authHeaders = token => ({
   'Content-Type': 'application/json',
   Accept: 'application/json'
 });
+const visibleStatuses = ['Tersedia', 'Link Eksternal', 'Coming Soon'];
 let resources = [];
+async function refreshSession(session) {
+  if (!session?.refresh_token) return null;
+  const response = await fetch(apiUrl('/auth/v1/token?grant_type=refresh_token'), {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ refresh_token: session.refresh_token })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) return null;
+  setSession(payload);
+  return payload;
+}
+async function ensureSession() {
+  const session = getSession();
+  if (!session?.access_token) return null;
+  const expiresAt = Number(session.expires_at || 0);
+  const shouldRefresh = expiresAt && expiresAt * 1000 < Date.now() + 60000;
+  if (!shouldRefresh) return session;
+  const refreshed = await refreshSession(session);
+  if (refreshed) return refreshed;
+  clearSession();
+  renderStatus();
+  return null;
+}
 function loadLocal() {
   try { resources = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch { resources = []; }
 }
 function saveLocal() { localStorage.setItem(storageKey, JSON.stringify(resources)); }
+function resetResourceForm() {
+  form.reset();
+  form.elements.author.value = 'AT STRUCTURA';
+  form.elements.link.value = '#';
+  form.elements.status.value = 'Tersedia';
+  form.elements.source_type.value = 'mega_link';
+}
 function renderStatus() {
   if (!authStatus) return;
   if (!isSupabaseReady()) {
@@ -112,12 +144,12 @@ async function supabaseLogin(email, password) {
 }
 async function saveToSupabase(item) {
   if (!isSupabaseReady()) throw new Error('Supabase belum dikonfigurasi.');
-  const session = getSession();
+  const session = await ensureSession();
   if (!session?.access_token) throw new Error('Login admin Supabase dulu.');
   const table = cfg().resourcesTable || 'resources';
-  const response = await fetch(apiUrl(`/rest/v1/${table}`), {
+  const response = await fetch(apiUrl(`/rest/v1/${table}?on_conflict=slug`), {
     method: 'POST',
-    headers: { ...authHeaders(session.access_token), Prefer: 'return=representation' },
+    headers: { ...authHeaders(session.access_token), Prefer: 'resolution=merge-duplicates,return=representation' },
     body: JSON.stringify(item)
   });
   const payload = await response.json().catch(() => ({}));
@@ -126,7 +158,7 @@ async function saveToSupabase(item) {
 }
 async function loadSupabaseResources() {
   if (!isSupabaseReady()) throw new Error('Supabase belum dikonfigurasi.');
-  const session = getSession();
+  const session = await ensureSession();
   const token = session?.access_token || cfg().anonKey;
   const table = cfg().resourcesTable || 'resources';
   const response = await fetch(apiUrl(`/rest/v1/${table}?select=*&order=created_at.desc`), { headers: authHeaders(token) });
@@ -144,7 +176,10 @@ form?.addEventListener('submit', async event => {
   if (action === 'saveResourceSupabase') {
     try {
       await saveToSupabase(item);
-      showToast('Metadata resource disimpan ke Supabase.');
+      await loadSupabaseResources();
+      showToast(visibleStatuses.includes(item.status) ? 'Resource sudah tampil di halaman Resources.' : 'Resource tersimpan sebagai Draft dan belum tampil publik.');
+      resetResourceForm();
+      return;
     } catch (error) {
       showToast(error.message);
       return;
@@ -153,11 +188,7 @@ form?.addEventListener('submit', async event => {
   resources.push(item);
   saveLocal();
   render();
-  form.reset();
-  form.elements.author.value = 'AT STRUCTURA';
-  form.elements.link.value = '#';
-  form.elements.status.value = 'Draft';
-  form.elements.source_type.value = 'mega_link';
+  resetResourceForm();
 });
 authForm?.addEventListener('submit', async event => {
   event.preventDefault();
@@ -175,11 +206,7 @@ logoutBtn?.addEventListener('click', () => {
   showToast('Logout Supabase berhasil.');
 });
 document.getElementById('resetManagerForm')?.addEventListener('click', () => {
-  form.reset();
-  form.elements.author.value = 'AT STRUCTURA';
-  form.elements.link.value = '#';
-  form.elements.status.value = 'Draft';
-  form.elements.source_type.value = 'mega_link';
+  resetResourceForm();
 });
 document.getElementById('copyResourceJson')?.addEventListener('click', async () => {
   await navigator.clipboard.writeText(output.value);

@@ -94,13 +94,14 @@
           </select></label>
           <label>Author<input class="control" name="author" value="AT STRUCTURA"></label>
           <label>Status<select class="control" name="status">
-            <option>Draft</option><option>Tersedia</option><option>Link Eksternal</option><option>Coming Soon</option><option>Archived</option>
+            <option value="Tersedia" selected>Tersedia</option><option value="Link Eksternal">Link Eksternal</option><option value="Coming Soon">Coming Soon</option><option value="Draft">Draft</option><option value="Archived">Archived</option>
           </select></label>
           <label>Sumber<select class="control" name="source_type"><option value="mega_link">Link MEGA</option><option value="external_link">Link Eksternal</option><option value="official_link">Link Resmi</option></select></label><label>Link Resource<input class="control" name="link" value="#" placeholder="https://mega.nz/file/... atau URL legal/resmi"></label><label>Nama File<input class="control" name="file_name" placeholder="Contoh: template-rab.xlsx"></label><label>Ukuran File (byte)<input class="control" name="file_size" type="number" min="0" placeholder="Opsional"></label><label>MIME Type<input class="control" name="mime_type" placeholder="application/pdf, application/zip, dll"></label>
           <label>Deskripsi<textarea class="control textarea" name="description" required placeholder="Ringkas fungsi resource, sumber, dan catatan legalitas."></textarea></label>
           <div class="manager-actions">
             <button class="btn btn-primary" type="submit" id="saveResourceSupabase">Simpan ke Supabase</button><button class="btn btn-secondary" type="submit" id="saveResourceLocal">Tambah Draft Lokal</button>
             <button class="btn btn-secondary" type="button" id="resetManagerForm">Reset Form</button>
+            <a class="btn btn-secondary" href="/pages/resources/" target="_blank" rel="noopener">Lihat Resources</a>
           </div>
         </form>
         <section class="card manager-output">
@@ -134,8 +135,8 @@
 </footer>
 <div class="toast" id="toast"></div>
 <script src="/js/navbar.js"></script>
-<script src="/js/supabase-config.js"></script>
-<script src="/js/resource-upload.js"></script>
+<script src="/js/supabase-config.js?v=3"></script>
+<script src="/js/resource-upload.js?v=3"></script>
 </body>
 </html>
 

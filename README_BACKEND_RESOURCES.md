@@ -9,8 +9,11 @@ Opsi ini memakai MEGA untuk menyimpan file besar dan Supabase untuk menyimpan me
 3. Buka `http://localhost:5500/pages/resource-upload/` saat menjalankan lokal.
 4. Login memakai akun admin Supabase.
 5. Isi metadata resource dan tempel link MEGA.
-6. Klik `Simpan ke Supabase`.
-7. Halaman `http://localhost:5500/pages/resources/` membaca data dari Supabase.
+6. Pastikan status `Tersedia`, `Link Eksternal`, atau `Coming Soon` jika ingin langsung tampil di halaman Resources.
+7. Klik `Simpan ke Supabase`.
+8. Halaman `http://localhost:5500/pages/resources/` membaca data dari Supabase.
+
+Jika memakai judul yang sama, data resource akan diperbarui berdasarkan `slug`, bukan dibuat ganda.
 
 ## Status Setup Saat Ini
 
