@@ -76,6 +76,16 @@ function authStatus(message, tone = '') {
   box.className = `page-note manager-status ${tone}`.trim();
 }
 const isEmailNotVerifiedError = message => /confirm|verified|verifikasi|not confirmed/i.test(String(message || ''));
+const normalizeAuthError = message => {
+  const text = String(message || 'Terjadi kesalahan autentikasi.');
+  if (/sending confirmation email|error sending|email address not authorized|smtp|mailer/i.test(text)) {
+    return 'Email verifikasi gagal dikirim. Supabase SMTP belum siap untuk email publik. Gunakan email yang terdaftar sebagai anggota team Supabase untuk tes, atau aktifkan Custom SMTP di Supabase Authentication > SMTP.';
+  }
+  if (/rate limit|too many/i.test(text)) {
+    return 'Pengiriman email terlalu sering. Tunggu beberapa menit atau naikkan rate limit setelah Custom SMTP aktif.';
+  }
+  return text;
+};
 
 async function signInUser(email, password) {
   const response = await fetch(authApiUrl('/auth/v1/token?grant_type=password'), {
@@ -84,7 +94,7 @@ async function signInUser(email, password) {
     body: JSON.stringify({ email, password })
   });
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error_description || payload.msg || payload.message || 'Login gagal. Periksa email dan password.');
+  if (!response.ok) throw new Error(normalizeAuthError(payload.error_description || payload.msg || payload.message || 'Login gagal. Periksa email dan password.'));
   setUserSession(payload);
   return payload;
 }
@@ -105,7 +115,7 @@ async function signUpUser({ name, email, phone, institution, password }) {
     })
   });
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error_description || payload.msg || payload.message || 'Daftar akun gagal.');
+  if (!response.ok) throw new Error(normalizeAuthError(payload.error_description || payload.msg || payload.message || 'Daftar akun gagal.'));
   return payload;
 }
 
@@ -116,7 +126,7 @@ async function verifyEmailCode(email, token) {
     body: JSON.stringify({ email, token, type: 'email' })
   });
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error_description || payload.msg || payload.message || 'Kode verifikasi tidak valid atau sudah kedaluwarsa.');
+  if (!response.ok) throw new Error(normalizeAuthError(payload.error_description || payload.msg || payload.message || 'Kode verifikasi tidak valid atau sudah kedaluwarsa.'));
   if (payload.access_token) setUserSession(payload);
   return payload;
 }
@@ -128,7 +138,7 @@ async function resendVerificationEmail(email) {
     body: JSON.stringify({ type: 'signup', email })
   });
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.error_description || payload.msg || payload.message || 'Gagal mengirim ulang kode verifikasi.');
+  if (!response.ok) throw new Error(normalizeAuthError(payload.error_description || payload.msg || payload.message || 'Gagal mengirim ulang kode verifikasi.'));
   return payload;
 }
 
