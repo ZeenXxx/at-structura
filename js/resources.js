@@ -10,6 +10,26 @@ const perPage = 9;
 const categories = ['All', 'SNI', 'Regulasi', 'Software', 'Template', 'Modul', 'Buku & Referensi', 'Video Tutorial', 'Website Rujukan'];
 const escapeText = value => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const statusTone = status => String(status || '').toLowerCase().includes('tersedia') ? 'tag-red' : '';
+const supabaseConfig = () => window.AT_SUPABASE || {};
+const isSupabaseReady = () => {
+  const cfg = supabaseConfig();
+  return Boolean(cfg.enabled && cfg.url && cfg.anonKey && !String(cfg.url).includes('PROJECT_ID') && !String(cfg.anonKey).includes('SUPABASE_ANON_KEY'));
+};
+const supabaseUrl = path => `${String(supabaseConfig().url || '').replace(/\/$/, '')}${path}`;
+const supabaseHeaders = token => ({
+  apikey: supabaseConfig().anonKey,
+  Authorization: `Bearer ${token || supabaseConfig().anonKey}`,
+  Accept: 'application/json'
+});
+const normalizeResource = item => ({
+  title: item.title || '',
+  category: item.category || 'Website Rujukan',
+  type: item.type || 'Link',
+  author: item.author || 'AT STRUCTURA',
+  description: item.description || '',
+  status: item.status || 'Tersedia',
+  link: item.link || item.mega_url || item.external_url || '#'
+});
 const card = item => `
   <article class="card resource-card">
     <span class="icon">${escapeText((item.category || 'RES').slice(0, 3).toUpperCase())}</span>
@@ -51,20 +71,34 @@ function render() {
   pagination.innerHTML = Array.from({ length: pages }, (_, i) => `<button class="${i + 1 === page ? 'active' : ''}" type="button" data-page="${i + 1}">${i + 1}</button>`).join('');
   pagination.querySelectorAll('button').forEach(button => button.addEventListener('click', () => { page = Number(button.dataset.page); render(); }));
 }
+async function loadSupabaseResources() {
+  const table = supabaseConfig().resourcesTable || 'resources';
+  const query = 'select=id,title,category,type,author,description,status,link,mega_url,external_url,published_at,created_at&status=in.(Tersedia,Link%20Eksternal,Coming%20Soon)&order=published_at.desc.nullslast,created_at.desc';
+  const response = await fetch(supabaseUrl(`/rest/v1/${table}?${query}`), { headers: supabaseHeaders() });
+  if (!response.ok) throw new Error(`Supabase resources gagal dimuat (${response.status}).`);
+  return (await response.json()).map(normalizeResource);
+}
+async function loadJsonResources() {
+  const response = await fetch('/data/resources.json');
+  if (!response.ok) throw new Error('resources.json gagal dimuat.');
+  return (await response.json()).map(normalizeResource);
+}
 async function init() {
   const params = new URLSearchParams(location.search);
   if (params.get('category')) current = params.get('category');
   renderFilters();
   try {
-    const response = await fetch('/data/resources.json');
-    resources = await response.json();
+    resources = isSupabaseReady() ? await loadSupabaseResources() : await loadJsonResources();
   } catch (error) {
-    resourceGrid.innerHTML = '<div class="card empty">Resources belum bisa dimuat. Jalankan melalui Live Server agar data JSON terbaca.</div>';
-    return;
+    try {
+      resources = await loadJsonResources();
+    } catch {
+      resourceGrid.innerHTML = '<div class="card empty">Resources belum bisa dimuat. Periksa konfigurasi Supabase atau jalankan melalui Live Server.</div>';
+      return;
+    }
   }
   render();
 }
 resourceSearch?.addEventListener('input', () => { page = 1; render(); });
 typeFilter?.addEventListener('change', () => { page = 1; render(); });
 init();
-

@@ -288,3 +288,38 @@ button, input, select, textarea { font: inherit; }
     grid-template-columns: 1fr;
   }
 }
+
+.manager-auth {
+  margin-bottom: 22px;
+  padding: 24px;
+}
+.manager-auth-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+.manager-auth-form label,
+.manager-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--primary);
+  font-weight: 900;
+}
+.manager-status {
+  margin-top: 14px;
+}
+.manager-status.status-online {
+  border-left-color: var(--red);
+  color: var(--primary);
+}
+.btn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none;
+}
+@media(max-width: 760px) {
+  .manager-auth-form {
+    grid-template-columns: 1fr;
+  }
+}

@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Resource Manager Lokal | AT STRUCTURA</title>
-<meta name="description" content="Halaman lokal untuk menyiapkan data resources AT STRUCTURA dalam format JSON.">
-<meta name="robots" content="index, follow">
+<title>Resource Manager Supabase | AT STRUCTURA</title>
+<meta name="description" content="Resource Manager AT STRUCTURA untuk menyimpan metadata link MEGA ke Supabase dan menyiapkan draft JSON lokal.">
+<meta name="robots" content="noindex, nofollow">
 <meta name="author" content="Arief Tediansyah">
 <meta name="theme-color" content="#0B2A5B">
 <meta name="application-name" content="AT STRUCTURA">
 <link rel="canonical" href="https://at-structura.vercel.app/pages/resource-upload/">
 <meta property="og:site_name" content="AT STRUCTURA">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Resource Manager Lokal | AT STRUCTURA">
-<meta property="og:description" content="Halaman lokal untuk menyiapkan data resources AT STRUCTURA dalam format JSON.">
+<meta property="og:title" content="Resource Manager Supabase | AT STRUCTURA">
+<meta property="og:description" content="Resource Manager AT STRUCTURA untuk menyimpan metadata link MEGA ke Supabase dan menyiapkan draft JSON lokal.">
 <meta property="og:url" content="https://at-structura.vercel.app/pages/resource-upload/">
 <meta property="og:image" content="https://at-structura.vercel.app/assets/logo/at-structura-logo.png">
 <meta property="og:locale" content="id_ID">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Resource Manager Lokal | AT STRUCTURA">
-<meta name="twitter:description" content="Halaman lokal untuk menyiapkan data resources AT STRUCTURA dalam format JSON.">
+<meta name="twitter:title" content="Resource Manager Supabase | AT STRUCTURA">
+<meta name="twitter:description" content="Resource Manager AT STRUCTURA untuk menyimpan metadata link MEGA ke Supabase dan menyiapkan draft JSON lokal.">
 <meta name="twitter:image" content="https://at-structura.vercel.app/assets/logo/at-structura-logo.png">
 <link rel="shortcut icon" href="/favicon.ico">
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -29,7 +29,7 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/navbar.css">
-<script type="application/ld+json">{"@id":"https://at-structura.vercel.app/pages/resource-upload/#webpage","@type":"WebPage","url":"https://at-structura.vercel.app/pages/resource-upload/","name":"Resource Manager Lokal | AT STRUCTURA","description":"Halaman lokal untuk menyiapkan data resources AT STRUCTURA dalam format JSON.","inLanguage":"id-ID","@context":"https://schema.org","isPartOf":{"@id":"https://at-structura.vercel.app/#website"}}</script>
+<script type="application/ld+json">{"@id":"https://at-structura.vercel.app/pages/resource-upload/#webpage","@type":"WebPage","url":"https://at-structura.vercel.app/pages/resource-upload/","name":"Resource Manager Supabase | AT STRUCTURA","description":"Resource Manager AT STRUCTURA untuk menyimpan metadata link MEGA ke Supabase dan menyiapkan draft JSON lokal.","inLanguage":"id-ID","@context":"https://schema.org","isPartOf":{"@id":"https://at-structura.vercel.app/#website"}}</script>
 </head>
 <body>
 <header class="navbar">
@@ -50,14 +50,28 @@
 <main>
   <section class="page-head">
     <div class="container">
-      <span class="eyebrow">Local manager</span>
+      <span class="eyebrow">Supabase + MEGA link</span>
       <h1>Resource Manager</h1>
-      <p class="lead">Halaman ini tidak ditampilkan di navbar. Gunakan untuk menyiapkan data resources secara lokal, lalu download atau copy JSON ke file <code>data/resources.json</code>.</p>
+      <p class="lead">Upload file besar secara manual ke MEGA, lalu tempel link-nya di sini. Metadata resource akan disimpan ke Supabase agar tampil untuk semua pengunjung web.</p>
     </div>
   </section>
   <section class="section">
     <div class="container">
-      <div class="engineering-disclaimer">Catatan keamanan: halaman tersembunyi bukan proteksi sungguhan jika web dipublikasikan. Untuk produksi, gunakan panel dengan autentikasi dan penyimpanan server. Versi ini aman untuk workflow lokal karena tidak mengirim data ke server.</div>
+      <div class="engineering-disclaimer">Opsi 1 aktif: file besar tetap di MEGA, sedangkan Supabase hanya menyimpan metadata dan link. Untuk menyimpan ke Supabase, gunakan akun admin dan RLS dari file <code>sql/supabase-resources.sql</code>.</div>
+      <div class="card manager-auth">
+        <span class="eyebrow">Admin</span>
+        <h2 class="title">Login Supabase</h2>
+        <p class="lead">Gunakan akun admin Supabase. User umum tetap hanya bisa membaca resource yang statusnya Tersedia atau Link Eksternal.</p>
+        <form id="resourceAuthForm" class="manager-auth-form">
+          <label>Email admin<input class="control" id="resourceAdminEmail" type="email" autocomplete="email" placeholder="email admin Supabase"></label>
+          <label>Password<input class="control" id="resourceAdminPassword" type="password" autocomplete="current-password" placeholder="password akun admin"></label>
+          <div class="manager-actions">
+            <button class="btn btn-primary" type="submit">Login Supabase</button>
+            <button class="btn btn-secondary" type="button" id="resourceLogout">Logout</button>
+          </div>
+        </form>
+        <div class="page-note manager-status" id="resourceAuthStatus">Mengecek konfigurasi Supabase...</div>
+      </div>
       <div class="manager-layout">
         <form class="card manager-form" id="resourceManagerForm">
           <label>Judul<input class="control" name="title" required placeholder="Contoh: SNI 2847:2019 Persyaratan Beton Struktural"></label>
@@ -80,26 +94,24 @@
           </select></label>
           <label>Author<input class="control" name="author" value="AT STRUCTURA"></label>
           <label>Status<select class="control" name="status">
-            <option>Coming Soon</option>
-            <option>Tersedia</option>
-            <option>Link Eksternal</option>
+            <option>Draft</option><option>Tersedia</option><option>Link Eksternal</option><option>Coming Soon</option><option>Archived</option>
           </select></label>
-          <label>Link<input class="control" name="link" value="#" placeholder="# atau URL legal/resmi"></label>
+          <label>Sumber<select class="control" name="source_type"><option value="mega_link">Link MEGA</option><option value="external_link">Link Eksternal</option><option value="official_link">Link Resmi</option></select></label><label>Link Resource<input class="control" name="link" value="#" placeholder="https://mega.nz/file/... atau URL legal/resmi"></label><label>Nama File<input class="control" name="file_name" placeholder="Contoh: template-rab.xlsx"></label><label>Ukuran File (byte)<input class="control" name="file_size" type="number" min="0" placeholder="Opsional"></label><label>MIME Type<input class="control" name="mime_type" placeholder="application/pdf, application/zip, dll"></label>
           <label>Deskripsi<textarea class="control textarea" name="description" required placeholder="Ringkas fungsi resource, sumber, dan catatan legalitas."></textarea></label>
           <div class="manager-actions">
-            <button class="btn btn-primary" type="submit">Tambah Resource</button>
+            <button class="btn btn-primary" type="submit" id="saveResourceSupabase">Simpan ke Supabase</button><button class="btn btn-secondary" type="submit" id="saveResourceLocal">Tambah Draft Lokal</button>
             <button class="btn btn-secondary" type="button" id="resetManagerForm">Reset Form</button>
           </div>
         </form>
         <section class="card manager-output">
           <span class="eyebrow">Output JSON</span>
           <h2 class="title">resources.json</h2>
-          <p class="lead">Data sementara disimpan di browser lokal. Download JSON lalu ganti isi file <code>data/resources.json</code> di VS Code.</p>
+          <p class="lead">Preview data bisa diambil dari Supabase atau draft lokal. Export JSON tetap disediakan sebagai backup.</p>
           <textarea class="control" id="resourceJsonOutput" spellcheck="false"></textarea>
           <div class="actions" style="margin-top:14px">
             <button class="btn btn-primary" type="button" id="copyResourceJson">Copy JSON</button>
             <button class="btn btn-secondary" type="button" id="downloadResourceJson">Download JSON</button>
-            <button class="btn btn-secondary" type="button" id="importCurrentResources">Muat Data Saat Ini</button>
+            <button class="btn btn-secondary" type="button" id="importCurrentResources">Muat JSON Lokal</button><button class="btn btn-secondary" type="button" id="loadSupabaseResources">Muat Supabase</button>
             <button class="btn btn-secondary" type="button" id="clearLocalResources">Hapus Draft Lokal</button>
           </div>
           <div class="manager-preview" id="resourceManagerPreview"></div>
@@ -122,9 +134,12 @@
 </footer>
 <div class="toast" id="toast"></div>
 <script src="/js/navbar.js"></script>
+<script src="/js/supabase-config.js"></script>
 <script src="/js/resource-upload.js"></script>
 </body>
 </html>
+
+
 
 
 
