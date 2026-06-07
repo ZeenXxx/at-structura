@@ -28,6 +28,7 @@
       <button class="active" type="button" data-admin-panel="resources">Resources</button>
       <button type="button" data-admin-panel="software">Software</button>
       <button type="button" data-admin-panel="services">Layanan</button>
+      <button type="button" data-admin-panel="members">Akun</button>
       <a href="/pages/resources/" target="_blank" rel="noopener">Lihat Resources</a>
       <a href="/pages/software/" target="_blank" rel="noopener">Lihat Software</a>
       <a href="/pages/jasa/" target="_blank" rel="noopener">Lihat Jasa</a>
@@ -46,6 +47,7 @@
         <div><strong id="resourceCount">0</strong><span>Resources</span></div>
         <div><strong id="softwareCount">0</strong><span>Software</span></div>
         <div><strong id="serviceCount">0</strong><span>Layanan</span></div>
+        <div><strong id="memberCount">0</strong><span>Akun</span></div>
       </div>
     </header>
 
@@ -240,10 +242,30 @@
         </section>
       </div>
     </section>
+
+    <section class="admin-panel" id="panelMembers">
+      <div class="admin-panel-head">
+        <div>
+          <h2>Akun Terdaftar</h2>
+          <p>Data member yang masuk saat daftar akun: nama, email, nomor telepon, instansi, dan status verifikasi.</p>
+        </div>
+      </div>
+      <section class="card admin-list-card admin-members-card">
+        <div class="filter-bar manager-filter">
+          <input class="control" id="memberAdminSearch" type="search" placeholder="Cari nama, email, telepon, atau instansi...">
+          <select class="control" id="memberAdminStatus">
+            <option value="All">Semua akun</option>
+            <option value="Verified">Terverifikasi</option>
+            <option value="Unverified">Belum verifikasi</option>
+          </select>
+        </div>
+        <div class="admin-list member-list" id="memberAdminList"></div>
+      </section>
+    </section>
   </section>
 </main>
 <div class="toast" id="toast"></div>
-<script src="/js/supabase-config.js?v=6"></script>
-<script src="/js/admin.js?v=3"></script>
+<script src="/js/supabase-config.js?v=7"></script>
+<script src="/js/admin.js?v=4"></script>
 </body>
 </html>

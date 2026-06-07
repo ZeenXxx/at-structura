@@ -1,6 +1,6 @@
 const sessionKey = 'at_structura_supabase_session';
 const loginPath = '/pages/resource-login/';
-const state = { resources: [], software: [], services: [], activePanel: 'resources' };
+const state = { resources: [], software: [], services: [], members: [], activePanel: 'resources' };
 const visibleStatuses = ['Tersedia', 'Link Eksternal', 'Coming Soon'];
 const serviceVisibleStatuses = ['Aktif'];
 
@@ -9,6 +9,7 @@ const els = {
   resourceCount: document.getElementById('resourceCount'),
   softwareCount: document.getElementById('softwareCount'),
   serviceCount: document.getElementById('serviceCount'),
+  memberCount: document.getElementById('memberCount'),
   logout: document.getElementById('adminLogout'),
   resourceForm: document.getElementById('resourceAdminForm'),
   softwareForm: document.getElementById('softwareAdminForm'),
@@ -16,12 +17,15 @@ const els = {
   resourceList: document.getElementById('resourceAdminList'),
   softwareList: document.getElementById('softwareAdminList'),
   serviceList: document.getElementById('serviceAdminList'),
+  memberList: document.getElementById('memberAdminList'),
   resourceSearch: document.getElementById('resourceAdminSearch'),
   resourceStatus: document.getElementById('resourceAdminStatus'),
   softwareSearch: document.getElementById('softwareAdminSearch'),
   softwareStatus: document.getElementById('softwareAdminStatus'),
   serviceSearch: document.getElementById('serviceAdminSearch'),
-  serviceStatus: document.getElementById('serviceAdminStatus')
+  serviceStatus: document.getElementById('serviceAdminStatus'),
+  memberSearch: document.getElementById('memberAdminSearch'),
+  memberStatus: document.getElementById('memberAdminStatus')
 };
 
 const cfg = () => window.AT_SUPABASE || {};
@@ -42,6 +46,12 @@ const adminTable = () => cfg().adminsTable || 'resource_admins';
 const adminCheck = { token: '', valid: false, denied: false };
 const escapeText = value => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const slugify = value => String(value || 'item').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'item';
+const formatDate = value => {
+  if (!value) return '-';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '-';
+  return new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+};
 const showToast = message => {
   const toast = document.getElementById('toast');
   if (!toast) return;
@@ -120,11 +130,13 @@ async function ensureSession() {
 const tableName = kind => {
   if (kind === 'software') return cfg().softwareTable || 'software_items';
   if (kind === 'services') return cfg().servicesTable || 'technical_services';
+  if (kind === 'members') return cfg().membersTable || 'member_profiles';
   return cfg().resourcesTable || 'resources';
 };
 const listForKind = kind => {
   if (kind === 'software') return state.software;
   if (kind === 'services') return state.services;
+  if (kind === 'members') return state.members;
   return state.resources;
 };
 const formForKind = kind => {
@@ -135,6 +147,7 @@ const formForKind = kind => {
 const listElForKind = kind => {
   if (kind === 'software') return els.softwareList;
   if (kind === 'services') return els.serviceList;
+  if (kind === 'members') return els.memberList;
   return els.resourceList;
 };
 const sourceFields = (kind, sourceType, link) => {
@@ -199,6 +212,16 @@ function servicePayload(form) {
 }
 
 function normalize(item, kind) {
+  if (kind === 'members') {
+    return {
+      ...item,
+      full_name: item.full_name || 'Tanpa nama',
+      email: item.email || '-',
+      phone: item.phone || '-',
+      institution: item.institution || '-',
+      source: item.source || '-'
+    };
+  }
   if (kind === 'services') {
     return {
       ...item,
@@ -280,17 +303,23 @@ function fillForm(kind, item) {
 
 function filterItems(kind) {
   const items = listForKind(kind);
-  const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : els.resourceSearch;
-  const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : els.resourceStatus;
+  const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : kind === 'members' ? els.memberSearch : els.resourceSearch;
+  const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : kind === 'members' ? els.memberStatus : els.resourceStatus;
   const search = (searchEl?.value || '').toLowerCase();
   const status = statusEl?.value || 'All';
   return items.filter(item => {
+    if (kind === 'members') {
+      const verified = Boolean(item.email_confirmed_at);
+      const haystack = [item.full_name, item.email, item.phone, item.institution, item.source, item.user_id].join(' ').toLowerCase();
+      return (status === 'All' || (status === 'Verified' && verified) || (status === 'Unverified' && !verified)) && haystack.includes(search);
+    }
     const haystack = [item.title, item.category, item.type, item.platform, item.license, item.author, item.description, item.status, item.link, item.icon].join(' ').toLowerCase();
     return (status === 'All' || item.status === status) && haystack.includes(search);
   });
 }
 
 function emptyTitle(kind) {
+  if (kind === 'members') return 'Akun belum ditemukan';
   if (kind === 'software') return 'Software belum ditemukan';
   if (kind === 'services') return 'Layanan belum ditemukan';
   return 'Resource belum ditemukan';
@@ -304,6 +333,42 @@ function newLabel(kind) {
 function renderList(kind) {
   const list = listElForKind(kind);
   const data = filterItems(kind);
+  if (kind === 'members') {
+    list.innerHTML = data.map(item => {
+      const verified = Boolean(item.email_confirmed_at);
+      return `
+        <article class="admin-item member-item" data-id="${escapeText(item.user_id)}">
+          <div>
+            <div class="meta">
+              <span class="badge ${verified ? 'tag-red' : ''}">${verified ? 'Terverifikasi' : 'Belum verifikasi'}</span>
+              <span class="badge">${escapeText(item.source)}</span>
+            </div>
+            <h3>${escapeText(item.full_name)}</h3>
+            <p>${escapeText(item.email)}</p>
+            <div class="member-detail-grid">
+              <span><strong>Telepon</strong>${escapeText(item.phone)}</span>
+              <span><strong>Instansi</strong>${escapeText(item.institution)}</span>
+              <span><strong>Daftar</strong>${escapeText(formatDate(item.created_at))}</span>
+              <span><strong>Verifikasi</strong>${escapeText(formatDate(item.email_confirmed_at))}</span>
+              <span><strong>Login terakhir</strong>${escapeText(formatDate(item.last_sign_in_at))}</span>
+            </div>
+            <small>User ID: ${escapeText(item.user_id)}</small>
+          </div>
+        </article>
+      `;
+    }).join('') || `
+      <div class="card empty-state admin-empty-state">
+        <span class="icon">AK</span>
+        <h3>${emptyTitle(kind)}</h3>
+        <p>Reset pencarian/filter untuk melihat semua akun yang sudah terdaftar.</p>
+        <div class="actions">
+          <button class="btn btn-secondary" type="button" data-admin-reset="${kind}">Reset Filter</button>
+        </div>
+      </div>
+    `;
+    els.memberCount.textContent = state.members.length;
+    return;
+  }
   list.innerHTML = data.map(item => {
     const statusClass = kind === 'services'
       ? (serviceVisibleStatuses.includes(item.status) && item.is_active !== false ? 'tag-red' : '')
@@ -344,12 +409,14 @@ function renderList(kind) {
   els.resourceCount.textContent = state.resources.length;
   els.softwareCount.textContent = state.software.length;
   els.serviceCount.textContent = state.services.filter(item => item.is_active !== false && item.status === 'Aktif').length;
+  els.memberCount.textContent = state.members.length;
 }
 
 function renderAll() {
   renderList('resources');
   renderList('software');
   renderList('services');
+  renderList('members');
 }
 
 async function fetchItems(kind) {
@@ -375,6 +442,7 @@ async function loadAll() {
   state.resources = await fetchItems('resources');
   state.software = await fetchItems('software');
   state.services = await fetchItems('services');
+  state.members = await fetchItems('members');
   renderAll();
   els.sessionStatus.textContent = 'Sesi admin aktif. Semua data dibaca dari Supabase.';
 }
@@ -422,6 +490,7 @@ function switchPanel(panel) {
   document.getElementById('panelResources').classList.toggle('active', panel === 'resources');
   document.getElementById('panelSoftware').classList.toggle('active', panel === 'software');
   document.getElementById('panelServices').classList.toggle('active', panel === 'services');
+  document.getElementById('panelMembers').classList.toggle('active', panel === 'members');
 }
 
 document.querySelectorAll('.admin-nav [data-admin-panel]').forEach(button => button.addEventListener('click', () => switchPanel(button.dataset.adminPanel)));
@@ -463,8 +532,8 @@ document.addEventListener('click', async event => {
   const resetButton = event.target.closest('button[data-admin-reset]');
   if (resetButton) {
     const kind = resetButton.dataset.adminReset;
-    const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : els.resourceSearch;
-    const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : els.resourceStatus;
+    const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : kind === 'members' ? els.memberSearch : els.resourceSearch;
+    const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : kind === 'members' ? els.memberStatus : els.resourceStatus;
     if (searchEl) searchEl.value = '';
     if (statusEl) statusEl.value = 'All';
     renderList(kind);
@@ -508,6 +577,8 @@ els.softwareSearch?.addEventListener('input', () => renderList('software'));
 els.softwareStatus?.addEventListener('change', () => renderList('software'));
 els.serviceSearch?.addEventListener('input', () => renderList('services'));
 els.serviceStatus?.addEventListener('change', () => renderList('services'));
+els.memberSearch?.addEventListener('input', () => renderList('members'));
+els.memberStatus?.addEventListener('change', () => renderList('members'));
 els.logout?.addEventListener('click', () => {
   clearSession();
   window.location.href = loginPath;

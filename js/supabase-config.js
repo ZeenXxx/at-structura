@@ -5,5 +5,7 @@
   resourcesTable: 'resources',
   softwareTable: 'software_items',
   servicesTable: 'technical_services',
-  countersTable: 'site_counters'
+  countersTable: 'site_counters',
+  membersTable: 'member_profiles',
+  adminsTable: 'resource_admins'
 };

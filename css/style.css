@@ -779,6 +779,35 @@ button, input, select, textarea { font: inherit; }
   color: var(--muted);
   overflow-wrap: anywhere;
 }
+.admin-members-card {
+  max-width: 1120px;
+}
+.member-item {
+  grid-template-columns: 1fr;
+}
+.member-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.member-detail-grid span {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.member-detail-grid strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--primary);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
 @media(max-width: 980px) {
   .admin-shell {
     grid-template-columns: 1fr;
@@ -803,6 +832,9 @@ button, input, select, textarea { font: inherit; }
   }
   .admin-item {
     grid-template-columns: 1fr;
+  }
+  .member-detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media(max-width: 640px) {
@@ -842,6 +874,9 @@ button, input, select, textarea { font: inherit; }
     padding: 14px;
   }
   .admin-item .manager-row-actions {
+    grid-template-columns: 1fr;
+  }
+  .member-detail-grid {
     grid-template-columns: 1fr;
   }
   .not-found-head {
