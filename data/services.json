@@ -1,0 +1,82 @@
+[
+  {
+    "title": "Tutor Teknik Sipil",
+    "slug": "tutor-teknik-sipil",
+    "icon": "TU",
+    "category": "Pembelajaran",
+    "description": "Pendampingan konsep, penyelesaian soal, dan pembahasan bertahap agar pengguna paham prosesnya.",
+    "status": "Aktif",
+    "is_active": true,
+    "sort_order": 10
+  },
+  {
+    "title": "Drafting Gambar Teknik",
+    "slug": "drafting-gambar-teknik",
+    "icon": "DG",
+    "category": "Drafting",
+    "description": "Pembuatan dan perapian gambar teknis dengan layer, dimensi, layout, dan plotting yang konsisten.",
+    "status": "Aktif",
+    "is_active": true,
+    "sort_order": 20
+  },
+  {
+    "title": "Asistensi Software Teknik Sipil",
+    "slug": "asistensi-software-teknik-sipil",
+    "icon": "SW",
+    "category": "Software",
+    "description": "Pendampingan ETABS, SAP2000, AutoCAD, Civil 3D, HEC-RAS, QGIS, dan workflow output.",
+    "status": "Aktif",
+    "is_active": true,
+    "sort_order": 30
+  },
+  {
+    "title": "Pendampingan Akademik Teknik Sipil",
+    "slug": "pendampingan-akademik-teknik-sipil",
+    "icon": "PA",
+    "category": "Akademik",
+    "description": "Merapikan alur belajar, referensi, template, dan pemahaman teknis untuk kebutuhan akademik.",
+    "status": "Aktif",
+    "is_active": true,
+    "sort_order": 40
+  },
+  {
+    "title": "Template Akademik",
+    "slug": "template-akademik",
+    "icon": "TA",
+    "category": "Template",
+    "description": "Template perhitungan, rekap data, ringkasan materi, dan dokumen teknis yang mudah dipakai ulang.",
+    "status": "Aktif",
+    "is_active": true,
+    "sort_order": 50
+  },
+  {
+    "title": "Pembuatan Web Tools Teknik Sipil",
+    "slug": "pembuatan-web-tools-teknik-sipil",
+    "icon": "WT",
+    "category": "Web Tools",
+    "description": "Kalkulator, converter, tabel bantu, dan visualisasi berbasis browser untuk kebutuhan Teknik Sipil.",
+    "status": "Aktif",
+    "is_active": true,
+    "sort_order": 60
+  },
+  {
+    "title": "Konsultasi Perhitungan Dasar",
+    "slug": "konsultasi-perhitungan-dasar",
+    "icon": "KD",
+    "category": "Konsultasi",
+    "description": "Diskusi asumsi, satuan, alur hitung, dan interpretasi hasil tahap awal.",
+    "status": "Aktif",
+    "is_active": true,
+    "sort_order": 70
+  },
+  {
+    "title": "Visualisasi Gambar Teknik",
+    "slug": "visualisasi-gambar-teknik",
+    "icon": "VG",
+    "category": "Visualisasi",
+    "description": "Merapikan gambar, diagram, skema alur, dan visual teknis agar lebih mudah dipresentasikan.",
+    "status": "Aktif",
+    "is_active": true,
+    "sort_order": 80
+  }
+]

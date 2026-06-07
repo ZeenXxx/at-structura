@@ -210,6 +210,64 @@ button, input, select, textarea { font: inherit; }
 .pagination button { min-width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 8px; background: #fff; cursor: pointer; font-weight: 900; }
 .pagination button.active { background: var(--red); color: #fff; border-color: var(--red); }
 .empty { padding: 28px; color: var(--muted); }
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 30px;
+  min-height: 260px;
+  display: grid;
+  align-content: center;
+  gap: 12px;
+  border-style: dashed;
+}
+.empty-state h3 {
+  margin: 2px 0 0;
+  color: var(--primary);
+  font-size: 24px;
+  line-height: 1.18;
+}
+.empty-state p {
+  margin: 0;
+  max-width: 620px;
+  color: var(--muted);
+}
+.empty-state .actions {
+  margin-top: 8px;
+}
+.not-found-head {
+  min-height: calc(100vh - 82px);
+  display: grid;
+  align-items: center;
+}
+.not-found-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 34px;
+  align-items: center;
+}
+.not-found-actions {
+  margin-top: 24px;
+}
+.not-found-card {
+  min-height: 300px;
+  padding: 28px;
+  display: grid;
+  align-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--primary), #142f62 58%, var(--red));
+  color: #fff;
+}
+.not-found-card span {
+  font-size: clamp(70px, 9vw, 118px);
+  font-weight: 900;
+  line-height: .9;
+}
+.not-found-card strong {
+  font-size: 24px;
+}
+.not-found-card small {
+  color: rgba(255, 255, 255, .75);
+  font-weight: 800;
+}
 .site-footer { padding: 58px clamp(20px, 5vw, 72px) 24px; background: #081C3B; color: #fff; }
 .footer-grid { display: grid; grid-template-columns: 1.45fr repeat(3, 1fr); gap: 30px; max-width: 1180px; margin: auto; }
 .footer-brand { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 900; }
@@ -244,6 +302,12 @@ button, input, select, textarea { font: inherit; }
   .footer-bottom { flex-direction: column; }
   .path-item { grid-template-columns: 48px minmax(0, 1fr); }
   .path-item .tag { grid-column: 2; justify-self: start; }
+  .not-found-layout {
+    grid-template-columns: 1fr;
+  }
+  .not-found-card {
+    min-height: 220px;
+  }
 }
 @media(max-width: 560px) {
   .container { width: min(100% - 28px, 1140px); }
@@ -251,6 +315,33 @@ button, input, select, textarea { font: inherit; }
   .title { font-size: 34px; }
   .contact-item { align-items: flex-start; flex-direction: column; }
   .contact-item span { text-align: left; }
+  .page-head { padding: 54px 0 38px; background-size: 28px 28px, 28px 28px, auto; }
+  .page-head h1 { font-size: 38px; }
+  .lead { font-size: 16px; }
+  .quick, .feature-card, .resource-card, .service-card, .portfolio-card, .path-card { padding: 18px; }
+  .filter-chips {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .filter {
+    justify-content: center;
+    width: 100%;
+  }
+  .pagination button {
+    min-width: 42px;
+  }
+  .empty-state {
+    min-height: 220px;
+    padding: 22px;
+  }
+  .empty-state h3 {
+    font-size: 21px;
+  }
+  .toast {
+    left: 14px;
+    right: 14px;
+    max-width: none;
+  }
 }
 .manager-layout {
   display: grid;
@@ -482,6 +573,8 @@ button, input, select, textarea { font: inherit; }
 .admin-stats {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 .admin-stats div {
   min-width: 118px;
@@ -600,5 +693,48 @@ button, input, select, textarea { font: inherit; }
   }
   .admin-item {
     grid-template-columns: 1fr;
+  }
+}
+@media(max-width: 640px) {
+  .admin-sidebar {
+    padding: 16px;
+    gap: 16px;
+  }
+  .admin-brand img {
+    width: 46px;
+    height: 46px;
+  }
+  .admin-nav {
+    grid-template-columns: 1fr;
+  }
+  .admin-main {
+    padding: 14px;
+  }
+  .admin-topbar h1 {
+    font-size: 34px;
+  }
+  .admin-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+  .admin-stats div {
+    min-width: 0;
+  }
+  .admin-panel-head h2 {
+    font-size: 26px;
+  }
+  .admin-form,
+  .admin-list-card {
+    padding: 16px;
+  }
+  .admin-item {
+    padding: 14px;
+  }
+  .admin-item .manager-row-actions {
+    grid-template-columns: 1fr;
+  }
+  .not-found-head {
+    min-height: auto;
   }
 }

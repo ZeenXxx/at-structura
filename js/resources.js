@@ -44,6 +44,17 @@ const card = item => `
     <div class="actions"><a class="btn btn-primary" href="${escapeText(item.link || '#')}" target="_blank" rel="noopener">${item.link && item.link !== '#' ? 'Buka Resource' : 'Detail Coming Soon'}</a></div>
   </article>
 `;
+const emptyState = ({ title, message, actionHref = '/pages/contact/', actionText = 'Hubungi Saya' }) => `
+  <div class="card empty-state">
+    <span class="icon">RS</span>
+    <h3>${escapeText(title)}</h3>
+    <p>${escapeText(message)}</p>
+    <div class="actions">
+      <button class="btn btn-secondary" type="button" id="resetResourceFilters">Reset Filter</button>
+      <a class="btn btn-primary" href="${escapeText(actionHref)}">${escapeText(actionText)}</a>
+    </div>
+  </div>
+`;
 function filtered() {
   const q = (resourceSearch?.value || '').toLowerCase();
   const type = typeFilter?.value || 'All';
@@ -67,9 +78,22 @@ function render() {
   const pages = Math.max(1, Math.ceil(data.length / perPage));
   page = Math.min(page, pages);
   const start = (page - 1) * perPage;
-  resourceGrid.innerHTML = data.slice(start, start + perPage).map(card).join('') || '<div class="card empty">Resource tidak ditemukan.</div>';
+  resourceGrid.innerHTML = data.slice(start, start + perPage).map(card).join('') || emptyState({
+    title: 'Resource belum ditemukan',
+    message: 'Coba reset filter atau gunakan kata kunci yang lebih umum. Jika ada referensi legal yang ingin ditambahkan, kirimkan detailnya lewat halaman kontak.',
+    actionHref: '/pages/contact/',
+    actionText: 'Usulkan Resource'
+  });
   pagination.innerHTML = Array.from({ length: pages }, (_, i) => `<button class="${i + 1 === page ? 'active' : ''}" type="button" data-page="${i + 1}">${i + 1}</button>`).join('');
   pagination.querySelectorAll('button').forEach(button => button.addEventListener('click', () => { page = Number(button.dataset.page); render(); }));
+  document.getElementById('resetResourceFilters')?.addEventListener('click', () => {
+    current = 'All';
+    page = 1;
+    if (resourceSearch) resourceSearch.value = '';
+    if (typeFilter) typeFilter.value = 'All';
+    renderFilters();
+    render();
+  });
 }
 async function loadSupabaseResources() {
   const table = supabaseConfig().resourcesTable || 'resources';
@@ -93,7 +117,12 @@ async function init() {
     try {
       resources = await loadJsonResources();
     } catch {
-      resourceGrid.innerHTML = '<div class="card empty">Resources belum bisa dimuat. Periksa konfigurasi Supabase atau jalankan melalui Live Server.</div>';
+      resourceGrid.innerHTML = emptyState({
+        title: 'Resources belum bisa dimuat',
+        message: 'Periksa koneksi internet, konfigurasi Supabase, atau jalankan website melalui Live Server.',
+        actionHref: '/',
+        actionText: 'Kembali Home'
+      });
       return;
     }
   }

@@ -42,9 +42,20 @@ const card = item => `
     </div>
     <h3>${escapeText(item.title)}</h3>
     <p>${escapeText(item.description)}</p>
-    <small>${escapeText(item.license)} · ${escapeText(item.author)}</small>
+    <small>${escapeText(item.license)} - ${escapeText(item.author)}</small>
     <div class="actions"><a class="btn btn-primary" href="${escapeText(item.link || '#')}" target="_blank" rel="noopener">${item.link && item.link !== '#' ? 'Buka Link' : 'Detail Coming Soon'}</a></div>
   </article>
+`;
+const emptyState = ({ title, message, actionHref = '/pages/contact/', actionText = 'Hubungi Saya' }) => `
+  <div class="card empty-state">
+    <span class="icon">SW</span>
+    <h3>${escapeText(title)}</h3>
+    <p>${escapeText(message)}</p>
+    <div class="actions">
+      <button class="btn btn-secondary" type="button" id="resetSoftwareFilters">Reset Filter</button>
+      <a class="btn btn-primary" href="${escapeText(actionHref)}">${escapeText(actionText)}</a>
+    </div>
+  </div>
 `;
 function categories() {
   const unique = [...new Set(softwareItems.map(item => item.category).filter(Boolean))];
@@ -73,9 +84,22 @@ function render() {
   const pages = Math.max(1, Math.ceil(data.length / perPage));
   page = Math.min(page, pages);
   const start = (page - 1) * perPage;
-  softwareGrid.innerHTML = data.slice(start, start + perPage).map(card).join('') || '<div class="card empty">Software tidak ditemukan.</div>';
+  softwareGrid.innerHTML = data.slice(start, start + perPage).map(card).join('') || emptyState({
+    title: 'Software belum ditemukan',
+    message: 'Coba reset filter atau gunakan kata kunci yang lebih umum. Jika ingin request catatan workflow software tertentu, kirimkan lewat halaman kontak.',
+    actionHref: '/pages/contact/',
+    actionText: 'Request Software'
+  });
   softwarePagination.innerHTML = Array.from({ length: pages }, (_, i) => `<button class="${i + 1 === page ? 'active' : ''}" type="button" data-page="${i + 1}">${i + 1}</button>`).join('');
   softwarePagination.querySelectorAll('button').forEach(button => button.addEventListener('click', () => { page = Number(button.dataset.page); render(); }));
+  document.getElementById('resetSoftwareFilters')?.addEventListener('click', () => {
+    currentCategory = 'All';
+    page = 1;
+    if (softwareSearch) softwareSearch.value = '';
+    if (platformFilter) platformFilter.value = 'All';
+    renderFilters();
+    render();
+  });
 }
 async function loadSupabaseSoftware() {
   const table = supabaseConfig().softwareTable || 'software_items';
@@ -98,7 +122,12 @@ async function init() {
     try {
       softwareItems = await loadJsonSoftware();
     } catch {
-      softwareGrid.innerHTML = '<div class="card empty">Software belum bisa dimuat. Periksa konfigurasi Supabase atau jalankan melalui Live Server.</div>';
+      softwareGrid.innerHTML = emptyState({
+        title: 'Software belum bisa dimuat',
+        message: 'Periksa koneksi internet, konfigurasi Supabase, atau jalankan website melalui Live Server.',
+        actionHref: '/',
+        actionText: 'Kembali Home'
+      });
       return;
     }
   }
