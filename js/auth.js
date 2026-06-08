@@ -87,6 +87,25 @@ const normalizeAuthError = message => {
   return text;
 };
 
+async function checkMemberAccountStatus(session) {
+  if (!session?.access_token) return null;
+  const response = await fetch(authApiUrl('/rest/v1/member_profiles?select=user_id,suspended_at,suspend_reason&limit=1'), {
+    headers: authHeaders(session.access_token)
+  });
+  const rows = await response.json().catch(() => []);
+  if (!response.ok) return null;
+  const profile = Array.isArray(rows) ? rows[0] : null;
+  if (!profile) {
+    clearUserSession();
+    throw new Error('Profil akun tidak aktif atau sudah dihapus.');
+  }
+  if (profile?.suspended_at) {
+    clearUserSession();
+    throw new Error(`Akun sedang disuspend. ${profile.suspend_reason || 'Hubungi admin AT STRUCTURA untuk membuka akses.'}`);
+  }
+  return profile;
+}
+
 async function signInUser(email, password) {
   const response = await fetch(authApiUrl('/auth/v1/token?grant_type=password'), {
     method: 'POST',
@@ -95,6 +114,7 @@ async function signInUser(email, password) {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(normalizeAuthError(payload.error_description || payload.msg || payload.message || 'Login gagal. Periksa email dan password.'));
+  await checkMemberAccountStatus(payload);
   setUserSession(payload);
   return payload;
 }
@@ -127,9 +147,95 @@ async function verifyEmailCode(email, token) {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(normalizeAuthError(payload.error_description || payload.msg || payload.message || 'Kode verifikasi tidak valid atau sudah kedaluwarsa.'));
-  if (payload.access_token) setUserSession(payload);
+  if (payload.access_token) {
+    await checkMemberAccountStatus(payload);
+    setUserSession(payload);
+  }
   return payload;
 }
+
+async function sendPasswordRecoveryOtp(email) {
+  const response = await fetch(authApiUrl('/auth/v1/recover'), {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ email })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(normalizeAuthError(payload.error_description || payload.msg || payload.message || 'Gagal mengirim OTP recovery password.'));
+  return payload;
+}
+
+async function verifyRecoveryCode(email, token) {
+  const response = await fetch(authApiUrl('/auth/v1/verify'), {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ email, token, type: 'recovery' })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(normalizeAuthError(payload.error_description || payload.msg || payload.message || 'Kode recovery tidak valid atau sudah kedaluwarsa.'));
+  if (payload.access_token) {
+    await checkMemberAccountStatus(payload);
+    setUserSession(payload);
+  }
+  return payload;
+}
+
+async function updateUserPassword(password) {
+  const session = await ensureUserSession();
+  if (!session?.access_token) throw new Error('Sesi recovery tidak ditemukan. Kirim OTP dan verifikasi kode dulu.');
+  const response = await fetch(authApiUrl('/auth/v1/user'), {
+    method: 'PUT',
+    headers: authHeaders(session.access_token),
+    body: JSON.stringify({ password })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(normalizeAuthError(payload.error_description || payload.msg || payload.message || 'Password gagal diperbarui.'));
+  return payload;
+}
+
+function setupChangePasswordForm() {
+  const form = document.querySelector('[data-change-password-form]');
+  if (!form) return;
+  const params = new URLSearchParams(window.location.search);
+  const session = getUserSession();
+  const initialEmail = params.get('email') || userEmailFromSession(session);
+  if (initialEmail) form.elements.email.value = initialEmail;
+
+  document.querySelector('[data-send-password-otp]')?.addEventListener('click', async () => {
+    if (!authReady()) return authStatus('Supabase belum dikonfigurasi.');
+    const email = String(form.elements.email.value || '').trim();
+    if (!email) return authStatus('Isi email akun dulu.');
+    authStatus('Mengirim OTP recovery ke email...');
+    try {
+      await sendPasswordRecoveryOtp(email);
+      authStatus('OTP recovery sudah dikirim. Cek inbox/spam email.', 'status-online');
+    } catch (error) {
+      authStatus(error.message);
+    }
+  });
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!authReady()) return authStatus('Supabase belum dikonfigurasi.');
+    const data = new FormData(form);
+    const email = String(data.get('email') || '').trim();
+    const token = String(data.get('token') || '').trim();
+    const password = String(data.get('password') || '');
+    const confirm = String(data.get('confirm_password') || '');
+    if (!email || !token) return authStatus('Email dan OTP wajib diisi.');
+    if (password.length < 6) return authStatus('Password baru minimal 6 karakter.');
+    if (password !== confirm) return authStatus('Konfirmasi password belum sama.');
+    authStatus('Memverifikasi OTP dan memperbarui password...');
+    try {
+      await verifyRecoveryCode(email, token);
+      await updateUserPassword(password);
+      authStatus('Password berhasil diperbarui. Silakan login ulang jika diminta.', 'status-online');
+    } catch (error) {
+      authStatus(error.message);
+    }
+  });
+}
+
 
 async function resendVerificationEmail(email) {
   const response = await fetch(authApiUrl('/auth/v1/resend'), {
@@ -251,9 +357,17 @@ function setupResendVerification() {
 
 async function guardProtectedPage() {
   if (!document.body?.dataset.requireAuth) return;
-  const session = await ensureUserSession();
-  if (session?.access_token) {
-    document.body.classList.remove('auth-checking');
+  try {
+    const session = await ensureUserSession();
+    if (session?.access_token) {
+      await checkMemberAccountStatus(session);
+      document.body.classList.remove('auth-checking');
+      return;
+    }
+  } catch (error) {
+    clearUserSession();
+    const next = encodeURIComponent(`${location.pathname}${location.search}`);
+    window.location.replace(`/pages/login/?next=${next}&message=suspended`);
     return;
   }
   const next = encodeURIComponent(`${location.pathname}${location.search}`);
@@ -263,11 +377,23 @@ async function guardProtectedPage() {
 async function renderAccountPage() {
   const box = document.querySelector('[data-account-panel]');
   if (!box) return;
-  const session = await ensureUserSession();
-  if (!session?.access_token) {
-    window.location.replace('/pages/login/?next=/pages/account/');
+  try {
+    const session = await ensureUserSession();
+    if (!session?.access_token) {
+      window.location.replace('/pages/login/?next=/pages/account/');
+      return;
+    }
+    await checkMemberAccountStatus(session);
+    document.body.classList.remove('auth-checking');
+    renderAccountPanel(box, session);
+  } catch (error) {
+    clearUserSession();
+    window.location.replace('/pages/login/?next=/pages/account/&message=suspended');
     return;
   }
+}
+
+function renderAccountPanel(box, session) {
   const email = userEmailFromSession(session);
   const name = session.user?.user_metadata?.full_name || 'Pengguna AT STRUCTURA';
   const phone = session.user?.user_metadata?.phone || '-';
@@ -281,6 +407,7 @@ async function renderAccountPage() {
       <div class="actions">
         <a class="btn btn-primary" href="/pages/software/">Buka Software</a>
         <a class="btn btn-secondary" href="/pages/jasa/">Buka Jasa</a>
+        <a class="btn btn-secondary" href="/pages/change-password/">Ganti Password</a>
         <button class="btn btn-danger" type="button" data-user-logout>Logout</button>
       </div>
     </div>
@@ -391,5 +518,6 @@ setupLoginForm();
 setupRegisterForm();
 setupVerifyEmailForm();
 setupResendVerification();
+setupChangePasswordForm();
 renderAccountPage();
 guardProtectedPage();

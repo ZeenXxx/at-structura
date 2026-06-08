@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login Akun | AT STRUCTURA</title>
-<meta name="description" content="Login akun AT STRUCTURA untuk mengakses halaman Software dan Jasa Teknik Sipil.">
+<title>Ganti Password | AT STRUCTURA</title>
+<meta name="description" content="Ganti atau recovery password akun AT STRUCTURA menggunakan OTP email.">
 <meta name="robots" content="noindex, nofollow">
 <meta name="author" content="Arief Tediansyah">
 <meta name="theme-color" content="#0B2A5B">
-<link rel="canonical" href="https://at-structura.vercel.app/pages/login/">
+<link rel="canonical" href="https://at-structura.vercel.app/pages/change-password/">
 <link rel="shortcut icon" href="/favicon.ico">
 <link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/style.css?v=2">
 <link rel="stylesheet" href="/css/navbar.css">
 </head>
 <body>
@@ -21,7 +21,7 @@
     <span><strong>AT STRUCTURA</strong><small>Civil engineering platform</small></span>
   </a>
   <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false"><span></span></button>
-  <nav class="nav-links" data-active="login">
+  <nav class="nav-links" data-active="account">
     <a href="/" data-page="home">Home</a>
     <a href="/pages/tools/" data-page="tools">Tools</a>
     <a href="/pages/resources/" data-page="resources">Resources</a>
@@ -35,31 +35,31 @@
 <main>
   <section class="page-head auth-head">
     <div class="container">
-      <span class="eyebrow">Akun Web</span>
-      <h1>Login AT STRUCTURA</h1>
-      <p class="lead">Masuk untuk membuka halaman Software dan Jasa. Tools dan Resources tetap bisa dibuka umum.</p>
+      <span class="eyebrow">Keamanan Akun</span>
+      <h1>Ganti Password</h1>
+      <p class="lead">Kirim OTP ke email akun, masukkan kode recovery, lalu buat password baru.</p>
     </div>
   </section>
   <section class="section">
     <div class="container auth-layout">
-      <form class="card manager-auth auth-card" data-login-form>
-        <span class="eyebrow">Member Access</span>
-        <h2 class="title">Masuk Akun</h2>
-        <label>Email<input class="control" name="email" type="email" autocomplete="email" placeholder="email@example.com" required></label>
-        <label>Password<input class="control" name="password" type="password" autocomplete="current-password" placeholder="Password akun" required></label>
-        <div id="loginCaptcha"></div>
-        <label>Jawaban Captcha<input class="control" name="captcha" inputmode="numeric" placeholder="Masukkan hasil hitung" required></label>
+      <form class="card manager-auth auth-card" data-change-password-form>
+        <span class="eyebrow">Recovery OTP</span>
+        <h2 class="title">Password Baru</h2>
+        <label>Email Akun<input class="control" name="email" type="email" autocomplete="email" placeholder="email@example.com" required></label>
+        <button class="btn btn-secondary" type="button" data-send-password-otp>Kirim OTP Email</button>
+        <label>Kode OTP<input class="control" name="token" inputmode="numeric" autocomplete="one-time-code" placeholder="6 digit kode email" required></label>
+        <label>Password Baru<input class="control" name="password" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter" required></label>
+        <label>Konfirmasi Password<input class="control" name="confirm_password" type="password" autocomplete="new-password" placeholder="Ulangi password baru" required></label>
         <div class="manager-actions">
-          <button class="btn btn-primary" type="submit">Login</button>
-          <a class="btn btn-secondary" href="/pages/daftar/">Daftar</a>
+          <button class="btn btn-primary" type="submit">Simpan Password</button>
+          <a class="btn btn-secondary" href="/pages/login/">Login</a>
         </div>
-        <p class="lead auth-small-link">Belum aktif? <a href="/pages/verify-email/">Masukkan kode verifikasi email</a>. Lupa password? <a href="/pages/change-password/">Recovery lewat OTP</a>.</p>
-        <div class="page-note manager-status" data-auth-status>Login diperlukan untuk Software dan Jasa.</div>
+        <div class="page-note manager-status" data-auth-status>OTP recovery dikirim ke email akun yang sudah terdaftar.</div>
       </form>
       <aside class="card auth-side">
-        <span class="icon">AT</span>
-        <h2>Akses member yang rapi</h2>
-        <p>Software dan Jasa dibuat khusus untuk pengguna yang punya akun agar aksesnya lebih tertata dan siap dikembangkan menjadi sistem member.</p>
+        <span class="icon">PW</span>
+        <h2>Recovery aman lewat email</h2>
+        <p>OTP hanya berlaku sementara. Setelah password berubah, gunakan password baru untuk login berikutnya.</p>
       </aside>
     </div>
   </section>
@@ -67,13 +67,13 @@
 <footer class="site-footer">
   <div class="footer-grid">
     <div><a class="footer-brand" href="/"><img src="/assets/logo/at-structura-logo.png?v=2" alt="Logo AT STRUCTURA"><span>AT STRUCTURA</span></a><p>Platform pribadi Arief Tediansyah untuk tools, resources, software, portfolio, dan layanan pendukung Teknik Sipil.</p></div>
-    <div><h3>Mulai Cepat</h3><a href="/pages/tools/">Tools</a><a href="/pages/resources/">Resources</a></div>
     <div><h3>Akun</h3><a href="/pages/login/">Login</a><a href="/pages/daftar/">Daftar</a></div>
+    <div><h3>Publik</h3><a href="/pages/tools/">Tools</a><a href="/pages/resources/">Resources</a></div>
     <div><h3>Kontak</h3><p>Email: arieftediansyah0@gmail.com<br>WhatsApp: 081220032582</p></div>
   </div>
-  <div class="footer-bottom"><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Member access.</span></div>
+  <div class="footer-bottom"><span>&copy; 2026 AT STRUCTURA. Developed by Arief Tediansyah.</span><span>Password recovery.</span></div>
 </footer>
-<script src="/js/supabase-config.js?v=6"></script>
+<script src="/js/supabase-config.js?v=8"></script>
 <script src="/js/auth.js?v=5"></script>
 <script src="/js/navbar.js?v=3"></script>
 </body>

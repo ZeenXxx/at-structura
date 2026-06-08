@@ -45,6 +45,7 @@ const els = {
 const cfg = () => window.AT_SUPABASE || {};
 const isSupabaseReady = () => Boolean(cfg().enabled && cfg().url && cfg().anonKey && !String(cfg().url).includes('PROJECT_ID') && !String(cfg().anonKey).includes('SUPABASE_ANON_KEY'));
 const apiUrl = path => `${String(cfg().url || '').replace(/\/$/, '')}${path}`;
+const functionUrl = path => `${String(cfg().url || '').replace(/\/$/, '')}/functions/v1${path}`;
 const getSession = () => {
   try { return JSON.parse(localStorage.getItem(sessionKey) || 'null'); } catch { return null; }
 };
@@ -370,8 +371,9 @@ function filterItems(kind) {
   return items.filter(item => {
     if (kind === 'members') {
       const verified = Boolean(item.email_confirmed_at);
+      const suspended = Boolean(item.suspended_at);
       const haystack = [item.full_name, item.email, item.phone, item.institution, item.source, item.user_id].join(' ').toLowerCase();
-      return (status === 'All' || (status === 'Verified' && verified) || (status === 'Unverified' && !verified)) && haystack.includes(search);
+      return (status === 'All' || (status === 'Verified' && verified && !suspended) || (status === 'Unverified' && !verified && !suspended) || (status === 'Suspended' && suspended)) && haystack.includes(search);
     }
     if (kind === 'orders') {
       const haystack = [item.order_number, item.status, item.total_amount, item.proof_file_name, ...(item.order_items || []).map(orderItem => orderItem.title_snapshot)].join(' ').toLowerCase();
@@ -476,11 +478,17 @@ function renderList(kind) {
   if (kind === 'members') {
     list.innerHTML = data.map(item => {
       const verified = Boolean(item.email_confirmed_at);
+      const suspended = Boolean(item.suspended_at);
+      const statusBadge = suspended ? 'Suspended' : verified ? 'Terverifikasi' : 'Belum verifikasi';
+      const statusClass = suspended || verified ? 'tag-red' : '';
+      const suspendButton = suspended
+        ? `<button class="btn btn-secondary" type="button" data-member-action="unsuspend" data-user-id="${escapeText(item.user_id)}">Buka Suspend</button>`
+        : `<button class="btn btn-secondary" type="button" data-member-action="suspend" data-user-id="${escapeText(item.user_id)}">Suspend</button>`;
       return `
         <article class="admin-item member-item" data-id="${escapeText(item.user_id)}">
           <div>
             <div class="meta">
-              <span class="badge ${verified ? 'tag-red' : ''}">${verified ? 'Terverifikasi' : 'Belum verifikasi'}</span>
+              <span class="badge ${statusClass}">${statusBadge}</span>
               <span class="badge">${escapeText(item.source)}</span>
             </div>
             <h3>${escapeText(item.full_name)}</h3>
@@ -491,8 +499,14 @@ function renderList(kind) {
               <span><strong>Daftar</strong>${escapeText(formatDate(item.created_at))}</span>
               <span><strong>Verifikasi</strong>${escapeText(formatDate(item.email_confirmed_at))}</span>
               <span><strong>Login terakhir</strong>${escapeText(formatDate(item.last_sign_in_at))}</span>
+              <span><strong>Suspend</strong>${escapeText(formatDate(item.suspended_at))}</span>
             </div>
+            ${suspended ? `<small>Alasan suspend: ${escapeText(item.suspend_reason || '-')}</small>` : ''}
             <small>User ID: ${escapeText(item.user_id)}</small>
+          </div>
+          <div class="manager-row-actions">
+            ${suspendButton}
+            <button class="btn btn-danger" type="button" data-member-action="delete" data-user-id="${escapeText(item.user_id)}">Hapus Akun</button>
           </div>
         </article>
       `;
@@ -682,6 +696,22 @@ async function deleteOrderForTesting(id) {
   await deleteRows('orders', `id=eq.${encodeURIComponent(id)}`, session);
 }
 
+async function runMemberAction(userId, action, reason = '') {
+  const session = await ensureSession();
+  if (!session?.access_token) return redirectToLogin();
+  const response = await fetch(functionUrl('/admin-account-action'), {
+    method: 'POST',
+    headers: {
+      ...authHeaders(session.access_token),
+      Authorization: `Bearer ${session.access_token}`
+    },
+    body: JSON.stringify({ user_id: userId, action, reason })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.error || payload.message || `Aksi akun gagal (${response.status}).`);
+  return payload;
+}
+
 async function openOrderProof(id) {
   const order = state.orders.find(item => item.id === id);
   if (!order?.proof_bucket || !order?.proof_path) return showToast('Bukti pembayaran belum ada.');
@@ -777,6 +807,29 @@ document.addEventListener('click', async event => {
   const proofButton = event.target.closest('[data-order-proof]');
   if (proofButton) {
     try { await openOrderProof(proofButton.dataset.orderProof); } catch (error) { showToast(error.message); }
+    return;
+  }
+  const memberButton = event.target.closest('[data-member-action]');
+  if (memberButton) {
+    const action = memberButton.dataset.memberAction;
+    const userId = memberButton.dataset.userId;
+    const member = state.members.find(item => item.user_id === userId);
+    if (!member) return showToast('Akun tidak ditemukan.');
+    const label = member.email || userId;
+    let reason = '';
+    if (action === 'suspend') {
+      reason = prompt(`Alasan suspend untuk ${label}:`, 'Akun disuspend oleh admin AT STRUCTURA.') || '';
+      if (!reason.trim()) return showToast('Suspend dibatalkan karena alasan kosong.');
+    }
+    if (action === 'unsuspend' && !confirm(`Buka suspend akun ${label}?`)) return;
+    if (action === 'delete' && !confirm(`Hapus akun ${label} secara permanen? Data profil, order, akses, dan akun Auth akan ikut dihapus.`)) return;
+    try {
+      await runMemberAction(userId, action, reason);
+      await loadAll();
+      showToast(action === 'delete' ? 'Akun berhasil dihapus.' : 'Status akun berhasil diperbarui.');
+    } catch (error) {
+      showToast(error.message);
+    }
     return;
   }
   const statusButton = event.target.closest('[data-order-save-status]');
