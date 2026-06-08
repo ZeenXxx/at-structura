@@ -304,6 +304,12 @@ async function renderAccountCommerce() {
           <div class="meta"><span class="badge tag-red">Akses Aktif</span><span class="badge">${window.ATShop.escape(access.item_kind)}</span></div>
           <h3>${window.ATShop.escape(item?.title || access.item_id)}</h3>
           <p>${window.ATShop.escape(item?.description || 'Akses premium sudah aktif.')}</p>
+          ${item ? `
+            <div class="download-progress" data-account-download-status="${window.ATShop.escape(access.item_kind)}:${window.ATShop.escape(access.item_id)}">
+              <div class="download-progress-bar"><span style="width: 0%"></span></div>
+              <small>Siap diunduh.</small>
+            </div>
+          ` : ''}
         </div>
         ${item ? `<button class="btn btn-primary" type="button" data-account-download="${window.ATShop.escape(access.item_kind)}:${window.ATShop.escape(access.item_id)}">Download</button>` : ''}
       </article>
@@ -336,7 +342,28 @@ async function renderAccountCommerce() {
     button.addEventListener('click', async () => {
       const item = itemByKey.get(button.dataset.accountDownload);
       if (!item) return;
-      try { await window.ATShop.openItem(item); } catch (error) { window.ATShop.showToast(error.message); }
+      const status = box.querySelector(`[data-account-download-status="${CSS.escape(button.dataset.accountDownload)}"]`);
+      const bar = status?.querySelector('.download-progress-bar span');
+      const text = status?.querySelector('small');
+      const originalText = button.textContent;
+      const setProgress = detail => {
+        const percent = Number(detail.percent || 0);
+        if (bar) bar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+        if (text) text.textContent = detail.message || 'Memproses download...';
+        button.textContent = detail.phase === 'done' ? 'Download' : 'Memproses...';
+      };
+      try {
+        button.disabled = true;
+        setProgress({ percent: 0, message: 'Menyiapkan download...' });
+        await window.ATShop.openItem(item, { onProgress: setProgress });
+      } catch (error) {
+        if (text) text.textContent = error.message;
+        if (bar) bar.style.width = '0%';
+        window.ATShop.showToast(error.message);
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
     });
   });
 }

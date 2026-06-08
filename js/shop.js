@@ -137,11 +137,39 @@ async function removeStorageFiles(bucket, paths, token = shopToken()) {
   if (!response.ok) throw new Error(payload.message || payload.error || `Hapus file storage gagal (${response.status}).`);
 }
 
-async function downloadStorageFile(item, token = shopToken()) {
+async function downloadStorageFile(item, token = shopToken(), options = {}) {
+  if (token && typeof token === 'object') {
+    options = token;
+    token = shopToken();
+  }
+  const report = detail => {
+    if (typeof options.onProgress === 'function') options.onProgress(detail);
+  };
+  report({ phase: 'signing', percent: 0, message: 'Menyiapkan link download...' });
   const url = await signedUrl(item.storage_bucket, item.storage_path, token);
+  report({ phase: 'connecting', percent: 4, message: 'Menghubungkan ke file...' });
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Download file gagal (${response.status}).`);
-  const blob = await response.blob();
+  const total = Number(response.headers.get('content-length') || 0);
+  let blob;
+  if (response.body && total > 0) {
+    const reader = response.body.getReader();
+    const chunks = [];
+    let received = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      received += value.length;
+      const percent = Math.min(99, Math.max(5, Math.round((received / total) * 100)));
+      report({ phase: 'downloading', percent, message: `Mengunduh ${percent}%...` });
+    }
+    blob = new Blob(chunks, { type: response.headers.get('content-type') || item.mime_type || 'application/octet-stream' });
+  } else {
+    report({ phase: 'downloading', percent: 25, message: 'Mengunduh file...' });
+    blob = await response.blob();
+  }
+  report({ phase: 'saving', percent: 100, message: 'Menyiapkan file di perangkat...' });
   const objectUrl = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = objectUrl;
@@ -151,6 +179,7 @@ async function downloadStorageFile(item, token = shopToken()) {
   anchor.click();
   anchor.remove();
   setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+  report({ phase: 'done', percent: 100, message: 'Download dimulai. Cek folder Downloads.' });
 }
 
 async function logDownload(item) {
@@ -163,16 +192,18 @@ async function logDownload(item) {
   }).catch(() => {});
 }
 
-async function openItem(item) {
+async function openItem(item, options = {}) {
   if (item.storage_bucket && item.storage_path) {
-    await downloadStorageFile(item);
+    await downloadStorageFile(item, shopToken(), options);
     await logDownload(item);
     return;
   }
   const url = item.link || item.official_url || item.mega_url || item.external_url || '#';
   if (url && url !== '#') {
+    if (typeof options.onProgress === 'function') options.onProgress({ phase: 'opening', percent: 80, message: 'Membuka link...' });
     await logDownload(item);
     window.open(url, '_blank', 'noopener');
+    if (typeof options.onProgress === 'function') options.onProgress({ phase: 'done', percent: 100, message: 'Link dibuka di tab baru.' });
   } else {
     showShopToast('File atau link belum tersedia.');
   }
