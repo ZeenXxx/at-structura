@@ -12,7 +12,13 @@ function appendAuthLinks() {
   const cartCount = (() => {
     try { return JSON.parse(localStorage.getItem('at_structura_cart') || '[]').length; } catch { return 0; }
   })();
-  nav.insertAdjacentHTML('beforeend', `<a href="/pages/cart/" data-page="cart">Keranjang <span data-cart-count>${cartCount}</span></a>`);
+  nav.insertAdjacentHTML('beforeend', `
+    <a class="cart-link" href="/pages/cart/" data-page="cart" aria-label="Keranjang">
+      <span class="cart-icon" aria-hidden="true"></span>
+      <span class="cart-label">Keranjang</span>
+      <span class="cart-badge ${cartCount > 0 ? 'show' : ''}" data-cart-count>${cartCount > 0 ? cartCount : ''}</span>
+    </a>
+  `);
   const session = readPublicUserSession();
   if (session?.access_token) {
     nav.insertAdjacentHTML('beforeend', `

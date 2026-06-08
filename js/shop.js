@@ -31,7 +31,11 @@ function writeCart(items) {
 }
 
 function updateCartBadge() {
-  document.querySelectorAll('[data-cart-count]').forEach(node => { node.textContent = readCart().length; });
+  const count = readCart().length;
+  document.querySelectorAll('[data-cart-count]').forEach(node => {
+    node.textContent = count > 0 ? String(count) : '';
+    node.classList.toggle('show', count > 0);
+  });
 }
 
 function addToCart(item) {

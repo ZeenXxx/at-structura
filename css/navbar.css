@@ -19,6 +19,57 @@
 .nav-links { display: flex; align-items: center; gap: 4px; }
 .nav-links a { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 13px; border-radius: 8px; color: #26364f; font-size: 14px; font-weight: 850; transition: .2s; }
 .nav-links a:hover, .nav-links a.active { color: var(--red); background: rgba(193, 18, 31, .08); }
+.cart-link {
+  position: relative;
+  gap: 8px;
+}
+.cart-icon {
+  position: relative;
+  width: 20px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-top: 0;
+  border-radius: 2px 2px 5px 5px;
+}
+.cart-icon:before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: -7px;
+  width: 10px;
+  height: 8px;
+  border-top: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  transform: skewX(-18deg);
+}
+.cart-icon:after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  bottom: -7px;
+  height: 4px;
+  background:
+    radial-gradient(circle, currentColor 0 2px, transparent 2.5px) left center / 8px 4px no-repeat,
+    radial-gradient(circle, currentColor 0 2px, transparent 2.5px) right center / 8px 4px no-repeat;
+}
+.cart-badge {
+  display: none;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 6px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+.cart-badge.show {
+  display: inline-flex;
+}
 .menu-toggle { display: none; width: 46px; height: 46px; border: 1px solid rgba(11, 42, 91, .15); border-radius: 8px; background: #fff; cursor: pointer; position: relative; }
 .menu-toggle span, .menu-toggle:before, .menu-toggle:after { content: ""; position: absolute; left: 12px; right: 12px; height: 2px; background: var(--primary); border-radius: 999px; transition: .2s; }
 .menu-toggle span { top: 22px; }
@@ -32,6 +83,9 @@
   .nav-links { position: fixed; top: 82px; left: 16px; right: 16px; display: none; grid-template-columns: 1fr; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; box-shadow: var(--shadow); }
   .nav-links.open { display: grid; }
   .nav-links a { justify-content: flex-start; }
+  .cart-link {
+    justify-content: flex-start;
+  }
 }
 @media(max-width: 560px) {
   .brand small { display: none; }
