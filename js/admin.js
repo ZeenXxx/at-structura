@@ -3,6 +3,13 @@ const loginPath = '/pages/resource-login/';
 const state = { resources: [], software: [], services: [], members: [], orders: [], activePanel: 'resources' };
 const visibleStatuses = ['Tersedia', 'Link Eksternal', 'Coming Soon'];
 const serviceVisibleStatuses = ['Aktif'];
+const orderStatuses = [
+  ['pending_payment', 'Menunggu Pembayaran'],
+  ['payment_review', 'Review Pembayaran'],
+  ['paid', 'Lunas'],
+  ['rejected', 'Ditolak'],
+  ['cancelled', 'Dibatalkan']
+];
 
 const els = {
   sessionStatus: document.getElementById('adminSessionStatus'),
@@ -56,6 +63,10 @@ const escapeText = value => String(value || '').replace(/[&<>"']/g, char => ({ '
 const slugify = value => String(value || 'item').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'item';
 const fileSlug = value => String(value || 'file').toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-|-$/g, '') || 'file';
 const money = value => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(value || 0));
+const orderStatusLabel = value => orderStatuses.find(([status]) => status === value)?.[1] || value || '-';
+const orderStatusOptions = selected => orderStatuses
+  .map(([value, label]) => `<option value="${escapeText(value)}" ${value === selected ? 'selected' : ''}>${escapeText(label)}</option>`)
+  .join('');
 const formatDate = value => {
   if (!value) return '-';
   const date = new Date(value);
@@ -430,18 +441,25 @@ function renderList(kind) {
       const reviewActions = order.status === 'payment_review'
         ? `<button class="btn btn-primary" type="button" data-order-action="paid" data-id="${escapeText(order.id)}">Setujui</button><button class="btn btn-danger" type="button" data-order-action="rejected" data-id="${escapeText(order.id)}">Tolak</button>`
         : '';
+      const statusEditor = `
+        <label class="sr-only" for="order-status-${escapeText(order.id)}">Status pembayaran</label>
+        <select class="control order-status-control" id="order-status-${escapeText(order.id)}" data-order-status="${escapeText(order.id)}">
+          ${orderStatusOptions(order.status)}
+        </select>
+        <button class="btn btn-secondary" type="button" data-order-save-status="${escapeText(order.id)}">Simpan Status</button>
+      `;
       return `
         <article class="admin-item order-item" data-id="${escapeText(order.id)}">
           <div>
             <div class="meta">
-              <span class="badge ${order.status === 'paid' ? 'tag-red' : ''}">${escapeText(order.status)}</span>
+              <span class="badge ${order.status === 'paid' ? 'tag-red' : ''}">${escapeText(orderStatusLabel(order.status))}</span>
               <span class="badge">${escapeText(money(order.total_amount))}</span>
             </div>
             <h3>${escapeText(order.order_number)}</h3>
             <p>${items.map(item => escapeText(item.title_snapshot)).join(', ') || 'Order premium'}</p>
             <small>Bukti: ${escapeText(order.proof_file_name || '-')} | Dibuat: ${escapeText(formatDate(order.created_at))}</small>
           </div>
-          <div class="manager-row-actions">${proofButton}${reviewActions}</div>
+          <div class="manager-row-actions">${proofButton}${statusEditor}${reviewActions}<button class="btn btn-danger" type="button" data-order-delete="${escapeText(order.id)}">Hapus Testing</button></div>
         </article>
       `;
     }).join('') || `
@@ -623,6 +641,7 @@ async function updateOrderStatus(id, status) {
   if (!session?.access_token) return redirectToLogin();
   const body = { status };
   if (status === 'rejected') body.admin_note = 'Pembayaran ditolak. Silakan upload bukti yang benar.';
+  if (status === 'paid') body.admin_note = null;
   const response = await fetch(apiUrl(`/rest/v1/orders?id=eq.${encodeURIComponent(id)}`), {
     method: 'PATCH',
     headers: { ...authHeaders(session.access_token), Prefer: 'return=minimal' },
@@ -632,6 +651,35 @@ async function updateOrderStatus(id, status) {
     const result = await response.json().catch(() => ({}));
     throw new Error(result.message || result.msg || `Update order gagal (${response.status}).`);
   }
+  if (status !== 'paid') {
+    await deleteRows('member_access', `order_id=eq.${encodeURIComponent(id)}`, session);
+  }
+}
+
+async function deleteRows(table, filter, session) {
+  const response = await fetch(apiUrl(`/rest/v1/${table}?${filter}`), {
+    method: 'DELETE',
+    headers: { ...authHeaders(session.access_token), Prefer: 'return=minimal' }
+  });
+  if (!response.ok) {
+    const result = await response.json().catch(() => ({}));
+    throw new Error(result.message || result.msg || `Hapus data ${table} gagal (${response.status}).`);
+  }
+}
+
+async function deleteOrderForTesting(id) {
+  const session = await ensureSession();
+  if (!session?.access_token) return redirectToLogin();
+  const order = state.orders.find(item => item.id === id);
+  if (!order) throw new Error('Order tidak ditemukan.');
+  if (order.proof_bucket && order.proof_path && window.ATShop?.removeStorageFiles) {
+    await window.ATShop.removeStorageFiles(order.proof_bucket, order.proof_path, session.access_token);
+  }
+  await deleteRows('member_access', `order_id=eq.${encodeURIComponent(id)}`, session).catch(error => {
+    if (!String(error.message || '').includes('column')) throw error;
+  });
+  await deleteRows('order_items', `order_id=eq.${encodeURIComponent(id)}`, session);
+  await deleteRows('orders', `id=eq.${encodeURIComponent(id)}`, session);
 }
 
 async function openOrderProof(id) {
@@ -729,6 +777,35 @@ document.addEventListener('click', async event => {
   const proofButton = event.target.closest('[data-order-proof]');
   if (proofButton) {
     try { await openOrderProof(proofButton.dataset.orderProof); } catch (error) { showToast(error.message); }
+    return;
+  }
+  const statusButton = event.target.closest('[data-order-save-status]');
+  if (statusButton) {
+    const id = statusButton.dataset.orderSaveStatus;
+    const select = document.querySelector(`[data-order-status="${CSS.escape(id)}"]`);
+    const nextStatus = select?.value;
+    if (!nextStatus) return showToast('Pilih status pembayaran dulu.');
+    try {
+      await updateOrderStatus(id, nextStatus);
+      await loadAll();
+      showToast('Status pembayaran berhasil diubah.');
+    } catch (error) {
+      showToast(error.message);
+    }
+    return;
+  }
+  const deleteOrderButton = event.target.closest('[data-order-delete]');
+  if (deleteOrderButton) {
+    const order = state.orders.find(item => item.id === deleteOrderButton.dataset.orderDelete);
+    const label = order?.order_number || 'order ini';
+    if (!confirm(`Hapus ${label} dari data testing? Bukti pembayaran di Storage juga akan dihapus permanen.`)) return;
+    try {
+      await deleteOrderForTesting(deleteOrderButton.dataset.orderDelete);
+      await loadAll();
+      showToast('Order testing dan bukti pembayaran berhasil dihapus.');
+    } catch (error) {
+      showToast(error.message);
+    }
     return;
   }
   const orderButton = event.target.closest('[data-order-action]');

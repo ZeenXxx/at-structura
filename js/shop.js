@@ -16,6 +16,7 @@ const shopMoney = value => new Intl.NumberFormat('id-ID', { style: 'currency', c
 const shopPath = path => String(path || '').split('/').map(encodeURIComponent).join('/');
 const shopFileSlug = value => String(value || 'file').toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-|-$/g, '') || 'file';
 const shopBaseUrl = () => String(shopCfg().url || '').replace(/\/$/, '');
+const downloadFileName = item => shopFileSlug(item.file_name || item.download_label || item.title || 'at-structura-file');
 
 function normalizeStoragePath(bucket, path) {
   const bucketName = String(bucket || shopBucket()).replace(/^\/+|\/+$/g, '');
@@ -121,6 +122,37 @@ async function signedUrl(bucket, path, token = shopToken()) {
   return resolveSignedUrl(url);
 }
 
+async function removeStorageFiles(bucket, paths, token = shopToken()) {
+  const bucketName = String(bucket || shopBucket()).replace(/^\/+|\/+$/g, '');
+  const cleanPaths = (Array.isArray(paths) ? paths : [paths])
+    .map(path => normalizeStoragePath(bucketName, path))
+    .filter(Boolean);
+  if (!bucketName || !cleanPaths.length) return;
+  const response = await fetch(storageApiUrl(`/object/${bucketName}`), {
+    method: 'DELETE',
+    headers: shopHeaders(token, true),
+    body: JSON.stringify({ prefixes: cleanPaths })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(payload.message || payload.error || `Hapus file storage gagal (${response.status}).`);
+}
+
+async function downloadStorageFile(item, token = shopToken()) {
+  const url = await signedUrl(item.storage_bucket, item.storage_path, token);
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Download file gagal (${response.status}).`);
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = objectUrl;
+  anchor.download = downloadFileName(item);
+  anchor.style.display = 'none';
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+}
+
 async function logDownload(item) {
   const session = shopSession();
   if (!session?.access_token) return;
@@ -133,9 +165,8 @@ async function logDownload(item) {
 
 async function openItem(item) {
   if (item.storage_bucket && item.storage_path) {
-    const url = await signedUrl(item.storage_bucket, item.storage_path);
+    await downloadStorageFile(item);
     await logDownload(item);
-    window.open(url, '_blank', 'noopener');
     return;
   }
   const url = item.link || item.official_url || item.mega_url || item.external_url || '#';
@@ -212,8 +243,8 @@ async function loadAccountData() {
   const itemRefs = [...access, ...saved];
   const resourceIds = itemRefs.filter(item => item.item_kind === 'resource').map(item => item.item_id);
   const softwareIds = itemRefs.filter(item => item.item_kind === 'software').map(item => item.item_id);
-  const resourceSelect = 'select=id,title,category,type,author,description,status,link,mega_url,external_url,storage_bucket,storage_path,access_type,price,download_label';
-  const softwareSelect = 'select=id,title,category,type,author,description,status,link,mega_url,official_url,storage_bucket,storage_path,access_type,price,download_label,platform,license';
+  const resourceSelect = 'select=id,title,category,type,author,description,status,link,mega_url,external_url,storage_bucket,storage_path,access_type,price,download_label,file_name,mime_type';
+  const softwareSelect = 'select=id,title,category,type,author,description,status,link,mega_url,official_url,storage_bucket,storage_path,access_type,price,download_label,file_name,mime_type,platform,license';
   const [resourceRes, softwareRes] = await Promise.all([
     resourceIds.length ? fetch(shopApiUrl(`/rest/v1/resources?${resourceSelect}&id=in.(${resourceIds.join(',')})`), { headers }) : Promise.resolve({ ok: true, json: async () => [] }),
     softwareIds.length ? fetch(shopApiUrl(`/rest/v1/software_items?${softwareSelect}&id=in.(${softwareIds.join(',')})`), { headers }) : Promise.resolve({ ok: true, json: async () => [] })
@@ -245,6 +276,8 @@ window.ATShop = {
   createOrderFromCart,
   submitPaymentProof,
   uploadStorageFile,
+  removeStorageFiles,
+  downloadStorageFile,
   signedUrl,
   loadAccountData,
   showToast: showShopToast

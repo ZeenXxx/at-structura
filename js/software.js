@@ -40,7 +40,9 @@ const normalizeSoftware = item => ({
   currency: item.currency || 'IDR',
   storage_bucket: item.storage_bucket || '',
   storage_path: item.storage_path || '',
-  download_label: item.download_label || 'Download'
+  download_label: item.download_label || 'Download',
+  file_name: item.file_name || '',
+  mime_type: item.mime_type || ''
 });
 const canOpen = item => item.access_type !== 'premium' || accessMap.has(`${item.item_kind}:${item.item_id}`);
 const accessBadge = item => item.access_type === 'premium' && item.price > 0 ? window.ATShop?.money?.(item.price) || `Rp ${item.price}` : 'Gratis';
@@ -127,7 +129,7 @@ function render() {
 }
 async function loadSupabaseSoftware() {
   const table = supabaseConfig().softwareTable || 'software_items';
-  const query = 'select=id,title,category,type,platform,license,author,description,status,link,official_url,mega_url,published_at,created_at,access_type,price,currency,storage_bucket,storage_path,download_label&status=in.(Tersedia,Link%20Eksternal,Coming%20Soon)&order=published_at.desc.nullslast,created_at.desc';
+  const query = 'select=id,title,category,type,platform,license,author,description,status,link,official_url,mega_url,published_at,created_at,access_type,price,currency,storage_bucket,storage_path,download_label,file_name,mime_type&status=in.(Tersedia,Link%20Eksternal,Coming%20Soon)&order=published_at.desc.nullslast,created_at.desc';
   const response = await fetch(supabaseUrl(`/rest/v1/${table}?${query}`), { headers: supabaseHeaders() });
   if (!response.ok) throw new Error(`Supabase software gagal dimuat (${response.status}).`);
   return (await response.json()).map(normalizeSoftware);
