@@ -1,4 +1,4 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
 Disallow: /pages/resource-upload/
 Disallow: /pages/resource-login/

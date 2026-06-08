@@ -1,4 +1,4 @@
-﻿const $ = selector => document.querySelector(selector);
+const $ = selector => document.querySelector(selector);
 const format = (value, digits = 0) => new Intl.NumberFormat('id-ID', {
   minimumFractionDigits: digits,
   maximumFractionDigits: digits

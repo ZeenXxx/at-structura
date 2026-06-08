@@ -1,4 +1,4 @@
-﻿.diagram-hero {
+.diagram-hero {
   padding: 88px 0 64px;
   background: linear-gradient(135deg, #0B2A5B, #153C78);
   color: #fff;
@@ -18,7 +18,7 @@
 
 .diagram-hero h1 {
   margin: 12px 0 16px;
-  font-size: clamp(36px, 6vw, 72px);
+  font-size: 66px;
   line-height: 1.02;
 }
 
@@ -327,7 +327,7 @@ th {
   color: var(--primary);
 }
 
-/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ Beam diagram SVG elements ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
+/* Ã¢â€â‚¬Ã¢â€â‚¬ Beam diagram SVG elements Ã¢â€â‚¬Ã¢â€â‚¬ */
 .diagram-node-ring {
   fill: rgba(255, 255, 255, .92);
   stroke: rgba(15, 77, 58, .2);
@@ -599,6 +599,10 @@ th {
 @media (max-width: 560px) {
   .diagram-hero {
     padding-top: 56px;
+  }
+
+  .diagram-hero h1 {
+    font-size: 42px;
   }
 
   .form-grid.two,

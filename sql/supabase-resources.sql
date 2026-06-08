@@ -1,4 +1,4 @@
-﻿-- AT STRUCTURA Resource Catalog (Opsi 1: file besar di MEGA, metadata di Supabase)
+-- AT STRUCTURA Resource Catalog (Opsi 1: file besar di MEGA, metadata di Supabase)
 -- Jalankan di Supabase SQL Editor.
 -- Setelah membuat user admin di Supabase Auth, masukkan user_id admin ke tabel resource_admins.
 

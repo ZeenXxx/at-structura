@@ -1,43 +1,115 @@
-﻿.navbar {
+.navbar {
   position: sticky;
   top: 0;
   z-index: 1000;
-  min-height: 82px;
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px clamp(18px, 5vw, 72px);
+  background: rgba(255, 255, 255, .86);
+  border-bottom: 1px solid rgba(11, 42, 91, .1);
+  box-shadow: 0 16px 40px rgba(11, 42, 91, .07);
+  backdrop-filter: blur(18px) saturate(1.18);
+}
+
+.brand {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px clamp(18px, 5vw, 72px);
-  background: rgba(255, 255, 255, .95);
-  border-bottom: 1px solid rgba(11, 42, 91, .12);
-  box-shadow: 0 12px 28px rgba(11, 42, 91, .08);
-  backdrop-filter: blur(16px);
+  min-width: 0;
+  margin-right: auto;
 }
-.brand { display: flex; align-items: center; gap: 12px; min-width: 0; margin-right: auto; }
-.brand img { width: 56px; height: 56px; object-fit: contain; }
-.brand strong { display: block; color: var(--primary); font-size: 21px; font-weight: 900; line-height: 1; }
-.brand small { display: block; max-width: 330px; margin-top: 5px; color: var(--muted); font-size: 11px; font-weight: 700; line-height: 1.25; }
-.nav-links { display: flex; align-items: center; gap: 4px; }
-.nav-links a { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 13px; border-radius: 8px; color: #26364f; font-size: 14px; font-weight: 850; transition: .2s; }
-.nav-links a:hover, .nav-links a.active { color: var(--red); background: rgba(193, 18, 31, .08); }
+
+.brand img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 14px rgba(11, 42, 91, .12));
+}
+
+.brand strong {
+  display: block;
+  color: var(--primary);
+  font-size: 19px;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: .01em;
+}
+
+.brand small {
+  display: block;
+  max-width: 330px;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 760;
+  line-height: 1.25;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px;
+  border: 1px solid rgba(11, 42, 91, .08);
+  border-radius: 8px;
+  background: rgba(243, 246, 250, .72);
+}
+
+.nav-links a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 7px;
+  color: #24324a;
+  font-size: 13px;
+  font-weight: 850;
+  transition: color .18s, background .18s, box-shadow .18s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--primary);
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(11, 42, 91, .08);
+}
+
+.nav-links a.active:after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 5px;
+  height: 2px;
+  border-radius: 99px;
+  background: var(--red);
+}
+
 .cart-link {
   position: relative;
   gap: 8px;
 }
+
 .cart-icon {
-  width: 25px;
-  height: 25px;
+  width: 24px;
+  height: 24px;
   color: currentColor;
   fill: none;
   stroke: currentColor;
-  stroke-width: 5.2;
+  stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
   flex: 0 0 auto;
 }
+
 .cart-badge {
   display: none;
-  min-width: 19px;
-  height: 19px;
+  min-width: 18px;
+  height: 18px;
   padding: 0 6px;
   align-items: center;
   justify-content: center;
@@ -48,29 +120,78 @@
   font-weight: 900;
   line-height: 1;
 }
+
 .cart-badge.show {
   display: inline-flex;
 }
-.menu-toggle { display: none; width: 46px; height: 46px; border: 1px solid rgba(11, 42, 91, .15); border-radius: 8px; background: #fff; cursor: pointer; position: relative; }
-.menu-toggle span, .menu-toggle:before, .menu-toggle:after { content: ""; position: absolute; left: 12px; right: 12px; height: 2px; background: var(--primary); border-radius: 999px; transition: .2s; }
-.menu-toggle span { top: 22px; }
-.menu-toggle:before { top: 15px; }
-.menu-toggle:after { top: 29px; }
+
+.menu-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(11, 42, 91, .14);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 10px 24px rgba(11, 42, 91, .08);
+}
+
+.menu-toggle span,
+.menu-toggle:before,
+.menu-toggle:after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 999px;
+  transition: .2s;
+}
+
+.menu-toggle span { top: 21px; }
+.menu-toggle:before { top: 14px; }
+.menu-toggle:after { top: 28px; }
 .menu-toggle[aria-expanded="true"] span { opacity: 0; }
-.menu-toggle[aria-expanded="true"]:before { top: 22px; transform: rotate(45deg); }
-.menu-toggle[aria-expanded="true"]:after { top: 22px; transform: rotate(-45deg); }
+.menu-toggle[aria-expanded="true"]:before { top: 21px; transform: rotate(45deg); }
+.menu-toggle[aria-expanded="true"]:after { top: 21px; transform: rotate(-45deg); }
+
 @media(max-width: 1040px) {
   .menu-toggle { display: block; }
-  .nav-links { position: fixed; top: 82px; left: 16px; right: 16px; display: none; grid-template-columns: 1fr; padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff; box-shadow: var(--shadow); }
-  .nav-links.open { display: grid; }
-  .nav-links a { justify-content: flex-start; }
-  .cart-link {
-    justify-content: flex-start;
+
+  .nav-links {
+    position: fixed;
+    top: 76px;
+    left: 16px;
+    right: 16px;
+    display: none;
+    grid-template-columns: 1fr;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .96);
+    box-shadow: var(--shadow);
   }
+
+  .nav-links.open { display: grid; }
+  .nav-links a { justify-content: flex-start; min-height: 44px; }
+  .nav-links a.active:after {
+    left: 10px;
+    right: auto;
+    width: 3px;
+    height: 22px;
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .cart-link { justify-content: flex-start; }
 }
+
 @media(max-width: 560px) {
   .brand small { display: none; }
-  .brand img { width: 50px; height: 50px; }
-  .navbar { min-height: 74px; }
-  .nav-links { top: 74px; }
+  .brand img { width: 44px; height: 44px; }
+  .brand strong { font-size: 17px; }
+  .navbar { min-height: 68px; padding-inline: 14px; }
+  .nav-links { top: 68px; }
 }

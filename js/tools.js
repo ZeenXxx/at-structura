@@ -1,4 +1,4 @@
-﻿const tabs = document.querySelectorAll('[data-tool-tab]');
+const tabs = document.querySelectorAll('[data-tool-tab]');
 const panels = document.querySelectorAll('.tool-panel');
 const toast = document.getElementById('toast');
 

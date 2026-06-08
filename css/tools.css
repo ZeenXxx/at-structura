@@ -1,4 +1,4 @@
-﻿body {
+body {
   background: linear-gradient(180deg, #F3F6FA 0%, #FFFFFF 44%, #F7F9FC 100%);
 }
 
@@ -124,7 +124,7 @@
 .tool-header h2 {
   margin: 0;
   color: var(--primary);
-  font-size: clamp(24px, 3vw, 38px);
+  font-size: 36px;
   line-height: 1.08;
 }
 
@@ -229,7 +229,7 @@
   display: block;
   margin: 10px 0;
   color: var(--primary);
-  font-size: clamp(28px, 4vw, 48px);
+  font-size: 44px;
   line-height: 1.08;
   overflow-wrap: anywhere;
 }
@@ -606,6 +606,16 @@
 }
 @media(max-width: 900px) {
   .tool-quick-guide { grid-template-columns: 1fr; }
+}
+
+@media(max-width: 760px) {
+  .tool-header h2 {
+    font-size: 30px;
+  }
+
+  .result-card strong {
+    font-size: 34px;
+  }
 }
 
 
