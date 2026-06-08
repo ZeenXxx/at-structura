@@ -633,12 +633,16 @@ async function saveItem(kind, payload) {
   if (!response.ok) throw new Error(result.message || result.msg || `Simpan ${kind} gagal (${response.status}).`);
 }
 
-async function deleteItem(kind, id) {
+async function deleteItem(kind, item) {
   const session = await ensureSession();
   if (!session?.access_token) {
     if (adminCheck.denied) return redirectDenied();
     redirectToLogin();
     return;
+  }
+  const id = typeof item === 'object' ? item.id : item;
+  if ((kind === 'resources' || kind === 'software') && item?.storage_bucket && item?.storage_path && window.ATShop?.removeStorageFiles) {
+    await window.ATShop.removeStorageFiles(item.storage_bucket, item.storage_path, session.access_token);
   }
   const response = await fetch(apiUrl(`/rest/v1/${tableName(kind)}?id=eq.${encodeURIComponent(id)}`), {
     method: 'DELETE',
@@ -885,11 +889,12 @@ document.addEventListener('click', async event => {
     return;
   }
   const label = kind === 'software' ? 'Software' : kind === 'services' ? 'Layanan' : 'Resources';
-  if (!confirm(`Hapus "${item.title}" dari ${label}?`)) return;
+  const storageNote = item.storage_bucket && item.storage_path ? ' File di Supabase Storage juga akan dihapus permanen.' : '';
+  if (!confirm(`Hapus "${item.title}" dari ${label}?${storageNote}`)) return;
   try {
-    await deleteItem(kind, item.id);
+    await deleteItem(kind, item);
     await loadAll();
-    showToast('Data berhasil dihapus.');
+    showToast(item.storage_path ? 'Data dan file Storage berhasil dihapus.' : 'Data berhasil dihapus.');
   } catch (error) {
     showToast(error.message);
   }
