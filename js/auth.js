@@ -21,6 +21,32 @@ const safeNextPath = fallback => {
 };
 const userEmailFromSession = session => session?.user?.email || session?.email || '';
 const captchaState = {};
+const eyeIcon = hidden => hidden
+  ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/></svg>'
+  : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6a17.8 17.8 0 0 1-3.2 3.6"/><path d="M10.7 5.1A10.7 10.7 0 0 1 12 5c6 0 9.5 6 9.5 6a17 17 0 0 1-2 2.7"/><path d="M3 3l18 18"/><path d="M9.9 9.9A3 3 0 0 0 14.1 14.1"/></svg>';
+
+function setupPasswordToggles() {
+  document.querySelectorAll('input[type="password"]:not([data-password-ready])').forEach(input => {
+    input.dataset.passwordReady = 'true';
+    const wrapper = document.createElement('span');
+    wrapper.className = 'password-field';
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'password-toggle';
+    button.setAttribute('aria-label', 'Lihat password');
+    button.innerHTML = eyeIcon(true);
+    button.addEventListener('click', () => {
+      const hidden = input.type === 'password';
+      input.type = hidden ? 'text' : 'password';
+      button.setAttribute('aria-label', hidden ? 'Tutup password' : 'Lihat password');
+      button.innerHTML = eyeIcon(!hidden);
+      input.focus();
+    });
+    wrapper.appendChild(button);
+  });
+}
 
 async function refreshUserSession(session = getUserSession()) {
   if (!authReady() || !session?.refresh_token) return null;
@@ -519,5 +545,6 @@ setupRegisterForm();
 setupVerifyEmailForm();
 setupResendVerification();
 setupChangePasswordForm();
+setupPasswordToggles();
 renderAccountPage();
 guardProtectedPage();
