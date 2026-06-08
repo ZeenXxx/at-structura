@@ -15,6 +15,33 @@ const shopEscape = value => String(value || '').replace(/[&<>"']/g, char => ({ '
 const shopMoney = value => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(value || 0));
 const shopPath = path => String(path || '').split('/').map(encodeURIComponent).join('/');
 const shopFileSlug = value => String(value || 'file').toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-|-$/g, '') || 'file';
+const shopBaseUrl = () => String(shopCfg().url || '').replace(/\/$/, '');
+
+function normalizeStoragePath(bucket, path) {
+  const bucketName = String(bucket || shopBucket()).replace(/^\/+|\/+$/g, '');
+  let cleanPath = String(path || '').trim();
+  cleanPath = cleanPath.replace(/^https?:\/\/[^/]+\/storage\/v1\/object\/(?:sign|public|authenticated)\//, '');
+  cleanPath = cleanPath.replace(/^\/?storage\/v1\/object\/(?:sign|public|authenticated)\//, '');
+  cleanPath = cleanPath.replace(/^\/?object\/(?:sign|public|authenticated)\//, '');
+  cleanPath = cleanPath.replace(/^\/+/, '');
+  if (cleanPath.startsWith(`${bucketName}/`)) cleanPath = cleanPath.slice(bucketName.length + 1);
+  cleanPath = cleanPath.split('?')[0];
+  return cleanPath;
+}
+
+function storageApiUrl(path) {
+  const cleanPath = String(path || '').startsWith('/') ? path : `/${path || ''}`;
+  return `${shopBaseUrl()}/storage/v1${cleanPath}`;
+}
+
+function resolveSignedUrl(url) {
+  const value = String(url || '');
+  if (!value) return '';
+  if (value.startsWith('http')) return value;
+  if (value.startsWith('/storage/v1/')) return `${shopBaseUrl()}${value}`;
+  if (value.startsWith('/object/')) return storageApiUrl(value);
+  return storageApiUrl(`/${value.replace(/^\/+/, '')}`);
+}
 
 function readCart() {
   try { return JSON.parse(localStorage.getItem(shopCartKey) || '[]'); } catch { return []; }
@@ -79,7 +106,10 @@ async function uploadStorageFile(file, path, token = shopToken()) {
 }
 
 async function signedUrl(bucket, path, token = shopToken()) {
-  const response = await fetch(shopApiUrl(`/storage/v1/object/sign/${bucket}/${shopPath(path)}`), {
+  const bucketName = String(bucket || shopBucket()).replace(/^\/+|\/+$/g, '');
+  const cleanPath = normalizeStoragePath(bucketName, path);
+  if (!bucketName || !cleanPath) throw new Error('Path file storage tidak valid.');
+  const response = await fetch(storageApiUrl(`/object/sign/${bucketName}/${shopPath(cleanPath)}`), {
     method: 'POST',
     headers: shopHeaders(token, true),
     body: JSON.stringify({ expiresIn: 300 })
@@ -88,7 +118,7 @@ async function signedUrl(bucket, path, token = shopToken()) {
   if (!response.ok) throw new Error(payload.message || payload.error || `Link download gagal dibuat (${response.status}).`);
   const url = payload.signedURL || payload.signedUrl || payload.signed_url;
   if (!url) throw new Error('Signed URL tidak tersedia.');
-  return url.startsWith('http') ? url : `${String(shopCfg().url || '').replace(/\/$/, '')}${url}`;
+  return resolveSignedUrl(url);
 }
 
 async function logDownload(item) {
