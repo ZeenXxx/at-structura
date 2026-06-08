@@ -14,7 +14,16 @@ function appendAuthLinks() {
   })();
   nav.insertAdjacentHTML('beforeend', `
     <a class="cart-link" href="/pages/cart/" data-page="cart" aria-label="Keranjang">
-      <span class="cart-icon" aria-hidden="true"></span>
+      <svg class="cart-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <path d="M8 13h8l7 30h27l6-23H21" />
+        <path d="M25 27h28" />
+        <path d="M28 35h21" />
+        <path d="M31 20l2 23" />
+        <path d="M43 20l-2 23" />
+        <path d="M23 43l-5 7h33" />
+        <circle cx="24" cy="54" r="5" />
+        <circle cx="48" cy="54" r="5" />
+      </svg>
       <span class="cart-label">Keranjang</span>
       <span class="cart-badge ${cartCount > 0 ? 'show' : ''}" data-cart-count>${cartCount > 0 ? cartCount : ''}</span>
     </a>

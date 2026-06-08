@@ -24,34 +24,15 @@
   gap: 8px;
 }
 .cart-icon {
-  position: relative;
-  width: 20px;
-  height: 18px;
-  border: 2px solid currentColor;
-  border-top: 0;
-  border-radius: 2px 2px 5px 5px;
-}
-.cart-icon:before {
-  content: "";
-  position: absolute;
-  left: -3px;
-  top: -7px;
-  width: 10px;
-  height: 8px;
-  border-top: 2px solid currentColor;
-  border-left: 2px solid currentColor;
-  transform: skewX(-18deg);
-}
-.cart-icon:after {
-  content: "";
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  bottom: -7px;
-  height: 4px;
-  background:
-    radial-gradient(circle, currentColor 0 2px, transparent 2.5px) left center / 8px 4px no-repeat,
-    radial-gradient(circle, currentColor 0 2px, transparent 2.5px) right center / 8px 4px no-repeat;
+  width: 25px;
+  height: 25px;
+  color: currentColor;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: 0 0 auto;
 }
 .cart-badge {
   display: none;
