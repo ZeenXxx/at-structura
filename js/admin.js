@@ -29,7 +29,10 @@ const els = {
   memberSearch: document.getElementById('memberAdminSearch'),
   memberStatus: document.getElementById('memberAdminStatus'),
   orderSearch: document.getElementById('orderAdminSearch'),
-  orderStatus: document.getElementById('orderAdminStatus')
+  orderStatus: document.getElementById('orderAdminStatus'),
+  resourceFormStatus: document.querySelector('[data-admin-form-status="resources"]'),
+  softwareFormStatus: document.querySelector('[data-admin-form-status="software"]'),
+  serviceFormStatus: document.querySelector('[data-admin-form-status="services"]')
 };
 
 const cfg = () => window.AT_SUPABASE || {};
@@ -65,6 +68,26 @@ const showToast = message => {
   toast.textContent = message;
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), 3000);
+};
+const formStatusEl = kind => {
+  if (kind === 'software') return els.softwareFormStatus;
+  if (kind === 'services') return els.serviceFormStatus;
+  return els.resourceFormStatus;
+};
+const setFormStatus = (kind, message, tone = '') => {
+  const node = formStatusEl(kind);
+  if (!node) return;
+  node.textContent = message;
+  node.className = `page-note manager-status ${tone}`.trim();
+};
+const setFormBusy = (kind, busy, message) => {
+  const form = formForKind(kind);
+  const button = kind === 'software' ? document.getElementById('saveSoftwareAdmin') : kind === 'services' ? document.getElementById('saveServiceAdmin') : document.getElementById('saveResourceAdmin');
+  if (button) {
+    button.disabled = busy;
+    button.textContent = busy ? 'Memproses...' : kind === 'software' ? (form?.elements.id.value ? 'Update Software' : 'Simpan Software') : kind === 'services' ? (form?.elements.id.value ? 'Update Layanan' : 'Simpan Layanan') : (form?.elements.id.value ? 'Update Resource' : 'Simpan Resource');
+  }
+  if (message) setFormStatus(kind, message);
 };
 const redirectToLogin = () => {
   window.location.replace(`${loginPath}?next=${encodeURIComponent('/pages/admin/')}`);
@@ -363,7 +386,13 @@ function newLabel(kind) {
 
 async function uploadAdminFile(kind, form, session) {
   const file = form.elements.storage_file?.files?.[0];
-  if (!file) return null;
+  const sourceType = String(new FormData(form).get('source_type') || '').trim();
+  const existingPath = String(form.elements.storage_path?.value || '').trim();
+  if (!file) {
+    if (sourceType === 'supabase_storage' && !existingPath) throw new Error('Pilih file dulu untuk sumber Supabase Storage.');
+    return null;
+  }
+  if (!session?.access_token) throw new Error('Sesi admin tidak valid. Silakan login ulang.');
   if (file.size > 50 * 1024 * 1024) throw new Error('Ukuran file maksimal 50 MB.');
   const title = String(new FormData(form).get('title') || 'file');
   const path = `products/${kind}/${Date.now()}-${slugify(title)}-${fileSlug(file.name)}`;
@@ -378,7 +407,7 @@ async function uploadAdminFile(kind, form, session) {
     body: file
   });
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(payload.message || payload.error || `Upload file gagal (${response.status}).`);
+  if (!response.ok) throw new Error(payload.message || payload.error || `Upload file gagal (${response.status}). Periksa akses admin dan policy Supabase Storage.`);
   form.elements.storage_bucket.value = storageBucket();
   form.elements.storage_path.value = path;
   form.elements.source_type.value = 'supabase_storage';
@@ -626,39 +655,58 @@ function switchPanel(panel) {
 document.querySelectorAll('.admin-nav [data-admin-panel]').forEach(button => button.addEventListener('click', () => switchPanel(button.dataset.adminPanel)));
 els.resourceForm?.addEventListener('submit', async event => {
   event.preventDefault();
+  setFormBusy('resources', true, 'Menyiapkan resource...');
   try {
     const session = await ensureSession();
+    if (els.resourceForm.elements.storage_file?.files?.[0]) setFormStatus('resources', 'Mengupload file ke Supabase Storage...');
     await uploadAdminFile('resources', els.resourceForm, session);
+    setFormStatus('resources', 'Menyimpan metadata resource...');
     await saveItem('resources', basePayload(els.resourceForm, 'resources'));
     await loadAll();
     resetForm('resources');
+    setFormStatus('resources', 'Resource berhasil disimpan.', 'status-online');
     showToast('Resource berhasil disimpan.');
   } catch (error) {
+    setFormStatus('resources', error.message);
     showToast(error.message);
+  } finally {
+    setFormBusy('resources', false);
   }
 });
 els.softwareForm?.addEventListener('submit', async event => {
   event.preventDefault();
+  setFormBusy('software', true, 'Menyiapkan software...');
   try {
     const session = await ensureSession();
+    if (els.softwareForm.elements.storage_file?.files?.[0]) setFormStatus('software', 'Mengupload file ke Supabase Storage...');
     await uploadAdminFile('software', els.softwareForm, session);
+    setFormStatus('software', 'Menyimpan metadata software...');
     await saveItem('software', softwarePayload(els.softwareForm));
     await loadAll();
     resetForm('software');
+    setFormStatus('software', 'Software berhasil disimpan.', 'status-online');
     showToast('Software berhasil disimpan.');
   } catch (error) {
+    setFormStatus('software', error.message);
     showToast(error.message);
+  } finally {
+    setFormBusy('software', false);
   }
 });
 els.serviceForm?.addEventListener('submit', async event => {
   event.preventDefault();
+  setFormBusy('services', true, 'Menyimpan layanan...');
   try {
     await saveItem('services', servicePayload(els.serviceForm));
     await loadAll();
     resetForm('services');
+    setFormStatus('services', 'Layanan berhasil disimpan.', 'status-online');
     showToast('Layanan berhasil disimpan.');
   } catch (error) {
+    setFormStatus('services', error.message);
     showToast(error.message);
+  } finally {
+    setFormBusy('services', false);
   }
 });
 
@@ -733,6 +781,19 @@ els.memberSearch?.addEventListener('input', () => renderList('members'));
 els.memberStatus?.addEventListener('change', () => renderList('members'));
 els.orderSearch?.addEventListener('input', () => renderList('orders'));
 els.orderStatus?.addEventListener('change', () => renderList('orders'));
+['resources', 'software'].forEach(kind => {
+  const form = formForKind(kind);
+  form?.elements.storage_file?.addEventListener('change', () => {
+    const file = form.elements.storage_file.files?.[0];
+    if (!file) return;
+    form.elements.source_type.value = 'supabase_storage';
+    form.elements.file_name.value = file.name;
+    form.elements.file_size.value = file.size;
+    form.elements.mime_type.value = file.type || 'application/octet-stream';
+    form.elements.link.value = '#';
+    setFormStatus(kind, `File siap diupload: ${file.name}`, 'status-online');
+  });
+});
 els.logout?.addEventListener('click', () => {
   clearSession();
   window.location.href = loginPath;
