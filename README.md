@@ -32,7 +32,7 @@ AT STRUCTURA adalah web pribadi Arief Tediansyah untuk belajar, tools, resources
 ## Kontak
 
 - WhatsApp: 081220032582
-- Email: arieftediansyah0@gmail.com
+- Email: atstructura@gmail.com
 - Instagram: arieftediansyah_
 - YouTube: Arief Tediansyah dan ZeenXxx
 

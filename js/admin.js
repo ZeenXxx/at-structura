@@ -383,7 +383,7 @@ function filterItems(kind) {
       return (status === 'All' || (status === 'Verified' && verified && !suspended) || (status === 'Unverified' && !verified && !suspended) || (status === 'Suspended' && suspended)) && haystack.includes(search);
     }
     if (kind === 'orders') {
-      const haystack = [item.order_number, item.status, item.total_amount, item.proof_file_name, ...(item.order_items || []).map(orderItem => orderItem.title_snapshot)].join(' ').toLowerCase();
+      const haystack = [item.order_number, item.status, item.total_amount, item.proof_file_name, item.payment_source_type, item.payment_source_name, item.payment_account_number, item.payment_account_name, item.payment_destination, item.payment_note, ...(item.order_items || []).map(orderItem => orderItem.title_snapshot)].join(' ').toLowerCase();
       return (status === 'All' || item.status === status) && haystack.includes(search);
     }
     if (kind === 'audit') {
@@ -497,6 +497,13 @@ function renderList(kind) {
             </div>
             <h3>${escapeText(order.order_number)}</h3>
             <p>${items.map(item => escapeText(item.title_snapshot)).join(', ') || 'Order premium'}</p>
+            <div class="member-detail-grid payment-review-grid">
+              <span><strong>Asal</strong>${escapeText([order.payment_source_type, order.payment_source_name].filter(Boolean).join(' - ') || '-')}</span>
+              <span><strong>No. Pengirim</strong>${escapeText(order.payment_account_number || '-')}</span>
+              <span><strong>Nama Pengirim</strong>${escapeText(order.payment_account_name || '-')}</span>
+              <span><strong>Tujuan</strong>${escapeText(order.payment_destination || '-')}</span>
+            </div>
+            ${order.payment_note ? `<small>Catatan: ${escapeText(order.payment_note)}</small>` : ''}
             <small>Bukti: ${escapeText(order.proof_file_name || '-')} | Dibuat: ${escapeText(formatDate(order.created_at))}</small>
           </div>
           <div class="manager-row-actions">${proofButton}${statusEditor}${reviewActions}<button class="btn btn-danger" type="button" data-order-delete="${escapeText(order.id)}">Hapus Testing</button></div>

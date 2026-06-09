@@ -442,27 +442,45 @@ function renderAccountPanel(box, session, profile = null) {
   const phone = profile?.phone || session.user?.user_metadata?.phone || '-';
   const institution = profile?.institution || session.user?.user_metadata?.institution || '-';
   const verified = profile?.email_confirmed_at || session.user?.email_confirmed_at;
+  const joined = profile?.created_at ? new Date(profile.created_at).toLocaleDateString('id-ID', { dateStyle: 'medium' }) : '-';
+  const initials = name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'AT';
+  const safe = value => window.ATShop?.escape?.(value) || String(value || '');
   box.innerHTML = `
-    <div class="account-hero card">
-      <div>
-        <span class="eyebrow">Member Area</span>
-        <h2>${window.ATShop?.escape?.(name) || name}</h2>
-        <p>${window.ATShop?.escape?.(email) || email}</p>
-        <div class="account-pills">
-          <span>${verified ? 'Email terverifikasi' : 'Email belum verifikasi'}</span>
-          <span>${window.ATShop?.escape?.(institution) || institution}</span>
-          <span>${window.ATShop?.escape?.(phone) || phone}</span>
+    <div class="member-dashboard">
+      <aside class="member-sidebar card">
+        <div class="member-avatar">${safe(initials)}</div>
+        <h2>${safe(name)}</h2>
+        <p>${safe(email)}</p>
+        <span class="member-status ${verified ? 'is-verified' : ''}">${verified ? 'Email terverifikasi' : 'Email belum verifikasi'}</span>
+        <div class="member-profile-list">
+          <div><span>Telepon</span><strong>${safe(phone)}</strong></div>
+          <div><span>Instansi</span><strong>${safe(institution)}</strong></div>
+          <div><span>Bergabung</span><strong>${safe(joined)}</strong></div>
         </div>
-      </div>
-      <div class="account-actions">
-        <a class="btn btn-primary" href="/pages/software/">Software</a>
-        <a class="btn btn-secondary" href="/pages/jasa/">Jasa</a>
-        <a class="btn btn-secondary" href="/pages/change-password/">Ganti Password</a>
-        <button class="btn btn-danger" type="button" data-user-logout>Logout</button>
-      </div>
-    </div>
-    <div class="account-commerce" data-account-commerce>
-      <div class="card empty-state"><span class="icon">DL</span><h3>Memuat akses...</h3><p>Sedang mengambil data order dan download.</p></div>
+        <div class="member-menu">
+          <a href="/pages/software/">Software Member</a>
+          <a href="/pages/jasa/">Layanan Jasa</a>
+          <a href="/pages/cart/">Keranjang</a>
+          <a href="/pages/change-password/">Ganti Password</a>
+        </div>
+        <button class="btn btn-danger member-logout" type="button" data-user-logout>Logout</button>
+      </aside>
+      <section class="member-main">
+        <div class="member-welcome card">
+          <div>
+            <span class="eyebrow">Member Area</span>
+            <h2>Selamat datang, ${safe(name.split(/\s+/)[0] || name)}</h2>
+            <p>Kelola pembelian, akses premium, item tersimpan, dan riwayat download AT STRUCTURA dari satu halaman.</p>
+          </div>
+          <div class="member-quick-actions">
+            <a class="btn btn-primary" href="/pages/software/">Buka Software</a>
+            <a class="btn btn-secondary" href="/pages/resources/">Cari Resources</a>
+          </div>
+        </div>
+        <div class="account-commerce" data-account-commerce>
+          <div class="card empty-state"><span class="icon">DL</span><h3>Memuat akses...</h3><p>Sedang mengambil data order dan download.</p></div>
+        </div>
+      </section>
     </div>
   `;
   renderAccountCommerce();
@@ -520,11 +538,11 @@ async function renderAccountCommerce() {
   const logsHtml = (data.downloads || []).map(log => `<li>${window.ATShop.escape(log.item_title || log.item_id)} <span>${new Date(log.created_at).toLocaleString('id-ID')}</span></li>`).join('') || '<li>Belum ada riwayat download.</li>';
   box.innerHTML = `
     ${summaryHtml}
-    <section class="account-grid">
-      <div class="card account-section"><h2>Akses Saya</h2><div class="admin-list">${accessHtml}</div></div>
-      <div class="card account-section"><h2>Order Saya</h2><div class="admin-list">${ordersHtml}</div></div>
-      <div class="card account-section"><h2>Disimpan</h2><div class="admin-list">${savedHtml}</div></div>
-      <div class="card account-section"><h2>Riwayat Download</h2><ul class="download-list">${logsHtml}</ul></div>
+    <section class="member-content-grid">
+      <div class="card account-section member-panel-wide"><div class="member-section-head"><h2>Akses Saya</h2><a href="/pages/software/">Lihat software</a></div><div class="admin-list">${accessHtml}</div></div>
+      <div class="card account-section"><div class="member-section-head"><h2>Order Saya</h2><a href="/pages/cart/">Keranjang</a></div><div class="admin-list">${ordersHtml}</div></div>
+      <div class="card account-section"><div class="member-section-head"><h2>Disimpan</h2><a href="/pages/resources/">Tambah</a></div><div class="admin-list">${savedHtml}</div></div>
+      <div class="card account-section member-panel-wide"><div class="member-section-head"><h2>Riwayat Download</h2><span>20 terbaru</span></div><ul class="download-list">${logsHtml}</ul></div>
     </section>
   `;
   box.querySelectorAll('[data-account-download]').forEach(button => {

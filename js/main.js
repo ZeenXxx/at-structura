@@ -149,7 +149,7 @@ function setupContactForm() {
     const message = data.get('message') || '';
     const subject = encodeURIComponent('Diskusi AT STRUCTURA - ' + topic);
     const body = encodeURIComponent(`Nama: ${name}\nEmail: ${email}\nKebutuhan: ${topic}\n\nPesan:\n${message}`);
-    window.location.href = `mailto:arieftediansyah0@gmail.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:atstructura@gmail.com?subject=${subject}&body=${body}`;
     showToast('Draft email dibuat di aplikasi email perangkat Anda.');
   });
 }

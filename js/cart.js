@@ -2,6 +2,18 @@ const cartList = document.getElementById('cartList');
 const cartTotal = document.getElementById('cartTotal');
 const clearCartButton = document.getElementById('clearCartButton');
 const checkoutPanel = document.getElementById('checkoutPanel');
+const paymentDestinations = [
+  ['BCA', '1394026657'],
+  ['SeaBank', '901303469040'],
+  ['GoPay', '081220032582'],
+  ['ShopeePay', '081220032582'],
+  ['Blu BCA', '008572518618'],
+  ['OVO', '081220032582'],
+  ['LinkAja', '081220032582']
+];
+const paymentDestinationOptions = () => paymentDestinations
+  .map(([name, number]) => `<option value="${window.ATShop.escape(`${name} - ${number}`)}">${window.ATShop.escape(`${name} - ${number}`)}</option>`)
+  .join('');
 
 function cartItemHtml(item) {
   return `
@@ -50,21 +62,45 @@ async function fetchOrder(orderId) {
 
 function orderHtml(order) {
   const items = order.order_items || [];
+  const destination = order.payment_destination || 'BCA - 1394026657';
   return `
-    <span class="eyebrow">Invoice</span>
-    <h2>${window.ATShop.escape(order.order_number)}</h2>
-    <p>Status: <strong>${window.ATShop.escape(order.status)}</strong></p>
+    <div class="checkout-invoice-head">
+      <div>
+        <span class="eyebrow">Invoice</span>
+        <h2>${window.ATShop.escape(order.order_number)}</h2>
+        <p>Status: <strong>${window.ATShop.escape(order.status)}</strong></p>
+      </div>
+      <span class="badge tag-red">${window.ATShop.money(order.total_amount)}</span>
+    </div>
     <div class="shop-order-items">
       ${items.map(item => `<div><span>${window.ATShop.escape(item.title_snapshot)}</span><strong>${window.ATShop.money(item.price_snapshot)}</strong></div>`).join('')}
     </div>
-    <h3>Total: ${window.ATShop.money(order.total_amount)}</h3>
+    <div class="payment-destination-box">
+      <h3>Rekening / E-wallet Tujuan</h3>
+      <div class="payment-destination-grid">
+        ${paymentDestinations.map(([name, number]) => `<div><strong>${window.ATShop.escape(name)}</strong><span>${window.ATShop.escape(number)}</span></div>`).join('')}
+      </div>
+    </div>
     <form class="manager-auth-form" id="proofForm">
+      <div class="form-grid-2">
+        <label>Jenis Pembayaran<select class="control" name="sourceType" required>
+          <option value="Bank">Bank</option>
+          <option value="E-wallet">E-wallet</option>
+        </select></label>
+        <label>Nama Bank / E-wallet Pengirim<input class="control" name="sourceName" placeholder="Contoh: BCA, Mandiri, DANA, GoPay" required></label>
+        <label>Nomor Rekening / Nomor E-wallet Pengirim<input class="control" name="accountNumber" inputmode="numeric" placeholder="Nomor pengirim" required></label>
+        <label>Nama Pemilik Rekening / E-wallet<input class="control" name="accountName" placeholder="Nama pengirim" required></label>
+      </div>
+      <label>Bank / E-wallet Tujuan<select class="control" name="destination" required>
+        ${paymentDestinationOptions()}
+      </select></label>
+      <label>Catatan Pembayaran<textarea class="control textarea" name="note" placeholder="Opsional: nominal transfer, waktu transfer, atau catatan lain"></textarea></label>
       <label>Upload bukti pembayaran<input class="control" type="file" name="proof" accept="image/*,.pdf" required></label>
       <div class="manager-actions">
         <button class="btn btn-primary" type="submit">Upload Bukti</button>
         <a class="btn btn-secondary" href="/pages/account/">Lihat Akun</a>
       </div>
-      <div class="page-note manager-status" data-proof-status>${order.proof_file_name ? `Bukti terakhir: ${window.ATShop.escape(order.proof_file_name)}` : 'Belum ada bukti pembayaran.'}</div>
+      <div class="page-note manager-status" data-proof-status>${order.proof_file_name ? `Bukti terakhir: ${window.ATShop.escape(order.proof_file_name)} | Tujuan: ${window.ATShop.escape(destination)}` : 'Belum ada bukti pembayaran.'}</div>
     </form>
   `;
 }
@@ -120,9 +156,17 @@ document.addEventListener('submit', async event => {
   const params = new URLSearchParams(location.search);
   const status = document.querySelector('[data-proof-status]');
   const file = event.target.elements.proof.files[0];
+  const payment = {
+    sourceType: event.target.elements.sourceType.value,
+    sourceName: event.target.elements.sourceName.value.trim(),
+    accountNumber: event.target.elements.accountNumber.value.trim(),
+    accountName: event.target.elements.accountName.value.trim(),
+    destination: event.target.elements.destination.value,
+    note: event.target.elements.note.value.trim()
+  };
   status.textContent = 'Mengupload bukti pembayaran...';
   try {
-    await window.ATShop.submitPaymentProof(params.get('order'), file);
+    await window.ATShop.submitPaymentProof(params.get('order'), file, payment);
     status.textContent = 'Bukti pembayaran terkirim. Menunggu review admin.';
     window.ATShop.showToast('Bukti pembayaran terkirim.');
   } catch (error) {

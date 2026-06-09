@@ -243,7 +243,7 @@ async function createOrderFromCart() {
   return payload;
 }
 
-async function submitPaymentProof(orderId, file) {
+async function submitPaymentProof(orderId, file, payment = {}) {
   const session = await window.ATAuth?.ensureUserSession?.();
   if (!session?.access_token) return location.href = `/pages/login/?next=${encodeURIComponent('/pages/checkout/')}`;
   const userId = session.user?.id;
@@ -252,7 +252,18 @@ async function submitPaymentProof(orderId, file) {
   const response = await fetch(shopApiUrl('/rest/v1/rpc/submit_payment_proof'), {
     method: 'POST',
     headers: shopHeaders(session.access_token, true),
-    body: JSON.stringify({ p_order_id: orderId, p_bucket: uploaded.bucket, p_path: uploaded.path, p_file_name: uploaded.fileName })
+    body: JSON.stringify({
+      p_order_id: orderId,
+      p_bucket: uploaded.bucket,
+      p_path: uploaded.path,
+      p_file_name: uploaded.fileName,
+      p_payment_source_type: payment.sourceType || null,
+      p_payment_source_name: payment.sourceName || null,
+      p_payment_account_number: payment.accountNumber || null,
+      p_payment_account_name: payment.accountName || null,
+      p_payment_destination: payment.destination || null,
+      p_payment_note: payment.note || null
+    })
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.message || payload.msg || 'Bukti pembayaran gagal disimpan.');

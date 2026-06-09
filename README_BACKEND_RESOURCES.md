@@ -22,7 +22,7 @@ Di Admin Dashboard, resource dan software yang sudah ada bisa diedit atau dihapu
 - Project Supabase aktif: `AT STRUCTURA`.
 - URL project: `https://xpruvhfuyhnhdvlwiyye.supabase.co`.
 - Tabel `resources`, `software_items`, dan `resource_admins` sudah tersedia.
-- Email admin resource sudah aktif: `arieftediansyah0@gmail.com`.
+- Email admin resource sudah aktif: `atstructura@gmail.com`.
 - Metadata awal dari `data/resources.json` sudah dipindahkan ke Supabase.
 - Metadata awal software dari `data/software.json` sudah dipindahkan ke Supabase.
 - Firebase tidak digunakan pada opsi ini.
