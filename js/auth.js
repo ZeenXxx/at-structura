@@ -20,6 +20,13 @@ const safeNextPath = fallback => {
   return next.startsWith('/') && !next.startsWith('//') ? next : fallback || '/';
 };
 const userEmailFromSession = session => session?.user?.email || session?.email || '';
+const accountStatusLabel = value => ({
+  pending_payment: 'Menunggu Pembayaran',
+  payment_review: 'Review Pembayaran',
+  paid: 'Lunas',
+  rejected: 'Ditolak',
+  cancelled: 'Dibatalkan'
+}[value] || value || '-');
 const captchaState = {};
 const eyeIcon = hidden => hidden
   ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="3"/></svg>'
@@ -130,6 +137,15 @@ async function checkMemberAccountStatus(session) {
     throw new Error(`Akun sedang disuspend. ${profile.suspend_reason || 'Hubungi admin AT STRUCTURA untuk membuka akses.'}`);
   }
   return profile;
+}
+
+async function fetchMemberProfile(session) {
+  if (!session?.access_token) return null;
+  const response = await fetch(authApiUrl('/rest/v1/member_profiles?select=*&limit=1'), {
+    headers: authHeaders(session.access_token)
+  });
+  const rows = await response.json().catch(() => []);
+  return response.ok && Array.isArray(rows) ? rows[0] : null;
 }
 
 async function signInUser(email, password) {
@@ -411,7 +427,8 @@ async function renderAccountPage() {
     }
     await checkMemberAccountStatus(session);
     document.body.classList.remove('auth-checking');
-    renderAccountPanel(box, session);
+    const profile = await fetchMemberProfile(session).catch(() => null);
+    renderAccountPanel(box, session, profile);
   } catch (error) {
     clearUserSession();
     window.location.replace('/pages/login/?next=/pages/account/&message=suspended');
@@ -419,20 +436,27 @@ async function renderAccountPage() {
   }
 }
 
-function renderAccountPanel(box, session) {
+function renderAccountPanel(box, session, profile = null) {
   const email = userEmailFromSession(session);
-  const name = session.user?.user_metadata?.full_name || 'Pengguna AT STRUCTURA';
-  const phone = session.user?.user_metadata?.phone || '-';
-  const institution = session.user?.user_metadata?.institution || '-';
+  const name = profile?.full_name || session.user?.user_metadata?.full_name || 'Pengguna AT STRUCTURA';
+  const phone = profile?.phone || session.user?.user_metadata?.phone || '-';
+  const institution = profile?.institution || session.user?.user_metadata?.institution || '-';
+  const verified = profile?.email_confirmed_at || session.user?.email_confirmed_at;
   box.innerHTML = `
-    <div class="card account-card">
-      <span class="icon">AT</span>
-      <h2>${name}</h2>
-      <p>${email}</p>
-      <p>Telepon: ${phone}<br>Instansi: ${institution}</p>
-      <div class="actions">
-        <a class="btn btn-primary" href="/pages/software/">Buka Software</a>
-        <a class="btn btn-secondary" href="/pages/jasa/">Buka Jasa</a>
+    <div class="account-hero card">
+      <div>
+        <span class="eyebrow">Member Area</span>
+        <h2>${window.ATShop?.escape?.(name) || name}</h2>
+        <p>${window.ATShop?.escape?.(email) || email}</p>
+        <div class="account-pills">
+          <span>${verified ? 'Email terverifikasi' : 'Email belum verifikasi'}</span>
+          <span>${window.ATShop?.escape?.(institution) || institution}</span>
+          <span>${window.ATShop?.escape?.(phone) || phone}</span>
+        </div>
+      </div>
+      <div class="account-actions">
+        <a class="btn btn-primary" href="/pages/software/">Software</a>
+        <a class="btn btn-secondary" href="/pages/jasa/">Jasa</a>
         <a class="btn btn-secondary" href="/pages/change-password/">Ganti Password</a>
         <button class="btn btn-danger" type="button" data-user-logout>Logout</button>
       </div>
@@ -449,10 +473,20 @@ async function renderAccountCommerce() {
   if (!box || !window.ATShop) return;
   const data = await window.ATShop.loadAccountData();
   const itemByKey = new Map((data.items || []).map(item => [`${item.item_kind}:${item.item_id}`, item]));
+  const paidOrders = (data.orders || []).filter(order => order.status === 'paid').length;
+  const reviewOrders = (data.orders || []).filter(order => order.status === 'payment_review').length;
+  const summaryHtml = `
+    <div class="account-summary">
+      <div class="card account-stat"><span>Akses aktif</span><strong>${(data.access || []).length}</strong></div>
+      <div class="card account-stat"><span>Order lunas</span><strong>${paidOrders}</strong></div>
+      <div class="card account-stat"><span>Review pembayaran</span><strong>${reviewOrders}</strong></div>
+      <div class="card account-stat"><span>Item disimpan</span><strong>${(data.saved || []).length}</strong></div>
+    </div>
+  `;
   const accessHtml = (data.access || []).map(access => {
     const item = itemByKey.get(`${access.item_kind}:${access.item_id}`);
     return `
-      <article class="admin-item">
+      <article class="admin-item account-item">
         <div>
           <div class="meta"><span class="badge tag-red">Akses Aktif</span><span class="badge">${window.ATShop.escape(access.item_kind)}</span></div>
           <h3>${window.ATShop.escape(item?.title || access.item_id)}</h3>
@@ -469,9 +503,9 @@ async function renderAccountCommerce() {
     `;
   }).join('') || '<div class="empty-state"><span class="icon">AK</span><h3>Belum ada akses premium</h3><p>Item premium akan muncul setelah pembayaran disetujui admin.</p></div>';
   const ordersHtml = (data.orders || []).map(order => `
-    <article class="admin-item">
+    <article class="admin-item account-item">
       <div>
-        <div class="meta"><span class="badge">${window.ATShop.escape(order.status)}</span><span class="badge">${window.ATShop.money(order.total_amount)}</span></div>
+        <div class="meta"><span class="badge ${order.status === 'paid' ? 'tag-red' : ''}">${window.ATShop.escape(accountStatusLabel(order.status))}</span><span class="badge">${window.ATShop.money(order.total_amount)}</span></div>
         <h3>${window.ATShop.escape(order.order_number)}</h3>
         <p>${(order.order_items || []).map(item => window.ATShop.escape(item.title_snapshot)).join(', ') || 'Order premium'}</p>
       </div>
@@ -480,10 +514,12 @@ async function renderAccountCommerce() {
   `).join('') || '<p class="lead">Belum ada order.</p>';
   const savedHtml = (data.saved || []).map(saved => {
     const item = itemByKey.get(`${saved.item_kind}:${saved.item_id}`);
-    return `<article class="admin-item"><div><h3>${window.ATShop.escape(item?.title || saved.item_id)}</h3><p>${window.ATShop.escape(saved.item_kind)}</p></div></article>`;
+    const key = `${saved.item_kind}:${saved.item_id}`;
+    return `<article class="admin-item account-item"><div><div class="meta"><span class="badge">${window.ATShop.escape(saved.item_kind)}</span></div><h3>${window.ATShop.escape(item?.title || saved.item_id)}</h3><p>${item ? window.ATShop.escape(item.description || 'Item tersimpan di akun.') : 'Metadata item belum tersedia.'}</p></div>${item ? `<button class="btn btn-secondary" type="button" data-account-open-saved="${window.ATShop.escape(key)}">Buka</button>` : ''}</article>`;
   }).join('') || '<p class="lead">Belum ada item tersimpan.</p>';
   const logsHtml = (data.downloads || []).map(log => `<li>${window.ATShop.escape(log.item_title || log.item_id)} <span>${new Date(log.created_at).toLocaleString('id-ID')}</span></li>`).join('') || '<li>Belum ada riwayat download.</li>';
   box.innerHTML = `
+    ${summaryHtml}
     <section class="account-grid">
       <div class="card account-section"><h2>Akses Saya</h2><div class="admin-list">${accessHtml}</div></div>
       <div class="card account-section"><h2>Order Saya</h2><div class="admin-list">${ordersHtml}</div></div>
@@ -516,6 +552,22 @@ async function renderAccountCommerce() {
       } finally {
         button.disabled = false;
         button.textContent = originalText;
+      }
+    });
+  });
+  box.querySelectorAll('[data-account-open-saved]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const item = itemByKey.get(button.dataset.accountOpenSaved);
+      if (!item) return;
+      try {
+        button.disabled = true;
+        button.textContent = 'Membuka...';
+        await window.ATShop.openItem(item);
+      } catch (error) {
+        window.ATShop.showToast(error.message);
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Buka';
       }
     });
   });

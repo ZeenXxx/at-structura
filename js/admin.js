@@ -1,6 +1,6 @@
 const sessionKey = 'at_structura_supabase_session';
 const loginPath = '/pages/resource-login/';
-const state = { resources: [], software: [], services: [], members: [], orders: [], activePanel: 'resources' };
+const state = { resources: [], software: [], services: [], members: [], orders: [], audit: [], activePanel: 'resources' };
 const visibleStatuses = ['Tersedia', 'Link Eksternal', 'Coming Soon'];
 const serviceVisibleStatuses = ['Aktif'];
 const orderStatuses = [
@@ -18,6 +18,7 @@ const els = {
   serviceCount: document.getElementById('serviceCount'),
   memberCount: document.getElementById('memberCount'),
   orderCount: document.getElementById('orderCount'),
+  auditCount: document.getElementById('auditCount'),
   logout: document.getElementById('adminLogout'),
   resourceForm: document.getElementById('resourceAdminForm'),
   softwareForm: document.getElementById('softwareAdminForm'),
@@ -27,6 +28,7 @@ const els = {
   serviceList: document.getElementById('serviceAdminList'),
   memberList: document.getElementById('memberAdminList'),
   orderList: document.getElementById('orderAdminList'),
+  auditList: document.getElementById('auditAdminList'),
   resourceSearch: document.getElementById('resourceAdminSearch'),
   resourceStatus: document.getElementById('resourceAdminStatus'),
   softwareSearch: document.getElementById('softwareAdminSearch'),
@@ -37,6 +39,8 @@ const els = {
   memberStatus: document.getElementById('memberAdminStatus'),
   orderSearch: document.getElementById('orderAdminSearch'),
   orderStatus: document.getElementById('orderAdminStatus'),
+  auditSearch: document.getElementById('auditAdminSearch'),
+  auditAction: document.getElementById('auditAdminAction'),
   resourceFormStatus: document.querySelector('[data-admin-form-status="resources"]'),
   softwareFormStatus: document.querySelector('[data-admin-form-status="software"]'),
   serviceFormStatus: document.querySelector('[data-admin-form-status="services"]')
@@ -174,6 +178,7 @@ const tableName = kind => {
   if (kind === 'services') return cfg().servicesTable || 'technical_services';
   if (kind === 'members') return cfg().membersTable || 'member_profiles';
   if (kind === 'orders') return 'orders';
+  if (kind === 'audit') return cfg().auditLogsTable || 'admin_audit_logs';
   return cfg().resourcesTable || 'resources';
 };
 const listForKind = kind => {
@@ -181,6 +186,7 @@ const listForKind = kind => {
   if (kind === 'services') return state.services;
   if (kind === 'members') return state.members;
   if (kind === 'orders') return state.orders;
+  if (kind === 'audit') return state.audit;
   return state.resources;
 };
 const formForKind = kind => {
@@ -193,6 +199,7 @@ const listElForKind = kind => {
   if (kind === 'services') return els.serviceList;
   if (kind === 'members') return els.memberList;
   if (kind === 'orders') return els.orderList;
+  if (kind === 'audit') return els.auditList;
   return els.resourceList;
 };
 const sourceFields = (kind, sourceType, link) => {
@@ -364,8 +371,8 @@ function fillForm(kind, item) {
 
 function filterItems(kind) {
   const items = listForKind(kind);
-  const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : kind === 'members' ? els.memberSearch : kind === 'orders' ? els.orderSearch : els.resourceSearch;
-  const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : kind === 'members' ? els.memberStatus : kind === 'orders' ? els.orderStatus : els.resourceStatus;
+  const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : kind === 'members' ? els.memberSearch : kind === 'orders' ? els.orderSearch : kind === 'audit' ? els.auditSearch : els.resourceSearch;
+  const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : kind === 'members' ? els.memberStatus : kind === 'orders' ? els.orderStatus : kind === 'audit' ? els.auditAction : els.resourceStatus;
   const search = (searchEl?.value || '').toLowerCase();
   const status = statusEl?.value || 'All';
   return items.filter(item => {
@@ -379,6 +386,11 @@ function filterItems(kind) {
       const haystack = [item.order_number, item.status, item.total_amount, item.proof_file_name, ...(item.order_items || []).map(orderItem => orderItem.title_snapshot)].join(' ').toLowerCase();
       return (status === 'All' || item.status === status) && haystack.includes(search);
     }
+    if (kind === 'audit') {
+      const actionFilter = els.auditAction?.value || 'All';
+      const haystack = [item.action, item.admin_email, item.target_table, item.target_id, item.target_title, JSON.stringify(item.metadata || {})].join(' ').toLowerCase();
+      return (actionFilter === 'All' || String(item.action || '').startsWith(actionFilter)) && haystack.includes(search);
+    }
     const haystack = [item.title, item.category, item.type, item.platform, item.license, item.author, item.description, item.status, item.link, item.icon].join(' ').toLowerCase();
     return (status === 'All' || item.status === status) && haystack.includes(search);
   });
@@ -387,6 +399,7 @@ function filterItems(kind) {
 function emptyTitle(kind) {
   if (kind === 'members') return 'Akun belum ditemukan';
   if (kind === 'orders') return 'Pesanan belum ditemukan';
+  if (kind === 'audit') return 'Audit log belum tersedia';
   if (kind === 'software') return 'Software belum ditemukan';
   if (kind === 'services') return 'Layanan belum ditemukan';
   return 'Resource belum ditemukan';
@@ -434,6 +447,31 @@ async function uploadAdminFile(kind, form, session) {
 function renderList(kind) {
   const list = listElForKind(kind);
   const data = filterItems(kind);
+  if (kind === 'audit') {
+    list.innerHTML = data.map(item => `
+      <article class="admin-item audit-item" data-id="${escapeText(item.id)}">
+        <div>
+          <div class="meta">
+            <span class="badge tag-red">${escapeText(item.action || '-')}</span>
+            <span class="badge">${escapeText(item.target_table || '-')}</span>
+            <span class="badge">${escapeText(formatDate(item.created_at))}</span>
+          </div>
+          <h3>${escapeText(item.target_title || item.target_id || 'Aktivitas admin')}</h3>
+          <p>${escapeText(item.admin_email || item.admin_user_id || '-')}</p>
+          <small>${escapeText(JSON.stringify(item.metadata || {}))}</small>
+        </div>
+      </article>
+    `).join('') || `
+      <div class="card empty-state admin-empty-state">
+        <span class="icon">LOG</span>
+        <h3>${emptyTitle(kind)}</h3>
+        <p>Jalankan file SQL audit log di Supabase bila panel ini masih kosong setelah ada aktivitas admin.</p>
+        <div class="actions"><button class="btn btn-secondary" type="button" data-admin-reset="${kind}">Reset Filter</button></div>
+      </div>
+    `;
+    if (els.auditCount) els.auditCount.textContent = state.audit.length;
+    return;
+  }
   if (kind === 'orders') {
     list.innerHTML = data.map(order => {
       const items = order.order_items || [];
@@ -473,6 +511,7 @@ function renderList(kind) {
       </div>
     `;
     els.orderCount.textContent = state.orders.length;
+    if (els.auditCount) els.auditCount.textContent = state.audit.length;
     return;
   }
   if (kind === 'members') {
@@ -522,6 +561,7 @@ function renderList(kind) {
     `;
     els.memberCount.textContent = state.members.length;
     els.orderCount.textContent = state.orders.length;
+    if (els.auditCount) els.auditCount.textContent = state.audit.length;
     return;
   }
   list.innerHTML = data.map(item => {
@@ -568,6 +608,7 @@ function renderList(kind) {
   els.serviceCount.textContent = state.services.filter(item => item.is_active !== false && item.status === 'Aktif').length;
   els.memberCount.textContent = state.members.length;
   els.orderCount.textContent = state.orders.length;
+  if (els.auditCount) els.auditCount.textContent = state.audit.length;
 }
 
 function renderAll() {
@@ -576,6 +617,7 @@ function renderAll() {
   renderList('services');
   renderList('members');
   renderList('orders');
+  renderList('audit');
 }
 
 async function fetchItems(kind) {
@@ -595,6 +637,12 @@ async function fetchItems(kind) {
     if (!response.ok) throw new Error(payload.message || payload.msg || `Load orders gagal (${response.status}).`);
     return payload;
   }
+  if (kind === 'audit') {
+    const response = await fetch(apiUrl(`/rest/v1/${tableName(kind)}?select=*&order=created_at.desc&limit=100`), { headers: authHeaders(session.access_token) });
+    const payload = await response.json().catch(() => []);
+    if (!response.ok) throw new Error(payload.message || payload.msg || `Load audit log gagal (${response.status}).`);
+    return payload;
+  }
   const resourceFilter = kind === 'resources' ? '&category=neq.Software' : '';
   const response = await fetch(apiUrl(`/rest/v1/${tableName(kind)}?select=*&order=${order}${resourceFilter}`), { headers: authHeaders(session.access_token) });
   const payload = await response.json().catch(() => ({}));
@@ -609,8 +657,32 @@ async function loadAll() {
   state.services = await fetchItems('services');
   state.members = await fetchItems('members');
   state.orders = await fetchItems('orders');
+  state.audit = await fetchItems('audit').catch(error => {
+    showToast(error.message);
+    return [];
+  });
   renderAll();
   els.sessionStatus.textContent = 'Sesi admin aktif. Semua data dibaca dari Supabase.';
+}
+
+async function logAdminAction(action, targetTable, targetId, targetTitle, metadata = {}) {
+  const session = await ensureSession();
+  if (!session?.access_token) return;
+  const user = await userFromSession(session).catch(() => null);
+  const body = {
+    admin_user_id: user?.id || null,
+    admin_email: user?.email || null,
+    action,
+    target_table: targetTable,
+    target_id: targetId ? String(targetId) : null,
+    target_title: targetTitle || null,
+    metadata
+  };
+  await fetch(apiUrl(`/rest/v1/${tableName('audit')}`), {
+    method: 'POST',
+    headers: { ...authHeaders(session.access_token), Prefer: 'return=minimal' },
+    body: JSON.stringify(body)
+  }).catch(() => {});
 }
 
 async function saveItem(kind, payload) {
@@ -631,6 +703,8 @@ async function saveItem(kind, payload) {
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(result.message || result.msg || `Simpan ${kind} gagal (${response.status}).`);
+  const savedId = Array.isArray(result) && result[0]?.id ? result[0].id : id || body.slug;
+  await logAdminAction(id ? 'update' : 'create', tableName(kind), savedId, body.title, { kind, status: body.status, access_type: body.access_type, source_type: body.source_type });
 }
 
 async function deleteItem(kind, item) {
@@ -652,6 +726,7 @@ async function deleteItem(kind, item) {
     const result = await response.json().catch(() => ({}));
     throw new Error(result.message || result.msg || `Hapus ${kind} gagal (${response.status}).`);
   }
+  await logAdminAction('delete', tableName(kind), id, item?.title || id, { kind, removed_storage_path: item?.storage_path || null });
 }
 
 async function updateOrderStatus(id, status) {
@@ -672,6 +747,8 @@ async function updateOrderStatus(id, status) {
   if (status !== 'paid') {
     await deleteRows('member_access', `order_id=eq.${encodeURIComponent(id)}`, session);
   }
+  const order = state.orders.find(item => item.id === id);
+  await logAdminAction('payment_status_update', 'orders', id, order?.order_number || id, { status });
 }
 
 async function deleteRows(table, filter, session) {
@@ -698,6 +775,7 @@ async function deleteOrderForTesting(id) {
   });
   await deleteRows('order_items', `order_id=eq.${encodeURIComponent(id)}`, session);
   await deleteRows('orders', `id=eq.${encodeURIComponent(id)}`, session);
+  await logAdminAction('delete_testing_order', 'orders', id, order.order_number || id, { proof_path: order.proof_path || null });
 }
 
 async function runMemberAction(userId, action, reason = '') {
@@ -713,6 +791,7 @@ async function runMemberAction(userId, action, reason = '') {
   });
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(payload.error || payload.message || `Aksi akun gagal (${response.status}).`);
+  await logAdminAction(`member_${action}`, 'member_profiles', userId, userId, { reason });
   return payload;
 }
 
@@ -732,6 +811,7 @@ function switchPanel(panel) {
   document.getElementById('panelServices').classList.toggle('active', panel === 'services');
   document.getElementById('panelMembers').classList.toggle('active', panel === 'members');
   document.getElementById('panelOrders').classList.toggle('active', panel === 'orders');
+  document.getElementById('panelAudit').classList.toggle('active', panel === 'audit');
 }
 
 document.querySelectorAll('.admin-nav [data-admin-panel]').forEach(button => button.addEventListener('click', () => switchPanel(button.dataset.adminPanel)));
@@ -796,8 +876,8 @@ document.addEventListener('click', async event => {
   const resetButton = event.target.closest('button[data-admin-reset]');
   if (resetButton) {
     const kind = resetButton.dataset.adminReset;
-    const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : kind === 'members' ? els.memberSearch : kind === 'orders' ? els.orderSearch : els.resourceSearch;
-    const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : kind === 'members' ? els.memberStatus : kind === 'orders' ? els.orderStatus : els.resourceStatus;
+    const searchEl = kind === 'software' ? els.softwareSearch : kind === 'services' ? els.serviceSearch : kind === 'members' ? els.memberSearch : kind === 'orders' ? els.orderSearch : kind === 'audit' ? els.auditSearch : els.resourceSearch;
+    const statusEl = kind === 'software' ? els.softwareStatus : kind === 'services' ? els.serviceStatus : kind === 'members' ? els.memberStatus : kind === 'orders' ? els.orderStatus : kind === 'audit' ? els.auditAction : els.resourceStatus;
     if (searchEl) searchEl.value = '';
     if (statusEl) statusEl.value = 'All';
     renderList(kind);
@@ -916,6 +996,8 @@ els.memberSearch?.addEventListener('input', () => renderList('members'));
 els.memberStatus?.addEventListener('change', () => renderList('members'));
 els.orderSearch?.addEventListener('input', () => renderList('orders'));
 els.orderStatus?.addEventListener('change', () => renderList('orders'));
+els.auditSearch?.addEventListener('input', () => renderList('audit'));
+els.auditAction?.addEventListener('change', () => renderList('audit'));
 ['resources', 'software'].forEach(kind => {
   const form = formForKind(kind);
   form?.elements.storage_file?.addEventListener('change', () => {

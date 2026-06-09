@@ -3,5 +3,12 @@ Allow: /
 Disallow: /pages/resource-upload/
 Disallow: /pages/resource-login/
 Disallow: /pages/admin/
+Disallow: /pages/account/
+Disallow: /pages/cart/
+Disallow: /pages/checkout/
+Disallow: /pages/login/
+Disallow: /pages/daftar/
+Disallow: /pages/verify-email/
+Disallow: /pages/change-password/
 Sitemap: https://at-structura.vercel.app/sitemap.xml
 

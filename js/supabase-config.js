@@ -8,5 +8,6 @@ window.AT_SUPABASE = {
   countersTable: 'site_counters',
   membersTable: 'member_profiles',
   adminsTable: 'resource_admins',
+  auditLogsTable: 'admin_audit_logs',
   storageBucket: 'at-structura-storage'
 };

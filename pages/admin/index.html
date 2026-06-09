@@ -15,7 +15,7 @@
 <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<link rel="stylesheet" href="/css/style.css?v=4">
+<link rel="stylesheet" href="/css/style.css?v=5">
 </head>
 <body class="admin-body">
 <main class="admin-shell">
@@ -30,6 +30,7 @@
       <button type="button" data-admin-panel="services">Layanan</button>
       <button type="button" data-admin-panel="members">Akun</button>
       <button type="button" data-admin-panel="orders">Pesanan</button>
+      <button type="button" data-admin-panel="audit">Audit Log</button>
       <a href="/pages/resources/" target="_blank" rel="noopener">Lihat Resources</a>
       <a href="/pages/software/" target="_blank" rel="noopener">Lihat Software</a>
       <a href="/pages/jasa/" target="_blank" rel="noopener">Lihat Jasa</a>
@@ -50,6 +51,7 @@
         <div><strong id="serviceCount">0</strong><span>Layanan</span></div>
         <div><strong id="memberCount">0</strong><span>Akun</span></div>
         <div><strong id="orderCount">0</strong><span>Pesanan</span></div>
+        <div><strong id="auditCount">0</strong><span>Log</span></div>
       </div>
     </header>
 
@@ -309,11 +311,34 @@
         <div class="admin-list" id="orderAdminList"></div>
       </section>
     </section>
+
+    <section class="admin-panel" id="panelAudit">
+      <div class="admin-panel-head">
+        <div>
+          <h2>Audit Log</h2>
+          <p>Catatan aktivitas penting admin seperti simpan, edit, hapus, ubah status pembayaran, suspend, dan hapus akun.</p>
+        </div>
+      </div>
+      <section class="card admin-list-card">
+        <div class="filter-bar manager-filter">
+          <input class="control" id="auditAdminSearch" type="search" placeholder="Cari aksi, email admin, target, atau metadata...">
+          <select class="control" id="auditAdminAction">
+            <option value="All">Semua aksi</option>
+            <option value="create">Create</option>
+            <option value="update">Update</option>
+            <option value="delete">Delete</option>
+            <option value="payment">Payment</option>
+            <option value="member">Member</option>
+          </select>
+        </div>
+        <div class="admin-list" id="auditAdminList"></div>
+      </section>
+    </section>
   </section>
 </main>
 <div class="toast" id="toast"></div>
-<script src="/js/supabase-config.js?v=8"></script>
+<script src="/js/supabase-config.js?v=9"></script>
 <script src="/js/shop.js?v=4"></script>
-<script src="/js/admin.js?v=9"></script>
+<script src="/js/admin.js?v=10"></script>
 </body>
 </html>
